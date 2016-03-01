@@ -133,7 +133,7 @@ var GraphVisualizer = function(args){
 		}else if(evt.index.length == 2){
 			// 2 indexes (nodes), traverse edge
 			// connect the objects if not connected
-			if(this.graph.nodes[evt.index[0]].graph.adjecent[evt.index[1]] == null){
+			if(this.graph.nodes[evt.index[0]].graph.adjecent[evt.index[1]] == null || evt.value[0] == 0){
 				//this.connectNodes(evt);
 				this.graph.mark({objects: [this.graph.nodes[evt.index[0]], this.graph.nodes[evt.index[1]]], color: this.readColor3d});
 				this.arrayElements2d[evt.id].markIndex({x: evt.index[0], y: evt.index[1], color: this.readColor2d});
