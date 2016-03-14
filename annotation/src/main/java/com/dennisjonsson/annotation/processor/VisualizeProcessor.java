@@ -1,6 +1,7 @@
 package com.dennisjonsson.annotation.processor;
 
 
+import com.dennisjonsson.annotation.processor.parser.TextProcessor;
 import com.dennisjonsson.markup.DataStructure;
 import com.dennisjonsson.markup.AbstractType;
 import com.dennisjonsson.annotation.RunVisualization;
