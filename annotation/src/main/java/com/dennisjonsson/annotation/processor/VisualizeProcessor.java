@@ -6,11 +6,6 @@ import com.dennisjonsson.markup.AbstractType;
 import com.dennisjonsson.annotation.RunVisualization;
 import com.dennisjonsson.annotation.VisualClassPath;
 import com.dennisjonsson.annotation.Visualize;
-import com.github.javaparser.JavaParser;
-import com.github.javaparser.ParseException;
-import com.github.javaparser.ast.CompilationUnit;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -21,23 +16,11 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.tools.Diagnostic;
-import javax.tools.FileObject;
 
 import java.util.Set;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.HashMap;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 //@AutoService(Processor.class)
@@ -45,7 +28,7 @@ public class VisualizeProcessor extends AbstractProcessor {
 	
 	private Messager messager;
 	private Filer filer;
-	private HashMap<String, SourceProcessor> sourceFiles;
+	private HashMap<String, TextProcessor> sourceFiles;
         private HashMap<String, ArrayList<DataStructure>> looseDataStructures;
 	private static final String PREFIX = "Visual";
         
@@ -55,7 +38,7 @@ public class VisualizeProcessor extends AbstractProcessor {
 	public synchronized void init(ProcessingEnvironment env){
 		messager = env.getMessager();		
 		filer = env.getFiler();
-		sourceFiles = new HashMap<String, SourceProcessor>();
+		sourceFiles = new HashMap<String, TextProcessor>();
                 looseDataStructures = new HashMap<String, ArrayList<DataStructure>>();
 	}
 
@@ -77,35 +60,30 @@ public class VisualizeProcessor extends AbstractProcessor {
 			go through all found classes containing annotations
 		*/
                 
-		for(SourceProcessor processor : sourceFiles.values()){
+		for(TextProcessor processor : sourceFiles.values()){
 			String sourceStr = null;
 			String newClass = processor.getClassName() + PREFIX;
                         if(!processor.isWritten()){
                             processor.written();
-                            try{	
-				// process new source file
-                                
-				processor.removeAnnotations();
-				processor.renameClass(newClass);
-				processor.insertInterceptionCalls();
-				processor.insertInterceptorMethods(); 
-                                processor.insertLogger();
-                                processor.replace(INSERTION_COMMENT, "\nlogger.printLog();\n");
-                               // processor.removePackage();
-				sourceStr = processor.getSource();
+                      	
+                            // process new source file
+                            processor.loadSource();
+                            processor.removeAnnotations();
+                            processor.renameClass(newClass);
+                            processor.insertInterceptionCalls();
+                            processor.insertInterceptorMethods(); 
+                            processor.insertLogger();
+                            processor.replace(INSERTION_COMMENT, "\nlogger.printLog();\n");
+                            processor.writeSource();
   
-				 //write new source source
+				/*
 				FileObject desination = filer.createSourceFile(
                                        // processor.getPackageElement().toString()+"."+
                                         processor.getClassName(), 
                                         processor.getPackageElement()
                                         
-                                );
-                                createFile(processor.getPath()/*sourcePath*/,processor.getClassName(), sourceStr);
-				//CreateSource(desination, sourceStr);
-                            }catch(IOException e){
-                                    throw new RuntimeException(e.toString());
-                            }
+                                );*/
+                            
 			
                             messager.printMessage(Diagnostic.Kind.NOTE,
                                     "Source:\n"+sourceStr);
@@ -156,7 +134,7 @@ public class VisualizeProcessor extends AbstractProcessor {
                             /*
                                     Get or create new source File representation
                             */
-                            SourceProcessor sourceProcessor = sourceFiles.get(classElement.toString());
+                            TextProcessor sourceProcessor = sourceFiles.get(classElement.toString());
      
                             if(sourceProcessor == null){
                                  if(!looseDataStructures.containsKey(classElement.toString())){
@@ -196,16 +174,14 @@ public class VisualizeProcessor extends AbstractProcessor {
                         
 			if(!(sourceFiles.containsKey(annotatedElement.toString()) || 
                                 sourceFiles.containsKey(annotatedElement.toString()+PREFIX))){
-                            CompilationUnit unit = null;
-                            String source = readFile( path, className, unit);
                             
-                            SourceProcessor sourceProcessor = 
-                                    new SourceProcessor(
-                                            source, 
+                            //String source = readFile( path, className, unit);
+                            
+                            TextProcessor sourceProcessor = 
+                                    new TextProcessor(
                                             className, 
                                             packageElement, 
-                                            path, 
-                                            unit);
+                                            path);
                             
                             // add loose dataStructures
                             if(looseDataStructures.containsKey(annotatedElement.toString())){
@@ -268,97 +244,10 @@ public class VisualizeProcessor extends AbstractProcessor {
 		messager.printMessage(Diagnostic.Kind.NOTE, strBuilder.toString());
 	}
 	
-
-        private void createFile(String path, String name,String source){
-            PrintWriter writer = null;
-            try {
-                writer = new PrintWriter(path+name+".java", "UTF-8");
-            } catch (FileNotFoundException ex) {
-                Logger.getLogger(VisualizeProcessor.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (UnsupportedEncodingException ex) {
-                Logger.getLogger(VisualizeProcessor.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
-            writer.write(source);
-            writer.close();
-         
-         
-        } 
-        
         /*
-        String readFile(String path, String className){
-            BufferedReader reader = null;
-            try {
-                reader = Files.newBufferedReader(Paths.get(path+className+".java"));
-            } catch (IOException ex) {
-                Logger.getLogger(VisualizeProcessor.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
-                throw new RuntimeException(ex.getMessage());
-            }
-            
-            Scanner scanner = new Scanner(reader);
-            StringBuilder builder = new StringBuilder();
-            while(scanner.hasNext()){
-                builder.append(scanner.nextLine());
-                builder.append("\n");
-            }
 
-            return builder.toString();
-        }
+      
         */
-        
-        InputStream getInputStream(String path, String className){
-            InputStream stream = null;
-            try {
-                
-                stream = 
-                        Files.newInputStream(
-                                Paths.get(path+className+".java"),  
-                                StandardOpenOption.READ);
-                
-            } catch (IOException ex) {
-                Logger.getLogger(VisualizeProcessor.class.getName()).log(Level.SEVERE, ex.getMessage(), ex);
-                throw new RuntimeException(ex.getMessage());
-            }
-            
-            return stream;
-        }
-        
-        String readFile(String path, String className, CompilationUnit nunit){
-            
-            InputStream stream = null;
-            StringBuilder builder = null;
-            
-            try {
-                
-                stream = getInputStream(path, className);
-                
-                Scanner scanner = new Scanner(stream);
-                builder = new StringBuilder();
-                while(scanner.hasNext()){
-                    builder.append(scanner.nextLine());
-                    builder.append("\n");
-                }
-                
-                nunit = JavaParser.parse(stream);
-                
-            }catch (ParseException ex) {
-                Logger.getLogger(VisualizeProcessor.class.getName()).log(Level.SEVERE, null, ex);
-                throw new RuntimeException(ex.getMessage());
-            }finally{
-                if(stream != null){
-                    try {
-                        stream.close();
-                    } catch (IOException ex) {
-                        Logger.getLogger(VisualizeProcessor.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-                
-            }
-            
-            
-
-            return builder.toString();
-        }
         
         
       
@@ -378,51 +267,6 @@ public class VisualizeProcessor extends AbstractProcessor {
          
         /*
          
-         private void CreateSource(FileObject destination, String source){
-		
-		try{
-			
-			Writer wrt = destination.openWriter();
-			wrt.write(source);
-			wrt.close();
-		}catch(IOException e){
-			throw new RuntimeException(e.toString());
-		}
-				
-	}
-         
-         private FileObject readSource(String className, String pkgName){
-		FileObject fileObject = null;
-              
-		try{
-  
-			fileObject = filer.getResource(
-                               
-                               new JavaFileManager.Location(){
-                                    @Override
-                                    public String getName() {
-                                        return Paths.get("C:/Users/dennis/Documents/" +
-                                                "NetBeansProjects/" +
-                                                "graphVisualizationTest/" +
-                                                 "src/main/java/com/"
-                                                + "dennisjonsson/"
-                                                + "graphvisualizationtest/").toString();
-                                        
-                                    }
-
-                                    @Override
-                                    public boolean isOutputLocation() {
-                                        return false;
-                                    }
-                                }
-                                , 
-				"",
-				className+".java" ); 
-					
-		}catch(IOException e){
-			throw new RuntimeException(e.toString());
-		}
-		return fileObject;
-	}
+       
 */
 }

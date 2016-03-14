@@ -46,9 +46,8 @@ public class NodeVisitor extends ModifierVisitorAdapter
             details = new ExpressionDetails();
             details.scope = null;
             details.statementId = UUID.randomUUID().toString();
-            
         }
-         
+
         for(DataStructure datastructure : dataStructures){
             
             if(n.getName().equals(datastructure.getIdentifier())){
