@@ -11,7 +11,7 @@ var BFSVisualizer = function(args){
 		
 	
 		// do something with the datastructures
-		for(var i =0 ; i < this.markup.header.variables.length; i++){
+		for(var i =0 ; i < this.markup.header.annotaVariables.length; i++){
 			
 			var type = this.markup.header.variables[i].type;
 			if(type == "edge list" ){

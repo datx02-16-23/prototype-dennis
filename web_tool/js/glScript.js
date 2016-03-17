@@ -183,7 +183,7 @@
 		
 			
 			// choose program
-			var markup = new Markup(object);
+			var markup = object;
 			this.currentProgram = this.programs[markup.header.visual]({markup: markup, environment: this});
 			this.DOM["upload_file_form"].removeChild(this.DOM["spinner"]);
 			this.DOM["container_window"].removeChild(this.DOM["upload_file_window"]);
@@ -192,36 +192,6 @@
 		
 		},
 		
-/*
-		this.parseText = function(){
-			
-			this.DOM["input_text_window"].appendChild(this.DOM["spinner"]);
-			var text = document.getElementById("text_input").value;
-			document.getElementById("text_input").style.zIndex = 0;
-			try{
-				var object = JSON.parse(text);
-			}catch(e){
-				alert("could not parse text: "+e.message);
-				this.DOM["input_text_window"].removeChild(this.DOM["spinner"]);
-				return false;
-			}
-			
-			// choose program
-			var markup = new Markup(object);
-			this.currentProgram = this.programs[markup.header.visual]({markup: markup, environment: this});
-
-			
-			document.getElementById("text_input").value = markup.print();
-			document.getElementById("text_input").style.zIndex = 3;
-			this.DOM["input_text_window"].removeChild(this.DOM["spinner"]);
-			this.DOM["container_window"].appendChild(this.DOM["player"]);
-			
-			this.closeFileWindow();
-			this.display();
-		
-		},
-		
-		*/
 		this.runVisualization = function(){
 			this.currentProgram.play();
 		},

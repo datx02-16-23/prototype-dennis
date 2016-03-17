@@ -14,12 +14,13 @@ var Sequence = function(args){
 		this.markup.body.push(event);
 	},
 	
+	/*
 	this.print = function(){
 		for(var i = 0; i < this.markup.body.length; i++){
 			console.log(this.markup.body[i].op+", "+
 			this.markup.body[i].id+", "+this.markup.body[i].x[0]);
 		}
-	},
+	},*/
 	
 	
 	this.slowDown =  function(times){

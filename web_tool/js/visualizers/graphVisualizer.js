@@ -2,7 +2,6 @@
 var GraphVisualizer = function(args){
 	
 	this.graph,
-	this.variables,
 	this.sequence,
 	this.markup = args.markup,
 	this.environment = args.environment,
@@ -20,39 +19,41 @@ var GraphVisualizer = function(args){
 		
 		this.arrayElements2d = [];
 		
-		if(this.markup.header.variables[0] == null){
-			alert("Graph program: no datastructure defined!");;
-		}
-		var type = this.markup.header.variables[0].type;
-		
-		// we only have this now 
-		if(type != "ADJECENCY_LIST" && type != "ADJECENCY_MATRIX" ){
-			alert("Graph program: could not find apropriate datastructure");
-		}
-		
+		var variables = this.markup.header.annotatedVariables;
+		var size = [];
+		var i = 0;
 		// create 2d DOM elements of data structures
-		for(var i = 0; i <this.markup.header.variables.length; i ++){
-			
-			var arrayElement = new ArrayElement({
-				lengthX: this.markup.header.variables[i].size[0], 
-				lengthY: this.markup.header.variables[i].size[1],
-				id: this.markup.header.variables[i].name });
+		for(var key in variables){
+			if (variables.hasOwnProperty(key)) {
+
+				var arrayElement = new ArrayElement({
+					lengthX: 	variables[key].attributes.size[0], 
+					lengthY: 	variables[key].attributes.size[1],
+					id: 		variables[key].identifier });
 				
-			arrayElement.init();
-			
-			this.arrayElements2d[arrayElement.id] = arrayElement;
-			
-			this.environment.DOM["debug_container"].appendChild(arrayElement.DOM);
+				// sizes of each variable 			
+				size[i] = variables[key].attributes.size[0];
+				i++;
+					
+				arrayElement.init();
+				
+				this.arrayElements2d[arrayElement.id] = arrayElement;
+				
+				this.environment.DOM["debug_container"].appendChild(arrayElement.DOM);
+			}
 			
 		}
+		
+		
 		
 		
 		// create graph and insert nodes 
 		this.graph = new Graph({environment: this.environment});
 		this.graph.init();
-		console.log("scene: "+this.environment.scene);
-		console.log(this.markup.header.variables[0].size[0]);
-		for(var i = 0; i < this.markup.header.variables[0].size[0]; i ++){
+		//console.log("scene: "+this.environment.scene);
+		//console.log(this.markup.header.variables[0].size[0]);
+		
+		for(var i = 0; i < size[0]; i ++){
 			
 			var hex = 0x5fcbff;
 			var sphereGeometry = new THREE.SphereGeometry( 1, 20, 20 );
@@ -98,11 +99,11 @@ var GraphVisualizer = function(args){
 	},
 	
 	this.display = function(evt){
-		this.environment.displayData(evt.op+" <br>id: "+evt.id+"; <br>index: "+evt.index+"; <br>value: "+evt.value+"; ");
-		if(evt.op == "read"){
-			this.read(evt);
-		}else if(evt.op == "write"){
-			this.write(evt);
+		//this.environment.displayData(evt.op+" <br>id: "+evt.id+"; <br>index: "+evt.index+"; <br>value: "+evt.value+"; ");
+		if(evt.operation == "read"){
+			this.read(evt.operationBody);
+		}else if(evt.operation == "write"){
+			this.write(evt.operationBody);
 		}
 	},
 	
@@ -119,34 +120,39 @@ var GraphVisualizer = function(args){
 	
 	
 	this.matrix = {};
+	
 	this.read = function(evt){
 		
-		this.arrayElements2d[evt.id].clearMarked();
+		var id = evt.source.id;
+		var index = evt.source.index;
+		var value = evt.value;
+		
+		this.arrayElements2d[id].clearMarked();
 		this.graph.clearMarked();
 		
-		if(evt.index.length == 1){
+		if(index.length == 1){
 			// 1 index (node), traverse single node
 			
-			this.graph.traverse({object: this.graph.nodes[evt.index[0]], color: this.readColor3d});
-			this.arrayElements2d[evt.id].markIndex({x: evt.index[0], color: this.readColor2d});
+			this.graph.traverse({object: this.graph.nodes[index[0]], color: this.readColor3d});
+			this.arrayElements2d[id].markIndex({x: index[0], color: this.readColor2d});
 			
-		}else if(evt.index.length == 2){
+		}else if(index.length == 2){
 			// 2 indexes (nodes), traverse edge
 			// connect the objects if not connected
-			if(this.graph.nodes[evt.index[0]].graph.adjecent[evt.index[1]] == null || evt.value[0] == 0){
+			if(this.graph.nodes[index[0]].graph.adjecent[index[1]] == null || value[0] == 0){
 				//this.connectNodes(evt);
-				this.graph.mark({objects: [this.graph.nodes[evt.index[0]], this.graph.nodes[evt.index[1]]], color: this.readColor3d});
-				this.arrayElements2d[evt.id].markIndex({x: evt.index[0], y: evt.index[1], color: this.readColor2d});
-				this.arrayElements2d[evt.id].markCell({x:evt.index[0], y: evt.index[1], color: this.readColor2d});
+				this.graph.mark({objects: [this.graph.nodes[index[0]], this.graph.nodes[index[1]]], color: this.readColor3d});
+				this.arrayElements2d[id].markIndex({x: index[0], y: index[1], color: this.readColor2d});
+				this.arrayElements2d[id].markCell({x:index[0], y: index[1], color: this.readColor2d});
 			}else{
 			
 			// fetch edge
-				var edgeObj = this.graph.nodes[evt.index[0]].graph.adjecent[evt.index[1]];
+				var edgeObj = this.graph.nodes[index[0]].graph.adjecent[index[1]];
 				var node2 = edgeObj.edge.value;
 				this.graph.colorObject({object: edgeObj, color: 0x000000});
-				this.graph.mark({objects: [edgeObj, this.graph.nodes[evt.index[0]], this.graph.nodes[evt.index[1]]], color: this.readColor3d});
-				this.arrayElements2d[evt.id].markIndex({x: evt.index[0], y: evt.index[1], color: this.readColor2d});
-				this.arrayElements2d[evt.id].markCell({x:evt.index[0], y: evt.index[1], color: this.readColor2d});
+				this.graph.mark({objects: [edgeObj, this.graph.nodes[index[0]], this.graph.nodes[index[1]]], color: this.readColor3d});
+				this.arrayElements2d[id].markIndex({x: index[0], y: index[1], color: this.readColor2d});
+				this.arrayElements2d[id].markCell({x:index[0], y: index[1], color: this.readColor2d});
 			}
 			
 		}
@@ -159,12 +165,16 @@ var GraphVisualizer = function(args){
 	
 	this.write = function(evt){
 		
-		this.arrayElements2d[evt.id].clearMarked();
+		var id = evt.target.id;
+		var index = evt.target.index;
+		var value = evt.value;
+		
+		this.arrayElements2d[id].clearMarked();
 		this.graph.clearMarked();
 		
 		//console.log("writing: obj1"+evt.index[0]+"obj2: "+evt.value[0]+", index: "+evt.index[1]);
 		
-		if(evt.index.length == 2){
+		if(index.length == 2){
 			// connect two nodes
 			
 			this.connectNodes(evt);
@@ -175,13 +185,17 @@ var GraphVisualizer = function(args){
 	
 	this.connectNodes = function(evt){
 		
-		console.log("connect: "+evt.index[0] +", "+ evt.index[1]+", length:"+evt.index.length);
-		var edge = this.graph.connectNodes({id1:evt.index[0] ,  id2: evt.index[1], index: evt.index[1], value: evt.value[0]});
+		var id = evt.target.id;
+		var index = evt.target.index;
+		var value = evt.value;
 		
-		this.arrayElements2d[evt.id].markCell({x: evt.index[0], y:evt.index[1], color: this.writeColor2d});
-		this.arrayElements2d[evt.id].markIndex({x:evt.index[0], y: evt.index[1], color: this.writeColor2d});
-		this.arrayElements2d[evt.id].insertValue({x: evt.index[0], y: evt.index[1], value: evt.value[0]});
-		this.graph.mark({objects: [edge, this.graph.nodes[evt.index[0]], this.graph.nodes[evt.index[1]]], color: this.writeColor3d});
+		console.log("connect: "+index[0] +", "+ index[1]+", length:"+index.length);
+		var edge = this.graph.connectNodes({id1: index[0] ,  id2: index[1], index: index[1], value: value[0]});
+		
+		this.arrayElements2d[id].markCell({x: index[0], y: index[1], color: this.writeColor2d});
+		this.arrayElements2d[id].markIndex({x:index[0], y: index[1], color: this.writeColor2d});
+		this.arrayElements2d[id].insertValue({x: index[0], y: index[1], value: value[0]});
+		this.graph.mark({objects: [edge, this.graph.nodes[index[0]], this.graph.nodes[index[1]]], color: this.writeColor3d});
 		
 	},
 	
