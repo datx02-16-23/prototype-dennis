@@ -21,19 +21,11 @@ import java.util.logging.Logger;
  */
 public class ASTProcessor extends SourceProcessor {
     
-    private SourceVisitorAdapter adapter;
+    private ASTParser adapter;
     private CompilationUnit unit;
     
-    public ASTProcessor(String path, String className, ArrayList<DataStructure> dataStructures) {
-        super(path, className, dataStructures);
-
-        
-    }
-    
-    public void parseSource(){
-        adapter = new SourceVisitorAdapter(dataStructures);
-        
-        adapter.visit(unit, null);
+    ASTProcessor(String path, String className) {
+        super(path, className, new ArrayList<DataStructure>());
         
     }
 
@@ -60,10 +52,21 @@ public class ASTProcessor extends SourceProcessor {
                Logger.getLogger(ASTProcessor.class.getName()).log(Level.SEVERE, null, ex);
            }
         }
-       
-  
+        
        return unit;
    }
+
+    @Override
+    public void processSource(Object arg) {
+        
+        
+        String newClass = (String)arg;
+        adapter = new ASTParser(dataStructures);
+        adapter.visit(unit, null);
+        TextParser parser = new TextParser(unit.toString());
+        parser.renameClass(className, newClass);
+        source = parser.getSource();
+    }
         
     
 }

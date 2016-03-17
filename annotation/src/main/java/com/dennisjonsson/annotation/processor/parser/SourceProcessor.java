@@ -29,6 +29,31 @@ public abstract class SourceProcessor {
     protected final String path;
     protected String source, className;
     protected ArrayList<DataStructure> dataStructures;
+    private boolean written = false;
+    
+    public String getClassName(){
+            return this.className;
+    }
+    
+    public String getPath() {
+        return path;
+    }
+
+    public ArrayList<DataStructure> getDataStructures() {
+        return dataStructures;
+    }
+    
+    public void addDataStructure(DataStructure dataStructure){
+            dataStructures.add(dataStructure);
+    }
+
+    public void written(){
+        this.written = true;
+    }
+
+    public boolean isWritten() {
+        return written;
+    }
     
     public void loadSource(){
         source = readFile(path, className);
@@ -37,6 +62,8 @@ public abstract class SourceProcessor {
     public void writeSource(){
         createFile(path, className, source);
     }
+    
+    public abstract void processSource(Object arg);
 
     public SourceProcessor(String path, String className, ArrayList<DataStructure> dataStructures) {
         this.path = path;
