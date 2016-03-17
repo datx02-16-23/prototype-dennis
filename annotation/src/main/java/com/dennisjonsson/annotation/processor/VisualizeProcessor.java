@@ -4,7 +4,6 @@ package com.dennisjonsson.annotation.processor;
 import com.dennisjonsson.annotation.processor.parser.TextProcessor;
 import com.dennisjonsson.markup.DataStructure;
 import com.dennisjonsson.markup.AbstractType;
-import com.dennisjonsson.annotation.RunVisualization;
 import com.dennisjonsson.annotation.VisualClassPath;
 import com.dennisjonsson.annotation.Visualize;
 import com.dennisjonsson.annotation.processor.parser.ASTProcessor;
@@ -25,6 +24,7 @@ import java.util.Set;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.HashMap;
+import com.dennisjonsson.annotation.TestVisualize;
 
 
 //@AutoService(Processor.class)
@@ -186,7 +186,7 @@ public class VisualizeProcessor extends AbstractProcessor {
         }
    
 	private void processRunVisualization(RoundEnvironment env){
-		for (Element annotatedElement : env.getElementsAnnotatedWith(RunVisualization.class)) {
+		for (Element annotatedElement : env.getElementsAnnotatedWith(TestVisualize.class)) {
 			messager.printMessage(Diagnostic.Kind.NOTE, "function: \n"+annotatedElement.toString());
 		}
 	}
@@ -241,7 +241,7 @@ public class VisualizeProcessor extends AbstractProcessor {
 	public Set<String> getSupportedAnnotationTypes() { 
 		Set<String> set = new LinkedHashSet<String>();
 		set.add(Visualize.class.getCanonicalName());
-		set.add(RunVisualization.class.getCanonicalName());
+		set.add(TestVisualize.class.getCanonicalName());
 		return set;
 	}
 
