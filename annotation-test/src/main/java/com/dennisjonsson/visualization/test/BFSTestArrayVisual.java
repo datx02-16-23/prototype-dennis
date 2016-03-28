@@ -17,10 +17,9 @@ public static com.dennisjonsson.log.ast.ASTLogger logger =
 new com.dennisjonsson.log.ast.ASTLogger(
 new String [] {"ADJECENCY_MATRIX","int[][]","adjList"});
 
-    final int size = 10;
+    final int size = 20;
 
     
-    @TestVisualize
     int[][] adjList = new int[size][size];
 
     // this is a comment yo
@@ -38,7 +37,7 @@ new String [] {"ADJECENCY_MATRIX","int[][]","adjList"});
         while (i < left.size()) {
             marked[left.get(i)] = true;
             for (int j = 0; j < eval("undefined", adjList[read("adjList", "", 0, left.get(i))], 2).length; j++) {
-                if (!marked[j] && eval("undefined", adjList[left.get(i)][read("adjList", "", 1, j)], 2) == 1) {
+                if (!marked[j] && eval("undefined", adjList[read("adjList", "", 0, left.get(i))][read("adjList", "", 1, j)], 2) == 1) {
                     left.add(j);
                     marked[j] = true;
                 }

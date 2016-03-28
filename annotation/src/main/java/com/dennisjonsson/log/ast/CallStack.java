@@ -89,7 +89,7 @@ public class CallStack {
         if(!op.update(logOp)){
             pointer ++;
         }
-        System.out.println("push: "+(pointer < start));
+        //System.out.println("push: "+(pointer < start));
         return pointer < start;
         
     }
@@ -98,8 +98,8 @@ public class CallStack {
         if(callStack.get(pointer).update(op)){
             pointer --;
         }
-        System.out.println("update: "+(pointer < start));
-        System.out.println("updated: "+op.operation+" at "+(pointer + 1));
+        //System.out.println("update: "+(pointer < start));
+        //System.out.println("updated: "+op.operation+" at "+(pointer + 1));
         return pointer < start;
     }
     

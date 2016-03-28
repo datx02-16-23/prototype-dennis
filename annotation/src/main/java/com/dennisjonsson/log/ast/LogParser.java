@@ -36,8 +36,8 @@ public class LogParser {
     }
 
     public void parse(){
-        System.out.println("operation: "+operations.size());
-        System.out.println(Arrays.toString(operations.toArray()));
+        System.out.println("operations: "+operations.size());
+        //System.out.println(Arrays.toString(operations.toArray()));
         int i = operations.size() - 1;
         while(i >= 0){
            i =  branch(i);
@@ -46,7 +46,7 @@ public class LogParser {
     
     private int branch(int i){
         LogOperation op = operations.get(i);
-        System.out.println("branch: "+op.operation);
+       // System.out.println("branch: "+op.operation);
         switch(op.operation){
             case EvalOperation.OPERATION :
                 return visit((EvalOperation)op, i - 1);
@@ -60,7 +60,7 @@ public class LogParser {
     }
     
     private int visit(EvalOperation op, int i){
-        System.out.println(op.operation);
+        //System.out.println(op.operation);
         LogOperation nextOp = operations.get(i);
         switch(op.expressionType){
             case EvalOperation.ASSIGNMENT :
@@ -78,7 +78,7 @@ public class LogParser {
     }
     
     private int visit(WriteOperation op, int i){
-        System.out.println(op.operation);
+        //System.out.println(op.operation);
         if(op.sourceType == WriteOperation.ARRAY &&
                 op.targetType == op.sourceType){
             return assignArraytoArray(op, i);
@@ -102,7 +102,8 @@ public class LogParser {
     }
     
     private int visit(IndexedReadOperation op, int i){
-        System.out.println(op.operation);
+        
+        //System.out.println(op.operation);
         EvalOperation eval = (EvalOperation)operations.get(i+2);
         return readArrayToUnknown(eval, i+1);
     }
@@ -144,7 +145,7 @@ public class LogParser {
         i = callStack.collect(i);
         callStack.next(section);
         composer.composeReadArrayToUknown(section, eval);
-        System.out.println("after: "+i);
+       // System.out.println("after: "+i);
         //composer.composeReadArrayToUknown(section);
         // if the collect is interuptd by an eval
         if(!(operations.get(i) instanceof EvalOperation)){

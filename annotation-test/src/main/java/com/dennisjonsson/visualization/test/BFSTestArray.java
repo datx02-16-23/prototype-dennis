@@ -14,10 +14,9 @@ import java.util.ArrayList;
 @VisualClassPath(path = "C:/Users/dennis/Documents/NetBeansProjects/" + "annotation-test/src/main/" + "java/com/dennisjonsson/visualization/test/")
 public class BFSTestArray {
 
-    final int size = 10;
+    final int size = 20;
 
     @Visualize(type = AbstractType.ADJECENCY_MATRIX)
-    @TestVisualize
     int[][] adjList = new int[size][size];
 
     // this is a comment yo

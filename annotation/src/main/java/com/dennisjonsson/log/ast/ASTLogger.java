@@ -76,6 +76,7 @@ public class ASTLogger {
         String json = null;
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         //json = gson.toJson(operations);
+        Collections.reverse(markup.body);
         json = gson.toJson(markup);
         PrintWriter writer = null;
         try {

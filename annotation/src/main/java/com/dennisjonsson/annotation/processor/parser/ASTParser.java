@@ -11,34 +11,23 @@ import com.dennisjonsson.markup.AbstractType;
 import com.dennisjonsson.markup.ArrayDataStructure;
 import com.dennisjonsson.markup.DataStructure;
 import com.dennisjonsson.markup.DataStructureFactory;
-import com.dennisjonsson.markup.PrimitiveDataStructure;
 import com.github.javaparser.ast.Node;
-import com.github.javaparser.ast.body.AnnotationDeclaration;
-import com.github.javaparser.ast.body.AnnotationMemberDeclaration;
-import com.github.javaparser.ast.body.EmptyMemberDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
-import com.github.javaparser.ast.body.VariableDeclaratorId;
 import com.github.javaparser.ast.comments.BlockComment;
 import com.github.javaparser.ast.comments.LineComment;
-import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.ArrayAccessExpr;
-import com.github.javaparser.ast.expr.ArrayInitializerExpr;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.BinaryExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
-import com.github.javaparser.ast.expr.LiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.expr.UnaryExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
-import com.github.javaparser.ast.stmt.AssertStmt;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.visitor.ModifierVisitorAdapter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.UUID;
 
 /**
  *
@@ -53,6 +42,7 @@ public class ASTParser extends ModifierVisitorAdapter
     public static final String IS_ASSIGNMENT = "assignment";
     public static final String IS_DECLARATION = "declaration";
     public static final String IS_BINARY = "binary";
+    public static final String CONTINUE = "continue";
 
 
     public ASTParser(ArrayList<DataStructure> dataStruct) {
@@ -187,7 +177,7 @@ public class ASTParser extends ModifierVisitorAdapter
         
         if(n.getValue() instanceof ArrayAccessExpr){ 
             ArrayAccessExpr aValueExp = (ArrayAccessExpr)n.getValue();
-            System.out.println("AssignExpr: accessed value: "+aValueExp.getName().toString()+" "+aValueExp.getIndex());
+           // System.out.println("AssignExpr: accessed value: "+aValueExp.getName().toString()+" "+aValueExp.getIndex());
             call = setWriteFromArray((ArrayAccessExpr)n.getValue());
         }else if(n.getValue() instanceof NameExpr){
             call = setWtriteFromVariable((NameExpr)n.getValue());
@@ -322,13 +312,14 @@ public class ASTParser extends ModifierVisitorAdapter
         
         
         if(arg != null && arg instanceof String){
-            System.out.println(arg+" : "+n.toString());
+            //System.out.println(arg+" : "+n.toString());
             String str = (String)arg;
+            
             if(str.equalsIgnoreCase(SKIP)){
-                return super.visit(n, null);
+                return super.visit(n, CONTINUE);
             }
         }else{
-            System.out.println(arg+" : "+n.toString() );
+            //System.out.println(arg+" : "+n.toString() );
         }
         
         // skip all which are outside of assignments and declarations
@@ -357,8 +348,10 @@ public class ASTParser extends ModifierVisitorAdapter
                     && arg == null){
                 //return super.visit(setEval(n), SKIP);
             }*/
-            if(arg == IS_BINARY){
+            if(((String)arg).equalsIgnoreCase(IS_BINARY)){
                 return super.visit(setEval(n), SKIP);
+            }else{
+            
             }
             
             return super.visit(n, arg);
