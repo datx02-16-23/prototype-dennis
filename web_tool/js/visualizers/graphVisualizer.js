@@ -37,7 +37,7 @@ var GraphVisualizer = function(args){
 					
 				arrayElement.init();
 				
-				this.arrayElements2d[arrayElement.id] = arrayElement;
+				this.arrayElements2d[arrayElement.identifier] = arrayElement;
 				
 				this.environment.DOM["debug_container"].appendChild(arrayElement.DOM);
 			}
@@ -139,7 +139,7 @@ var GraphVisualizer = function(args){
 		}else if(index.length == 2){
 			// 2 indexes (nodes), traverse edge
 			// connect the objects if not connected
-			if(this.graph.nodes[index[0]].graph.adjecent[index[1]] == null || value[0] == 0){
+			if(this.graph.nodes[index[0]].graph.adjecent[index[1]] == null || value == 0){
 				//this.connectNodes(evt);
 				this.graph.mark({objects: [this.graph.nodes[index[0]], this.graph.nodes[index[1]]], color: this.readColor3d});
 				this.arrayElements2d[id].markIndex({x: index[0], y: index[1], color: this.readColor2d});
@@ -190,11 +190,11 @@ var GraphVisualizer = function(args){
 		var value = evt.value;
 		
 		console.log("connect: "+index[0] +", "+ index[1]+", length:"+index.length);
-		var edge = this.graph.connectNodes({id1: index[0] ,  id2: index[1], index: index[1], value: value[0]});
+		var edge = this.graph.connectNodes({id1: index[0] ,  id2: index[1], index: index[1], value: value});
 		
 		this.arrayElements2d[id].markCell({x: index[0], y: index[1], color: this.writeColor2d});
 		this.arrayElements2d[id].markIndex({x:index[0], y: index[1], color: this.writeColor2d});
-		this.arrayElements2d[id].insertValue({x: index[0], y: index[1], value: value[0]});
+		this.arrayElements2d[id].insertValue({x: index[0], y: index[1], value: value});
 		this.graph.mark({objects: [edge, this.graph.nodes[index[0]], this.graph.nodes[index[1]]], color: this.writeColor3d});
 		
 	},

@@ -37,7 +37,7 @@ public class MarkupComposer {
         collectNestedReads(fromSection);
         ArrayEntity to = toArrayEntity((ReadArray)toSection.get(0));
         collectNestedReads(toSection);
-        markup.body.add(new Write(from, to, new String [] {op.value}));
+        markup.body.add(new Write(from, to, op.value));
         
     }
    
@@ -49,7 +49,7 @@ public class MarkupComposer {
         ArrayEntity from = toArrayEntity((ReadArray)fromSection.get(0));
         collectNestedReads(fromSection);
         VariableEntity to = new VariableEntity(eval.identifier);
-        markup.body.add(new Write(from, to, new String [] {eval.value}));
+        markup.body.add(new Write(from, to, eval.value));
         
     }
     
@@ -61,7 +61,7 @@ public class MarkupComposer {
         ArrayEntity to = toArrayEntity((ReadArray)toSection.get(0));
         collectNestedReads(toSection);
         
-        markup.body.add(new Write(from, to, new String [] {write.value}));
+        markup.body.add(new Write(from, to, write.value));
         
     }
     
@@ -69,7 +69,7 @@ public class MarkupComposer {
             EvalOperation eval){
         VariableEntity from = new VariableEntity(write.identifier);
         VariableEntity to = new VariableEntity(eval.identifier);
-        markup.body.add(new Write(from, to, new String [] {eval.value}));
+        markup.body.add(new Write(from, to, eval.value));
     }
     
     public Read composeReadArrayToUknown(ReadArray readArray){

@@ -5,6 +5,7 @@
  */
 package com.dennisjonsson.annotation.processor.parser;
 
+import com.dennisjonsson.annotation.Print;
 import com.dennisjonsson.annotation.processor.VisualizeProcessor;
 import com.dennisjonsson.markup.DataStructure;
 import java.io.FileNotFoundException;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.lang.model.element.Element;
 
 /**
  *
@@ -30,6 +32,19 @@ public abstract class SourceProcessor {
     protected String source, className;
     protected ArrayList<DataStructure> dataStructures;
     private boolean written = false;
+    protected Element print;
+
+    public String getPrintingPath() {
+        return "\""+print.getAnnotation(Print.class).path()+"\"";
+    }
+    
+    public Element getPrintingMethod(){
+        return print;
+    }
+
+    public void setPrint(Element print) {
+        this.print = print;
+    }
     
     public String getClassName(){
             return this.className;

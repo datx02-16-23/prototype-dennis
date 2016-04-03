@@ -20,8 +20,8 @@ public class Write extends Operation{
     private static final String KEY_VALUE = "value";
     
 
-    public Write(Entity source, Entity target, String[] value) {
-        super(OPERATION, new HashMap<String, Object>());
+    public Write(Entity source, Entity target, Object value) {
+        super(OPERATION, new HashMap<>());
         this.operationBody.put(KEY_SOURCE, source);
         this.operationBody.put(KEY_TARGET, target);
         this.operationBody.put(KEY_VALUE, value);
@@ -49,7 +49,7 @@ public class Write extends Operation{
     * Set the value(s) which were written to {@code target} (from {@code source}, if applicable).
     * @param value Set the value(s) written to {@code target}.
     */
-   public void setValue(String value){
+   public void setValue(Object value){
            this.operationBody.put(KEY_VALUE, value);
    }
 

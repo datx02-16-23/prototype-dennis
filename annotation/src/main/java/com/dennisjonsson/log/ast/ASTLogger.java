@@ -26,13 +26,15 @@ import java.util.Stack;
  */
 public class ASTLogger {
 
-    ArrayList<LogOperation> operations = 
+    final ArrayList<LogOperation> operations = 
             new ArrayList<>();
-    
-    Markup markup;
-    Stack<Operation> callStack;
+    final Markup markup;
+    final Stack<Operation> callStack;
+    final String printingPath;
 
-    public ASTLogger(String [] data) {
+    public ASTLogger(String [] data, String printingPath) {
+        
+        this.printingPath = printingPath;
         
         callStack = new Stack<>();
         Header header = new Header();
@@ -43,7 +45,9 @@ public class ASTLogger {
                    .getDataStructure(data[i], data[i+1], data[i+2]);
            header.addDataStructure(dataStructure);
         }
-        markup = new Markup(header, new ArrayList<Operation>());
+        
+        markup = new Markup(header, new ArrayList<>());
+        
         markup.header.setVisual("graph");
         
     }
@@ -53,12 +57,12 @@ public class ASTLogger {
         operations.add(new IndexedReadOperation(id, index, dimension));
     }
     
-    public void write(String name, String value, int sourceType, int targetType){
+    public void write(String name, Object value, int sourceType, int targetType){
         // (String name, String value, String operation, String statementId)
         operations.add(new WriteOperation(name, value, sourceType, targetType));
     }
     
-    public void eval(String targetId, String value, int expressionType){
+    public void eval(String targetId, Object value, int expressionType){
         //EvalOperation(String value, String statementId)
         operations.add(new EvalOperation(targetId, value, expressionType));
     }
@@ -71,16 +75,16 @@ public class ASTLogger {
        parser.parse();
     }
     
-    public void printLog(){
+    public void print(){
         parse();
         String json = null;
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Gson gson = new GsonBuilder().create();
         //json = gson.toJson(operations);
         Collections.reverse(markup.body);
         json = gson.toJson(markup);
         PrintWriter writer = null;
         try {
-            writer = new PrintWriter("testText.txt", "UTF-8");
+            writer = new PrintWriter(printingPath+"testText.txt", "UTF-8");
             writer.print(json);
         } catch (FileNotFoundException | UnsupportedEncodingException ex) {
             throw new RuntimeException(ex.getMessage());

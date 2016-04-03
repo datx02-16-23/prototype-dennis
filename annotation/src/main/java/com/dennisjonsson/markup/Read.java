@@ -19,8 +19,8 @@ public class Read extends Operation{
     private static final String KEY_VALUE = "value";
     
 
-    public Read(Entity source, Entity target, String[] value) {
-        super(OPERATION, new HashMap<String, Object>());
+    public Read(Entity source, Entity target, Object value) {
+        super(OPERATION, new HashMap<>());
         this.operationBody.put(KEY_SOURCE, source);
         this.operationBody.put(KEY_TARGET, target);
         this.operationBody.put(KEY_VALUE, value);
@@ -49,7 +49,7 @@ public class Read extends Operation{
         * of {@code target} and the specified index after operation execution, if applicable.
         * @param value Set the value(s) which were read from {@code source}.
         */
-    public void setValue(String value){
+    public void setValue(Object value){
         this.operationBody.put(KEY_VALUE, value);
     }
 

@@ -64,8 +64,11 @@ public class ASTProcessor extends SourceProcessor {
         if(unit == null){
             throw new RuntimeException("ASTPRocessor: CompilationUnit is null");
         }
+        if(print == null){
+            throw new RuntimeException("ASTPRocessor: No printing method found");
+        }
         String newClass = (String)arg;
-        adapter = new ASTParser(dataStructures);
+        adapter = new ASTParser(dataStructures, getPrintingMethod());
         adapter.visit(unit, null);
         
         // textual changes
@@ -77,8 +80,9 @@ public class ASTProcessor extends SourceProcessor {
         parser.insertField("public static com.dennisjonsson.log.ast.ASTLogger logger = \n"
                 +   "new com.dennisjonsson.log.ast.ASTLogger(\n"
                 +   parser.printDataStructures(dataStructures)
-                +   ");", className);
-        parser.replace(TextProcessor.INSERTION_COMMENT, "\nlogger.printLog();\n");
+                +   ","
+                +   getPrintingPath()
+                + ");", className);
         source = parser.getSource();
      
         

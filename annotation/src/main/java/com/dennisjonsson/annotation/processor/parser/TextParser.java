@@ -29,7 +29,8 @@ public class TextParser {
     
     public void removeAnnotations(){
             source = source.replaceAll("\\@Visualize(\\((.|\\=)*\\))?+","");
-            source = source.replaceAll("\\@(VisualClassPath)(\\([^\\(\\)]*\\))","");
+            source = source.replaceAll("\\@(SourcePath)(\\([^\\(\\)]*\\))","");
+            source = source.replaceAll("\\@(Print)(\\([^\\(\\)]*\\))","");
     }
     
      public void removePackage(){

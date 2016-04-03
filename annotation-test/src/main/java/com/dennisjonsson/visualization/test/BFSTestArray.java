@@ -5,13 +5,16 @@
  */
 package com.dennisjonsson.visualization.test;
 
-import com.dennisjonsson.annotation.TestVisualize;
+
+import com.dennisjonsson.annotation.Print;
 import com.dennisjonsson.markup.AbstractType;
-import com.dennisjonsson.annotation.VisualClassPath;
 import com.dennisjonsson.annotation.Visualize;
 import java.util.ArrayList;
+import com.dennisjonsson.annotation.SourcePath;
 
-@VisualClassPath(path = "C:/Users/dennis/Documents/NetBeansProjects/" + "annotation-test/src/main/" + "java/com/dennisjonsson/visualization/test/")
+@SourcePath(path = "C:/Users/dennis/Documents/NetBeansProjects/" 
+        + "annotation-test/src/main/" 
+        + "java/com/dennisjonsson/visualization/test/")
 public class BFSTestArray {
 
     final int size = 20;
@@ -46,6 +49,11 @@ public class BFSTestArray {
     public static void main(String[] args) {
         BFSTestArray bfs = new BFSTestArray();
         bfs.bfs(0);
+        bfs.print();
     /*end visualize*/
     }
+    
+   @Print(path = "")
+    public void print(){
+    } 
 }

@@ -3,7 +3,6 @@ package com.dennisjonsson.annotation.processor.parser;
 import com.dennisjonsson.markup.DataStructure;
 import java.util.ArrayList;
 import java.util.Arrays;
-import javax.lang.model.type.TypeMirror;
 
 public class MethodsSource{
 	
@@ -64,7 +63,6 @@ public class MethodsSource{
                     + "String statementId, "
                     + "int dimension, "
                     + "int index){ "
-                       // +"\nlogger.logg(\"read\", name ,uuid, index, dimension);\n"
                     + "\nlogger.read(name, statementId ,index ,dimension);\n"
 
                     + "return index; \n}";
@@ -72,33 +70,18 @@ public class MethodsSource{
 	
 	public String getWriteMethod(String primitiveType){
            
-            /*
-		return "public static "+primitiveType+" write(String name, String statementId, "+primitiveType+" value){\n"
-                       
-                        + "logger.write(name, statementId, value+\"\");\n"
-                        + "return value;\n"
-                        + "}";*/
             return "public static "+primitiveType+" write(String name, "+primitiveType+" value, int sourceType, int targetType ){\n"
                        
-                        + "logger.write(name, value+\"\", sourceType, targetType);\n"
+                        + "logger.write(name, value, sourceType, targetType);\n"
                         + "return value;\n"
                         + "}";
-            
-
-             
 	}
         
         public String getEval(String primitiveType){
-            /*
-            return "public static "+primitiveType+" eval(String statementId, "+primitiveType+" value, int statement){"
-                    + "\n"
-                    + "logger.eval(statementId, value+\"\");\n"
-                    + "return value;\n"
-                    + "}\n";
-*/
+
             return "public static "+primitiveType+" eval(String targetId, "+primitiveType+" value, int expressionType){"
                     + "\n"
-                    + "logger.eval(targetId, value+\"\", expressionType);\n"
+                    + "logger.eval(targetId, value, expressionType);\n"
                     + "return value;\n"
                     + "}\n";
         }

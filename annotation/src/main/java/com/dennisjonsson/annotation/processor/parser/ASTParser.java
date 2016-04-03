@@ -12,6 +12,7 @@ import com.dennisjonsson.markup.ArrayDataStructure;
 import com.dennisjonsson.markup.DataStructure;
 import com.dennisjonsson.markup.DataStructureFactory;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
 import com.github.javaparser.ast.comments.BlockComment;
 import com.github.javaparser.ast.comments.LineComment;
@@ -22,12 +23,14 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.NullLiteralExpr;
 import com.github.javaparser.ast.expr.StringLiteralExpr;
 import com.github.javaparser.ast.expr.UnaryExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.visitor.ModifierVisitorAdapter;
 import java.util.ArrayList;
+import javax.lang.model.element.Element;
 
 /**
  *
@@ -35,20 +38,28 @@ import java.util.ArrayList;
  */
 public class ASTParser extends ModifierVisitorAdapter
 {
-    ArrayList<DataStructure> dataStructures;
-    ArrayList<DataStructure> uknowns;
+    final ArrayList<DataStructure> dataStructures;
+    final ArrayList<DataStructure> uknowns;
+    final Element printMethod;
+    
+    public static final String LOGGER = "logger";
+    public static final String PRINT = "print";
+    public static final String PRINT_METHOD = LOGGER+"."+PRINT;
+    
     
     public static final String SKIP = "skip";
     public static final String IS_ASSIGNMENT = "assignment";
     public static final String IS_DECLARATION = "declaration";
     public static final String IS_BINARY = "binary";
     public static final String CONTINUE = "continue";
+    
+    
 
 
-    public ASTParser(ArrayList<DataStructure> dataStruct) {
+    public ASTParser(ArrayList<DataStructure> dataStruct, Element printMethod) {
         this.dataStructures = dataStruct;
         uknowns = new ArrayList<>();
-       
+        this.printMethod = printMethod;
     }
     
  
@@ -70,6 +81,22 @@ public class ASTParser extends ModifierVisitorAdapter
      /*
         highest branch
     */
+
+    @Override
+    public Node visit(MethodDeclaration n, Object arg) {
+        
+        String name = n.getName();
+        String print = printMethod.toString().replaceAll("\\(.*\\)", "");
+        System.out.println(name + ", "+print);
+        if(name.equalsIgnoreCase(print)){
+            ArrayList<Expression> args = new ArrayList<>();
+            n.getBody().getStmts().add(new ExpressionStmt (new MethodCallExpr(null, PRINT_METHOD, args)));
+        }
+        return super.visit(n, arg); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    
+    
     @Override
     public Node visit(ExpressionStmt n, Object arg) {
         
@@ -235,7 +262,7 @@ public class ASTParser extends ModifierVisitorAdapter
     
     private MethodCallExpr setWriteFromUndefined(Expression exp){
         ArrayList<Expression> args = new ArrayList<>();
-        args.add(new StringLiteralExpr("undefined"));
+        args.add(new NullLiteralExpr());
         args.add(exp);
         args.add(new IntegerLiteralExpr(WriteOperation.UNDEFINED+""));
         return createWrite(args);
@@ -362,7 +389,7 @@ public class ASTParser extends ModifierVisitorAdapter
     
     public MethodCallExpr setEval(ArrayAccessExpr aaExpr){
         ArrayList<Expression> args = new ArrayList<>();
-        args.add(new StringLiteralExpr("undefined"));
+        args.add(new NullLiteralExpr());
         args.add(aaExpr);
         args.add(new IntegerLiteralExpr(EvalOperation.ARRAY_ECCESS+""));
         return new MethodCallExpr(null, "eval", args);

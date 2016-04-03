@@ -5,16 +5,17 @@
  */
 package com.dennisjonsson.visualization.test;
 
-import com.dennisjonsson.annotation.VisualClassPath;
+import com.dennisjonsson.annotation.Print;
 import com.dennisjonsson.annotation.Visualize;
 import com.dennisjonsson.markup.AbstractType;
+import com.dennisjonsson.annotation.SourcePath;
 
 /**
  *
  * @author dennis
  */
 
-@VisualClassPath(path="C:/Users/dennis/Documents/NetBeansProjects/" + "annotation-test/src/main/" + "java/com/dennisjonsson/visualization/test/")
+@SourcePath(path="C:/Users/dennis/Documents/NetBeansProjects/" + "annotation-test/src/main/" + "java/com/dennisjonsson/visualization/test/")
 public class TestParse {
 
     /**
@@ -53,8 +54,12 @@ public class TestParse {
         for(int i = 0; i < c[0].length; i++){}
         
         //b[1] = k;
-        
+        print();
        /*end visualize*/
     }
+    
+    @Print(path = "")
+    public static void print(){
+    } 
     
 }
