@@ -24,13 +24,13 @@ new String [] {"ARRAY","int[][]","a","ARRAY","int[]","b","ARRAY","int[][]","c"},
      * @param args the command line arguments
      */
     
-    public static int[][] a = new int[][] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };
+    public static int[][] a = eval("a", write(null, new int[][] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } }, 3, 1), 0);
 
     
-    static int[] b = new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    static int[] b = eval("b", write(null, new int[] { 0, 0, 0, 0, 0, 0, 0, 0, 0 }, 3, 1), 0);
 
     
-    static int[][] c = new int[3][3];
+    static int[][] c = eval("c", write(null, new int[3][3], 3, 1), 0);
 
     public static void main(String[] args) {
         for (int i = 0; i < a.length; i++) {

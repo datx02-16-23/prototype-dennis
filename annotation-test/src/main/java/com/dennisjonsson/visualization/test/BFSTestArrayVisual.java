@@ -20,7 +20,7 @@ new String [] {"ADJECENCY_MATRIX","int[][]","adjList"},"");
     final int size = 20;
 
     
-    int[][] adjList = new int[size][size];
+    int[][] adjList = eval("adjList", write(null, new int[size][size], 3, 1), 0);
 
     // this is a comment yo
     public void bfs(int start) {
