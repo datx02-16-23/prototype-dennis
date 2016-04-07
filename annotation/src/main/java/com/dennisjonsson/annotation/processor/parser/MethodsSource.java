@@ -1,5 +1,6 @@
 package com.dennisjonsson.annotation.processor.parser;
 
+import com.dennisjonsson.log.ast.LogUtils;
 import com.dennisjonsson.markup.DataStructure;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,7 +49,7 @@ public class MethodsSource{
                
              
                 return getReadMethod(dStruct.getType())
-                        + "\n"+getWriteMethod(primitiveType)
+                        + "\n"+getWriteMethod(primitiveType,0)
                         + "\n"+getPrimitiveEvals();
 		
 	}
@@ -68,23 +69,33 @@ public class MethodsSource{
                     + "return index; \n}";
 	}
 	
-	public String getWriteMethod(String primitiveType){
-           
+	public String getWriteMethod(String primitiveType, int dimension){
             return "public static "+primitiveType+" write(String name, "+primitiveType+" value, int sourceType, int targetType ){\n"
                        
-                        + "logger.write(name, value, sourceType, targetType);\n"
+                        + "logger.write(name, "+getValue(dimension,primitiveType,"value")+", sourceType, targetType);\n"
                         + "return value;\n"
                         + "}";
 	}
         
-        public String getEval(String primitiveType){
-
+        public String getEval(String primitiveType, int dimension){
             return "public static "+primitiveType+" eval(String targetId, "+primitiveType+" value, int expressionType){"
                     + "\n"
-                    + "logger.eval(targetId, value, expressionType);\n"
+                    + "logger.eval(targetId, "+getValue(dimension,primitiveType,"value")+", expressionType);\n"
                     + "return value;\n"
                     + "}\n";
         }
+        
+        public String getValue(int dimension, String type, String name){
+            String value = name;
+            if(dimension > 1){
+                 value = "new "+LogUtils.CLASS_NAME+"<"+type+">()."+LogUtils.COPY+"("+name+")";
+            }
+            if(dimension == 1){
+                value = "java.util.Arrays.copyOf("+name+","+name+".length)";
+            }
+            return value;
+        }
+        
         
         
           public int countDimension(String type){
@@ -102,8 +113,8 @@ public class MethodsSource{
             StringBuilder builder = new StringBuilder();
             for(int i = 0; i <= dimensions; i++){
                 if(!isPrimitive(primitiveType)){
-                    builder.append(getEval(primitiveType));
-                    builder.append(getWriteMethod(primitiveType));
+                    builder.append(getEval(primitiveType, i));
+                    builder.append(getWriteMethod(primitiveType, i));
                     primitives.add(primitiveType);
                 }
                 primitiveType = primitiveType + "[]";
@@ -118,8 +129,8 @@ public class MethodsSource{
          
             for(String str : looseTypes){
                 if(!isPrimitive(str)){
-                    builder.append(getWriteMethod(str));
-                    builder.append(getEval(str));
+                    builder.append(getWriteMethod(str,0));
+                    builder.append(getEval(str,0));
                 }
             }
             return builder.toString();

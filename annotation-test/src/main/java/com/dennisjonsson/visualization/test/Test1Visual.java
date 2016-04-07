@@ -19,7 +19,7 @@ import com.github.javaparser.ast.Node;
 public class Test1Visual{
 public static com.dennisjonsson.log.ast.ASTLogger logger = 
 new com.dennisjonsson.log.ast.ASTLogger(
-new String [] {"ARRAY","int[]","a","ARRAY","int[]","b"},"");
+new com.dennisjonsson.log.ast.SourceHeader("Test1Visual","",new String [] {"ARRAY","int[]","a","ARRAY","int[]","b"}));
 
     /**
      * @param args the command line arguments
@@ -65,18 +65,18 @@ public static int write(String name, int value, int sourceType, int targetType )
 logger.write(name, value, sourceType, targetType);
 return value;
 }public static int[] eval(String targetId, int[] value, int expressionType){
-logger.eval(targetId, value, expressionType);
+logger.eval(targetId, java.util.Arrays.copyOf(value,value.length), expressionType);
 return value;
 }
 public static int[] write(String name, int[] value, int sourceType, int targetType ){
-logger.write(name, value, sourceType, targetType);
+logger.write(name, java.util.Arrays.copyOf(value,value.length), sourceType, targetType);
 return value;
 }public static int[][] eval(String targetId, int[][] value, int expressionType){
-logger.eval(targetId, value, expressionType);
+logger.eval(targetId, new com.dennisjonsson.log.ast.LogUtils<int[][]>().deepCopy(value), expressionType);
 return value;
 }
 public static int[][] write(String name, int[][] value, int sourceType, int targetType ){
-logger.write(name, value, sourceType, targetType);
+logger.write(name, new com.dennisjonsson.log.ast.LogUtils<int[][]>().deepCopy(value), sourceType, targetType);
 return value;
 }public static String write(String name, String value, int sourceType, int targetType ){
 logger.write(name, value, sourceType, targetType);

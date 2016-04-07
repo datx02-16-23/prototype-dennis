@@ -171,7 +171,7 @@ public class ASTParser extends ModifierVisitorAdapter
         call.getArgs().add(new IntegerLiteralExpr(WriteOperation.VARIABLE+""));
 
         ArrayList<Expression> args = new ArrayList<>();
-        args.add(new StringLiteralExpr(decl.getId().toString()));
+        args.add(new StringLiteralExpr(decl.getId().toString().replaceAll("\\[\\s*\\]","")));
         args.add(call);
         args.add(new IntegerLiteralExpr(""+EvalOperation.ASSIGNMENT));
         decl.setInit(new MethodCallExpr(null, "eval", args));

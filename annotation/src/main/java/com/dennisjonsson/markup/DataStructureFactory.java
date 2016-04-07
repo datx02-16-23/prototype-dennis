@@ -13,7 +13,7 @@ public class DataStructureFactory {
     
     public static DataStructure getDataStructure(
             String abstractType, String type, String identifier){
-        
+        type = type.toLowerCase();
         switch(abstractType){
             case "ADJECENCY_MATRIX" :
                 return createAdjecencyMatrix(type, identifier);

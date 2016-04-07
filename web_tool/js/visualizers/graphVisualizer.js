@@ -4,7 +4,7 @@ var GraphVisualizer = function(args){
 	this.graph,
 	this.sequence,
 	this.markup = args.markup,
-	this.environment = args.environment,
+	this.environment = new VisualizationEnvironment(),
 	this.arrayElements2d,
 	this.writeColor3d = 0xff6d6d,
 	this.writeColor2d = "#FF6D6D",
@@ -17,6 +17,9 @@ var GraphVisualizer = function(args){
 	
 	this.init = function(){
 		
+		environment.getClientBrowser();
+		environment.setUpDOM();
+		environment.init();
 		this.arrayElements2d = [];
 		
 		var variables = this.markup.header.annotatedVariables;
@@ -174,7 +177,7 @@ var GraphVisualizer = function(args){
 		
 		//console.log("writing: obj1"+evt.index[0]+"obj2: "+evt.value[0]+", index: "+evt.index[1]);
 		
-		if(index.length == 2){
+		if(index != null && index.length == 2){
 			// connect two nodes
 			
 			this.connectNodes(evt);
@@ -272,7 +275,7 @@ var GraphVisualizer = function(args){
 		
 		//console.log("writing: obj1"+evt.index[0]+"obj2: "+evt.value[0]+", index: "+evt.index[1]);
 		
-		if(evt.index.length == 2){
+		if(evt.index != null && evt.index.length == 2){
 			// connect two nodes
 			
 			this.connectNodes(evt);

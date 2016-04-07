@@ -25,17 +25,21 @@ import java.util.Stack;
  * @author dennis
  */
 public class ASTLogger {
+    
+    public static final String CLASS_NAME = "com.dennisjonsson.log.ast.ASTLogger"; 
 
     final ArrayList<LogOperation> operations = 
             new ArrayList<>();
     final Markup markup;
+    
     final Stack<Operation> callStack;
-    final String printingPath;
+    final SourceHeader sourceHeader;
 
-    public ASTLogger(String [] data, String printingPath) {
+    public ASTLogger(SourceHeader sourceHeader) {
         
-        this.printingPath = printingPath;
-        
+        this.sourceHeader = sourceHeader;
+        String [] data = sourceHeader.dsArgs;
+       
         callStack = new Stack<>();
         Header header = new Header();
         
@@ -47,8 +51,6 @@ public class ASTLogger {
         }
         
         markup = new Markup(header, new ArrayList<>());
-        
-        markup.header.setVisual("graph");
         
     }
         
@@ -84,7 +86,7 @@ public class ASTLogger {
         json = gson.toJson(markup);
         PrintWriter writer = null;
         try {
-            writer = new PrintWriter(printingPath+"testText.txt", "UTF-8");
+            writer = new PrintWriter(sourceHeader.printingPath+sourceHeader.className+".json", "UTF-8");
             writer.print(json);
         } catch (FileNotFoundException | UnsupportedEncodingException ex) {
             throw new RuntimeException(ex.getMessage());

@@ -5,6 +5,8 @@
  */
 package com.dennisjonsson.annotation.processor.parser;
 
+import com.dennisjonsson.log.ast.ASTLogger;
+import com.dennisjonsson.log.ast.SourceHeader;
 import com.dennisjonsson.markup.DataStructure;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
@@ -77,12 +79,15 @@ public class ASTProcessor extends SourceProcessor {
         className = newClass;
         parser.removeAnnotations();
         parser.insertInterceptorMethods(dataStructures);
-        parser.insertField("public static com.dennisjonsson.log.ast.ASTLogger logger = \n"
-                +   "new com.dennisjonsson.log.ast.ASTLogger(\n"
-                +   parser.printDataStructures(dataStructures)
+        parser.insertField("public static "+ASTLogger.CLASS_NAME+" logger = \n"
+                +   "new "+ASTLogger.CLASS_NAME+"(\n"
+                +   "new "+SourceHeader.CLASS_NAME+"("
+                +   "\""+newClass+"\""
                 +   ","
                 +   getPrintingPath()
-                + ");", className);
+                +   ","
+                +   parser.printDataStructures(dataStructures)
+                + "));", className);
         source = parser.getSource();
      
         
