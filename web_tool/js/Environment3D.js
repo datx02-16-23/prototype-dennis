@@ -1,6 +1,6 @@
 	
 	
-	var VisualizationEnvironment3D =  function(conatiner, browser){
+	var Environment3D =  function(container, debugContainer ,browser){
 		// orientation 
 		this.prev_x = 0.0,
 		this.prev_y = 0.0,
@@ -28,8 +28,8 @@
 		this.mouse = new THREE.Vector2(),
 		
 		// DOM
-		this.conatiner = container,
-		
+		this.container = container,
+		this.debugContainer = debugContainer,
 		// browser specifics
 		this.browser = browser,
 		
@@ -39,8 +39,8 @@
 
 
 		this.init = function(){
-			this.browser = browser;
-			this.container = container;
+
+		
 			/*
 				renderer
 			*/
@@ -50,7 +50,7 @@
 			this.renderer.setSize( this.CANVAS_WIDTH, this.CANVAS_HEIGHT );
 			//this.renderer.setClearColor( 0xf8f8f8 );
 			//this.DOM["container"].appendChild( this.renderer.domElement );
-			conatiner.appendChild( this.renderer.domElement );
+			container.appendChild( this.renderer.domElement );
 			/*
 				scene
 			*/
@@ -88,18 +88,46 @@
 			
 			this.renderer.clear(true, false,false);
 			
-			window.addEventListener( 'resize', this.onWindowResize, false );
-			window['onresize'] = this.onWindowResize;
-			this.onWindowResize();
-		},
-		
-		this.onWindowResize = function() {
-			
+			//window.addEventListener( 'resize', this.onWindowResize, false );
+			//window['onresize'] = this.onWindowResize;
+			//this.onWindowResize();
 			this.CANVAS_WIDTH = window.innerWidth;
 			this.CANVAS_HEIGHT= window.innerHeight;
 			this.camera.aspect = (window.innerWidth*0.7)/ window.innerHeight;
 			this.camera.updateProjectionMatrix();
 			this.renderer.setSize( window.innerWidth*0.7, window.innerHeight );
+			
+			//onMouseDown="environment.mouseDown()" onMouseUp="environment.mouseUp()" onMouseMove="environment.motion()
+			var _this = this;
+			container.addEventListener( 'mousedown', function(){
+				_this.mouseDown();
+			}, false );
+			container.addEventListener( 'mouseup', function(){
+				_this.mouseUp();
+			}, false );
+			container.addEventListener( 'mousemove', function(){
+				_this.motion();
+			}, false );
+
+			container["onmouseup"] = function(){
+				_this.mouseUp();
+			};
+			container["onmousemove"] = function(){
+				_this.motion();
+			};
+			
+			container["onmousedown"] = function(){
+				_this.mouseDown();
+			}
+			
+			
+			this.display();
+			
+		},
+		
+		this.onWindowResize = function() {
+			
+			
 			
 			this.display();
 		},

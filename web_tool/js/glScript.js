@@ -1,5 +1,4 @@
-	
-	
+
 	var VisualizationEnvironment =  function(){
 		
 		// DOM
@@ -8,7 +7,10 @@
 		// browser specifics
 		this.browser,
 		
-		
+		this.init = function(){
+			this.getClientBrowser();
+			this.setUpDOM();
+		}
 		
 		this.endLoad = function(){
 			document.body.removeChild(this.DOM["spinner"]);
@@ -68,14 +70,12 @@
 			this.DOM["window_frame"].style.zIndex = 2;
 			this.DOM["window_frame"].id = "window_frame";
 			
-			window.addEventListener( 'resize', this.onWindowResize, false );
-			window['onresize'] = this.onWindowResize;
-			this.onWindowResize();
+			
+			
 
 		},
 		
 		this.openFileWindow = function(){
-			alert("ok");
 			this.DOM["input_text_window"].style.zIndex = 3;
 			this.DOM["container_window"].appendChild(this.DOM["input_text_window"]);
 			this.DOM["container_window"].appendChild(this.DOM["window_frame"]);
@@ -139,11 +139,33 @@
 				currentProgram.init({size:10});
 				return currentProgram;
 			},
-			"graph":
-			function(args){
-				var currentProgram;
-				currentProgram = new GraphVisualizer({markup: args.markup, environment: args.environment});
+			"ADJACENCY_MATRIX":
+			function(args){			
+				var currentProgram = new GraphVisualizer(
+					{
+						markup: args.markup, 
+						environment: new Environment3D(args.DOM["container"], args.DOM["debug_container"],args.browser)
+					}
+				);
+					
 				currentProgram.init({size:10});
+				
+				return currentProgram;
+			},
+			"BINARY_TREE":
+			function(args){			
+				var currentProgram = new BinaryTreeVisualizer({
+						markup: args.markup, 
+						environment: new Environment2D({
+							container: args.DOM["container"], 
+							debugContainer: args.DOM["debug_container"], 
+							browser: args.browser
+						})
+					}
+				);
+					
+				currentProgram.init({size:10});
+				
 				return currentProgram;
 			}
 		},
@@ -164,11 +186,27 @@
 			
 			// choose program
 			var markup = object;
-			this.currentProgram = this.programs[markup.header.visual]({markup: markup, environment: this});
+			
+			var variables = markup.header.annotatedVariables;
+
+			// create 2d DOM elements of data structures
+			for(var key in variables){
+				if (variables.hasOwnProperty(key)) {
+					this.currentProgram = this.programs[variables[key].abstractType](
+					{
+						markup: markup, 
+						DOM: this.DOM, 
+						browser : this.browser
+					});
+				}
+			}
+			
+			
 			this.DOM["upload_file_form"].removeChild(this.DOM["spinner"]);
 			this.DOM["container_window"].removeChild(this.DOM["upload_file_window"]);
 			this.DOM["container_window"].appendChild(this.DOM["player"]);
-			this.display();
+			
+			
 		
 		},
 		

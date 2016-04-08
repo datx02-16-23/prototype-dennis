@@ -4,7 +4,7 @@ var GraphVisualizer = function(args){
 	this.graph,
 	this.sequence,
 	this.markup = args.markup,
-	this.environment = new VisualizationEnvironment(),
+	this.environment3d = args.environment,
 	this.arrayElements2d,
 	this.writeColor3d = 0xff6d6d,
 	this.writeColor2d = "#FF6D6D",
@@ -16,10 +16,9 @@ var GraphVisualizer = function(args){
 	*/
 	
 	this.init = function(){
-		
-		environment.getClientBrowser();
-		environment.setUpDOM();
-		environment.init();
+	
+		this.environment3d.init();
+
 		this.arrayElements2d = [];
 		
 		var variables = this.markup.header.annotatedVariables;
@@ -42,7 +41,7 @@ var GraphVisualizer = function(args){
 				
 				this.arrayElements2d[arrayElement.identifier] = arrayElement;
 				
-				this.environment.DOM["debug_container"].appendChild(arrayElement.DOM);
+				this.environment3d.debugContainer.appendChild(arrayElement.DOM);
 			}
 			
 		}
@@ -51,9 +50,9 @@ var GraphVisualizer = function(args){
 		
 		
 		// create graph and insert nodes 
-		this.graph = new Graph({environment: this.environment});
+		this.graph = new Graph({environment: this.environment3d});
 		this.graph.init();
-		//console.log("scene: "+this.environment.scene);
+		//console.log("scene: "+this.environment3d.scene);
 		//console.log(this.markup.header.variables[0].size[0]);
 		
 		for(var i = 0; i < size[0]; i ++){
@@ -102,7 +101,7 @@ var GraphVisualizer = function(args){
 	},
 	
 	this.display = function(evt){
-		//this.environment.displayData(evt.op+" <br>id: "+evt.id+"; <br>index: "+evt.index+"; <br>value: "+evt.value+"; ");
+		//this.environment3d.displayData(evt.op+" <br>id: "+evt.id+"; <br>index: "+evt.index+"; <br>value: "+evt.value+"; ");
 		if(evt.operation == "read"){
 			this.read(evt.operationBody);
 		}else if(evt.operation == "write"){
@@ -159,7 +158,7 @@ var GraphVisualizer = function(args){
 			}
 			
 		}
-		this.environment.display();
+		this.environment3d.display();
 	},
 	
 	/*
@@ -183,7 +182,7 @@ var GraphVisualizer = function(args){
 			this.connectNodes(evt);
 		}
 		
-		this.environment.display();
+		this.environment3d.display();
 	},
 	
 	this.connectNodes = function(evt){
@@ -261,7 +260,7 @@ var GraphVisualizer = function(args){
 			this.arrayElements2d[evt.id].markCell({x:evt.index[0], y: evt.index[1], color: this.readColor2d});
 			
 		}
-		this.environment.display();
+		this.environment3d.display();
 	},
 	
 	/*
@@ -281,7 +280,7 @@ var GraphVisualizer = function(args){
 			this.connectNodes(evt);
 		}
 		
-		this.environment.display();
+		this.environment3d.display();
 	},
 	
 	this.list.connectNodes = function(evt){
