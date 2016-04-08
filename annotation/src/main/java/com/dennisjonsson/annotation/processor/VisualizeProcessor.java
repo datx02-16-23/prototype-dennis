@@ -26,6 +26,10 @@ import java.util.LinkedHashSet;
 import java.util.HashMap;
 import com.dennisjonsson.markup.DataStructureFactory;
 import com.dennisjonsson.annotation.SourcePath;
+import com.dennisjonsson.annotation.VisualizeArg;
+import com.dennisjonsson.markup.Argument;
+import com.dennisjonsson.markup.Method;
+import javax.lang.model.type.DeclaredType;
 
 
 //@AutoService(Processor.class)
@@ -33,9 +37,11 @@ public class VisualizeProcessor extends AbstractProcessor {
 	
 	private Messager messager;
 	private Filer filer;
-	private HashMap<String, SourceProcessor> sourceFiles;
+	private HashMap<String, ASTProcessor> sourceFiles;
         private HashMap<String, ArrayList<DataStructure>> looseDataStructures;
         private HashMap<String, Element> loosePrints;
+        private HashMap<String, HashMap<String, Method>> looseMethods;
+        
 	private static final String PREFIX = "Visual";
         
         
@@ -47,7 +53,9 @@ public class VisualizeProcessor extends AbstractProcessor {
 		sourceFiles = new HashMap<>();
                 looseDataStructures = new HashMap<>();
                 loosePrints = new HashMap<>();
+                looseMethods = new HashMap<>();
 	}
+        
 
 	/*
 		process annot
@@ -57,6 +65,7 @@ public class VisualizeProcessor extends AbstractProcessor {
 		
                 processVisualClassPath(env);
 		processVisualize(env);
+                processVisualizeArg(env);
                 processPrint(env);
                 
 		for(SourceProcessor sourceProcessor : sourceFiles.values()){
@@ -79,6 +88,77 @@ public class VisualizeProcessor extends AbstractProcessor {
 		return true;
 	}
         
+        private void processVisualizeArg(RoundEnvironment env){
+            for (Element annotatedElement : env.getElementsAnnotatedWith(VisualizeArg.class)) {
+                
+                Element classElement = getNextElementOf(annotatedElement, ElementKind.CLASS);
+                
+                
+                if(classElement != null && annotatedElement.getKind() 
+                    == ElementKind.METHOD){
+                    
+                    addArgument(annotatedElement, classElement.toString());
+                }else{
+                    throw new RuntimeException("No enclosing class "
+                                + "found for Print");
+                }
+            }
+            
+        }
+        
+        private void addArgument(Element annotatedElement, String className){
+            
+            VisualizeArg annotation = (VisualizeArg)
+                    annotatedElement.getAnnotation(VisualizeArg.class);
+            
+            String name = annotation.name();
+            AbstractType abstarctType = annotation.abstractType();
+            int pos = annotation.position();
+
+            Method method = new Method(
+                    className, 
+                    annotatedElement.getSimpleName().toString(),
+                    annotatedElement.toString());
+            
+            if(pos < 0 || pos >= method.arguments.length){
+                throw new RuntimeException("position must be in range of argument list");
+            }
+
+            DataStructure ds = DataStructureFactory
+                    .getDataStructure(abstarctType.toString(), 
+                            method.arguments[pos].trim(), name);
+            
+            addDataStructure(ds, className);
+            // Argument(String method, int position, DataStructure dataStructure)
+            addArgument(new Argument(name,method,pos, ds));
+ 
+        }
+        
+        private void addArgument(Argument arg){
+            ASTProcessor processor = sourceFiles.get(arg.method.className);
+            
+            if(processor != null){
+               // Argument(String method, int position, DataStructure dataStructure) {
+               
+                processor.addArgument(arg);
+                //throw new RuntimeException("added: "+arg.method.name+", "+arg.name);
+                //throw new RuntimeException("adding print to processor");
+            }else{
+                HashMap<String, Method> methods = looseMethods.get(arg.method.className);
+                if(methods == null){
+                    methods = new HashMap<>();
+                    looseMethods.put(arg.method.className,methods);
+                }
+                if(methods.get(arg.method.name) == null){
+                    methods.put(arg.method.name, arg.method);
+                }
+                
+                methods.get(arg.method.name).addArgument(arg);
+                //throw new RuntimeException("adding print to loose prints");
+            }
+        }
+        
+        
         private void processPrint(RoundEnvironment env){
             for (Element annotatedElement : env.getElementsAnnotatedWith(Print.class)) {
                 
@@ -99,7 +179,7 @@ public class VisualizeProcessor extends AbstractProcessor {
         }
         
         public void addPrint(Element annotatedElement, String className){
-            SourceProcessor processor = sourceFiles.get(className);
+            ASTProcessor processor = sourceFiles.get(className);
             
             if(processor != null){
                 
@@ -121,7 +201,7 @@ public class VisualizeProcessor extends AbstractProcessor {
 
                 Visualize annotation = (Visualize)annotatedElement.getAnnotation(Visualize.class);
 
-                AbstractType abstractType = annotation.type();
+                AbstractType abstractType = annotation.abstractType();
 
                 DataStructure dataStructure = DataStructureFactory.getDataStructure(abstractType.toString(), 
                         annotatedElement.asType().toString(), 
@@ -146,7 +226,7 @@ public class VisualizeProcessor extends AbstractProcessor {
 	}
         
         private void addDataStructure(DataStructure dataStructure, String className){
-            SourceProcessor sourceProcessor = sourceFiles.get(className);
+            ASTProcessor sourceProcessor = sourceFiles.get(className);
 
             if(sourceProcessor == null){
                  if(!looseDataStructures.containsKey(className)){
@@ -179,8 +259,8 @@ public class VisualizeProcessor extends AbstractProcessor {
                         sourceFiles.containsKey(annotatedElement.toString()+PREFIX))){
 
 
-                    SourceProcessor sourceProcessor = 
-                        SourceProcessorFactory
+                    ASTProcessor sourceProcessor = 
+                        (ASTProcessor)SourceProcessorFactory
                                 .getProcessor(
                                         SourceProcessorFactory.Type.AST, 
                                         path, 
@@ -200,6 +280,11 @@ public class VisualizeProcessor extends AbstractProcessor {
                         sourceProcessor.setPrint(
                                 loosePrints.get(annotatedElement.toString()));
                     }
+                    
+                    if(looseMethods.containsKey(annotatedElement.toString())){
+                        sourceProcessor.addMethods(looseMethods.get(annotatedElement.toString()));
+                    }
+                    
 
                     sourceFiles.put(annotatedElement.toString(), sourceProcessor);
 

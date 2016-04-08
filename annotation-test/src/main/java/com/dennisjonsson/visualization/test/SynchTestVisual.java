@@ -18,7 +18,7 @@ import com.dennisjonsson.annotation.SourcePath;
 public class SynchTestVisual{
 public static com.dennisjonsson.log.ast.ASTLogger logger = 
 new com.dennisjonsson.log.ast.ASTLogger(
-new com.dennisjonsson.log.ast.SourceHeader("SynchTestVisual","",new String [] {"ARRAY","int[][]","a","ARRAY","int[]","b","ARRAY","int[][]","c"}));
+new com.dennisjonsson.log.ast.SourceHeader("SynchTestVisual","",new com.dennisjonsson.markup.DataStructure [] {  com.dennisjonsson.markup.DataStructureFactory.getDataStructure("ARRAY","int[][]","a"),com.dennisjonsson.markup.DataStructureFactory.getDataStructure("ARRAY","int[]","b"),com.dennisjonsson.markup.DataStructureFactory.getDataStructure("ARRAY","int[][]","c")}));
 
     /**
      * @param args the command line arguments

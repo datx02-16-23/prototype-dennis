@@ -14,7 +14,7 @@ import com.dennisjonsson.annotation.SourcePath;
 public class TestParseVisual{
 public static com.dennisjonsson.log.ast.ASTLogger logger = 
 new com.dennisjonsson.log.ast.ASTLogger(
-new com.dennisjonsson.log.ast.SourceHeader("TestParseVisual","",new String [] {"ARRAY","int[]","b","ARRAY","int[][]","c","ARRAY","int[][][]","d"}));
+new com.dennisjonsson.log.ast.SourceHeader("TestParseVisual","",new com.dennisjonsson.markup.DataStructure [] {  com.dennisjonsson.markup.DataStructureFactory.getDataStructure("ARRAY","int[]","b"),com.dennisjonsson.markup.DataStructureFactory.getDataStructure("ARRAY","int[][]","c"),com.dennisjonsson.markup.DataStructureFactory.getDataStructure("ARRAY","int[][][]","d")}));
 
     /**
      * @param args the command line arguments

@@ -7,13 +7,16 @@ package com.dennisjonsson.annotation.processor.parser;
 
 import com.dennisjonsson.log.ast.ASTLogger;
 import com.dennisjonsson.log.ast.SourceHeader;
+import com.dennisjonsson.markup.Argument;
 import com.dennisjonsson.markup.DataStructure;
+import com.dennisjonsson.markup.Method;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,18 +28,35 @@ public class ASTProcessor extends SourceProcessor {
     
     private ASTParser adapter;
     private CompilationUnit unit;
+    public HashMap<String, Method> methods;
     
     ASTProcessor(String path, String className) {
-        super(path, className, new ArrayList<DataStructure>());
-        
+        super(path, className);
+        methods = new HashMap<>();
+    }
+    
+    public void addArgument(Argument arg){
+        if(methods.get(arg.method.name) == null){
+            methods.put(arg.method.name, arg.method);
+        }
+        methods.get(arg.method.name).addArgument(arg);
+    }
+    
+    public void addMethods(HashMap<String, Method> methods){
+        this.methods = methods;
+    }
+    
+    public void addAllArguments(ArrayList<Argument> args){
+        for(Argument arg : args){
+            addArgument(arg);
+        }
     }
 
     @Override
     public void loadSource() {
         unit = readFile();
     }
-    
-   
+
    CompilationUnit readFile(){
        
        InputStream stream = this.getInputStream(path, className);
@@ -70,7 +90,10 @@ public class ASTProcessor extends SourceProcessor {
             throw new RuntimeException("ASTPRocessor: No printing method found");
         }
         String newClass = (String)arg;
-        adapter = new ASTParser(dataStructures, getPrintingMethod());
+        
+        
+        
+        adapter = new ASTParser(dataStructures, getPrintingMethod(), methods);
         adapter.visit(unit, null);
         
         // textual changes
@@ -92,6 +115,9 @@ public class ASTProcessor extends SourceProcessor {
      
         
     }
+    
+   
+   
         
     
 }

@@ -68,8 +68,10 @@ public class LogParser {
                     throw new RuntimeException("Unexpected successor to eval: "+nextOp.operation);
                 }
                 return visit((WriteOperation)nextOp, i-1 );
-            case EvalOperation.ARRAY_ECCESS :
+            case EvalOperation.ARRAY_ACCESS :
                 return visit((IndexedReadOperation)nextOp, i-1);
+            case EvalOperation.METHOD_CALL :
+                return visit((WriteOperation)nextOp, i-1 );
             //case EvalOperation.DECLARATION :
                 
         }

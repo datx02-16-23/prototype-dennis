@@ -22,14 +22,14 @@ public class SynchTest {
     /**
      * @param args the command line arguments
      */
-    @Visualize(type = AbstractType.ARRAY)
+    @Visualize(abstractType = AbstractType.ARRAY)
     public static int [][] a = new int[][] {{1,2,3},{4,5,6},{7,8,9}};
     
-    @Visualize(type = AbstractType.ARRAY)
+    @Visualize(abstractType = AbstractType.ARRAY)
     static int [] b = new int[] {0,0,0,0,0,0,0,0,0};
     
     
-    @Visualize(type = AbstractType.ARRAY)
+    @Visualize(abstractType = AbstractType.ARRAY)
     static int [][] c = new int [3][3];
     
     public static void main(String[] args) {

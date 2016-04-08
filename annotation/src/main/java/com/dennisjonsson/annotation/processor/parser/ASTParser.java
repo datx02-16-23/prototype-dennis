@@ -8,9 +8,11 @@ package com.dennisjonsson.annotation.processor.parser;
 import com.dennisjonsson.log.ast.EvalOperation;
 import com.dennisjonsson.log.ast.WriteOperation;
 import com.dennisjonsson.markup.AbstractType;
+import com.dennisjonsson.markup.Argument;
 import com.dennisjonsson.markup.ArrayDataStructure;
 import com.dennisjonsson.markup.DataStructure;
 import com.dennisjonsson.markup.DataStructureFactory;
+import com.dennisjonsson.markup.Method;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
@@ -31,7 +33,9 @@ import com.github.javaparser.ast.expr.UnaryExpr;
 import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.visitor.ModifierVisitorAdapter;
+import static java.awt.PageAttributes.MediaType.A;
 import java.util.ArrayList;
+import java.util.HashMap;
 import javax.lang.model.element.Element;
 
 /**
@@ -42,6 +46,8 @@ public class ASTParser extends ModifierVisitorAdapter
 {
     final ArrayList<DataStructure> dataStructures;
     final ArrayList<DataStructure> uknowns;
+    final HashMap<String, Method> methods;
+    
     final Element printMethod;
     
     public static final String LOGGER = "logger";
@@ -63,10 +69,12 @@ public class ASTParser extends ModifierVisitorAdapter
     private Level level = Level.CLASS; 
 
 
-    public ASTParser(ArrayList<DataStructure> dataStruct, Element printMethod) {
+    public ASTParser(ArrayList<DataStructure> dataStruct, Element printMethod, 
+            HashMap<String, Method> methods) {
         this.dataStructures = dataStruct;
         uknowns = new ArrayList<>();
         this.printMethod = printMethod;
+        this.methods = methods;
     }
     
  
@@ -386,9 +394,80 @@ public class ASTParser extends ModifierVisitorAdapter
         ArrayList<Expression> args = new ArrayList<>();
         args.add(new NullLiteralExpr());
         args.add(aaExpr);
-        args.add(new IntegerLiteralExpr(EvalOperation.ARRAY_ECCESS+""));
+        args.add(new IntegerLiteralExpr(EvalOperation.ARRAY_ACCESS+""));
         return new MethodCallExpr(null, "eval", args);
     }
+
+    @Override
+    public Node visit(MethodCallExpr n, Object arg) {
+        handleArguments(n);
+        return super.visit(n, arg); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    private void handleArguments(MethodCallExpr n){
+        System.out.println("methods: "+n.getName()+", "+methods.keySet().size());
+        Method method = methods.get(n.getName());
+        
+        if(method != null){
+            for(Argument argItem : method.annotetedArguments){
+                MethodCallExpr call = 
+                        handleArgument(n.getArgs().get(argItem.position),argItem);
+                n.getArgs().set(argItem.position, call);
+            }
+        }
+    }
+    
+    private MethodCallExpr handleArgument(Expression expr, Argument arg){
+        
+        DataStructure ds = isAnnotated(expr.toString());
+        Expression source;
+        int writeSourceContext;
+        int writeTargetContext = WriteOperation.VARIABLE;
+        
+        if(ds != null){
+            source = new StringLiteralExpr(ds.getIdentifier());
+            if(expr instanceof ArrayAccessExpr){
+                writeSourceContext = WriteOperation.ARRAY;
+            }else{
+              writeSourceContext = WriteOperation.VARIABLE;  
+            }
+            
+        }else{
+            source = new NullLiteralExpr();
+            writeSourceContext = WriteOperation.UNDEFINED;
+        }
+  
+        return setEvalCall(
+                new StringLiteralExpr(arg.name),
+                setWriteCall(source, expr, writeSourceContext, writeTargetContext),
+                EvalOperation.METHOD_CALL);
+    }
+    
+    
+    
+    public MethodCallExpr setEvalCall(Expression target, Expression value, int context){
+        ArrayList<Expression> args = new ArrayList<>();
+        args.add(target);
+        args.add(value);
+        args.add(new IntegerLiteralExpr(context+""));
+        
+        return new MethodCallExpr(null, EvalOperation.OPERATION, args);
+    }
+    
+    
+    public MethodCallExpr setWriteCall(Expression source, Expression value, 
+            int sourceType, int targetType){
+        ArrayList<Expression> args = new ArrayList<>();
+        args.add(source);
+        args.add(value);
+        args.add(new IntegerLiteralExpr(sourceType+""));
+        args.add(new IntegerLiteralExpr(targetType+""));
+        return new MethodCallExpr(null, WriteOperation.OPERATION, args);
+    }
+    
+    
+    
+    
 
     @Override
     public Node visit(BinaryExpr n, Object arg) {

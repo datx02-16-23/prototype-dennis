@@ -6,5 +6,5 @@ import com.dennisjonsson.markup.AbstractType;
 
 @Retention(RetentionPolicy.SOURCE)
 public @interface Visualize {
-	AbstractType type();
+	AbstractType abstractType();
 }

@@ -15,7 +15,7 @@ import com.dennisjonsson.annotation.SourcePath;
 public class BFSTestArrayVisual{
 public static com.dennisjonsson.log.ast.ASTLogger logger = 
 new com.dennisjonsson.log.ast.ASTLogger(
-new com.dennisjonsson.log.ast.SourceHeader("BFSTestArrayVisual","",new String [] {"ADJECENCY_MATRIX","int[][]","adjList"}));
+new com.dennisjonsson.log.ast.SourceHeader("BFSTestArrayVisual","",new com.dennisjonsson.markup.DataStructure [] {  com.dennisjonsson.markup.DataStructureFactory.getDataStructure("ADJECENCY_MATRIX","int[][]","adjList")}));
 
     final int size = 20;
 

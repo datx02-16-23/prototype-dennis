@@ -5,6 +5,9 @@
  */
 package com.dennisjonsson.log.ast;
 
+import com.dennisjonsson.markup.Argument;
+import com.dennisjonsson.markup.DataStructure;
+
 /**
  *
  * @author dennis
@@ -13,15 +16,23 @@ public class SourceHeader {
     
     public static final String CLASS_NAME = "com.dennisjonsson.log.ast.SourceHeader";
     
-    public String className;
-    public String printingPath;
-    String [] dsArgs;
+    public final String className;
+    public final String printingPath;
+    public final DataStructure [] dataStructures;
 
-    public SourceHeader(String className, String printingPath, String[] dsArgs) {
+    public SourceHeader(String className, String printingPath, DataStructure[] dataStructures) {
         this.className = className;
         this.printingPath = printingPath;
-        this.dsArgs = dsArgs;
+        this.dataStructures = dataStructures;
     }
+
+    
+
+    
+
+   
+
+    
     
     
     

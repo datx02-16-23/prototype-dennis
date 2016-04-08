@@ -38,16 +38,13 @@ public class ASTLogger {
     public ASTLogger(SourceHeader sourceHeader) {
         
         this.sourceHeader = sourceHeader;
-        String [] data = sourceHeader.dsArgs;
+        
        
         callStack = new Stack<>();
         Header header = new Header();
         
-        for(int i = 0; i < data.length-2; i = i+3){
-  
-           DataStructure dataStructure = DataStructureFactory
-                   .getDataStructure(data[i], data[i+1], data[i+2]);
-           header.addDataStructure(dataStructure);
+        for( DataStructure ds : sourceHeader.dataStructures){
+           header.addDataStructure(ds);
         }
         
         markup = new Markup(header, new ArrayList<>());

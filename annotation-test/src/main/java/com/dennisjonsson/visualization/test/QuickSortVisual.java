@@ -7,46 +7,61 @@ package com.dennisjonsson.visualization.test;
 
 import com.dennisjonsson.annotation.Print;
 import com.dennisjonsson.annotation.SourcePath;
-import com.dennisjonsson.annotation.Visualize;
+import com.dennisjonsson.annotation.VisualizeArg;
 import com.dennisjonsson.markup.AbstractType;
-import com.github.javaparser.ast.Node;
+import java.util.Arrays;
 
 /**
  *
  * @author dennis
  */
 
-public class Test1Visual{
+public class QuickSortVisual{
 public static com.dennisjonsson.log.ast.ASTLogger logger = 
 new com.dennisjonsson.log.ast.ASTLogger(
-new com.dennisjonsson.log.ast.SourceHeader("Test1Visual","",new com.dennisjonsson.markup.DataStructure [] {  com.dennisjonsson.markup.DataStructureFactory.getDataStructure("ARRAY","int[]","a"),com.dennisjonsson.markup.DataStructureFactory.getDataStructure("ARRAY","int[]","b")}));
-
-    /**
-     * @param args the command line arguments
-     */
-    
-    public static int[] a = eval("a", write(null, new int[10], 3, 1), 0);
-
-    
-    public static int[] b = eval("b", write(null, new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 }, 3, 1), 0);
-
-    public static int c[] = new int[2];
+new com.dennisjonsson.log.ast.SourceHeader("QuickSortVisual","",new com.dennisjonsson.markup.DataStructure [] {  com.dennisjonsson.markup.DataStructureFactory.getDataStructure("ARRAY","int[]","arr")}));
 
     public static void main(String[] args) {
-        // TODO code application logic here
-        int d = eval("d", write("a", a[read("a", "", 0, 1)], 0, 1), 0);
-        eval("a", a = write(null, new int[] { 1, 2, 3, 4, 5, 6 }, 3, 1), 0);
-        eval("a", a = write("b", b, 1, 1), 0);
-        eval("a[1]", a[read("a", "", 0, 1)] = write("b", b[read("b", "", 0, 1)], 0, 0), 0);
-        eval("d", d = write("a", a[read("a", "", 0, 1)], 0, 1), 0);
-        eval("a[1]", a[read("a", "", 0, 1)] = write(null, 1, 3, 0), 0);
-        eval("a[2]", a[read("a", "", 0, 2)] = write("d", d, 1, 0), 0);
-        d = c[1];
-        c[1] = d;
-        c[1] = c[0];
-        d = d;
-        // Node d = c[1];
+        int[] x = { 9, 2, 4, 7, 3, 7, 10 };
+        System.out.println(Arrays.toString(x));
+        int low = 0;
+        int high = x.length - 1;
+        quickSort(eval("arr", write(null, x, 3, 1), 3), low, high);
         print();
+        System.out.println(Arrays.toString(x));
+    }
+
+    
+    public static void quickSort(int[] arr, int low, int high) {
+        if (arr == null || arr.length == 0)
+            return;
+        if (low >= high)
+            return;
+        // pick the pivot
+        int middle = low + (high - low) / 2;
+        int pivot = eval("pivot", write("arr", arr[read("arr", "", 0, middle)], 0, 1), 0);
+        // make left < pivot and right > pivot
+        int i = low, j = high;
+        while (i <= j) {
+            while (eval(null, arr[read("arr", "", 0, i)], 2) < pivot) {
+                i++;
+            }
+            while (eval(null, arr[read("arr", "", 0, j)], 2) > pivot) {
+                j--;
+            }
+            if (i <= j) {
+                int temp = eval("temp", write("arr", arr[read("arr", "", 0, i)], 0, 1), 0);
+                eval("arr[i]", arr[read("arr", "", 0, i)] = write("arr", arr[read("arr", "", 0, j)], 0, 0), 0);
+                eval("arr[j]", arr[read("arr", "", 0, j)] = write("temp", temp, 1, 0), 0);
+                i++;
+                j--;
+            }
+        }
+        // recursively sort two sub parts
+        if (low < j)
+            quickSort(eval("arr", write("arr", arr, 1, 1), 3), low, j);
+        if (high > i)
+            quickSort(eval("arr", write("arr", arr, 1, 1), 3), i, high);
     }
 
     

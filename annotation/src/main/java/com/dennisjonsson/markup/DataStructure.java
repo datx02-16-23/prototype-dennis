@@ -13,6 +13,8 @@ import java.util.HashMap;
  */
 public class DataStructure {
     
+    public static final String CLASS_NAME = "com.dennisjonsson.markup.DataStructure";
+    
     protected String abstractType;
     protected String rawType;
     protected String identifier;

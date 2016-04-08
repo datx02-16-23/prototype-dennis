@@ -24,10 +24,10 @@ public class Test1 {
      * @param args the command line arguments
      */
     
-    @Visualize(type = AbstractType.ARRAY)
+    @Visualize(abstractType = AbstractType.ARRAY)
     public static int [] a = new int[10];
     
-    @Visualize(type = AbstractType.ARRAY)
+    @Visualize(abstractType = AbstractType.ARRAY)
     public static int [] b = new int[]{1,2,3,4,5,6,7,8,9};
     
     public static int c [] = new int [2];

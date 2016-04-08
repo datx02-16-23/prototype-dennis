@@ -23,11 +23,11 @@ public class TestParse {
      */
     
     
-    @Visualize(type=AbstractType.ARRAY)
+    @Visualize(abstractType=AbstractType.ARRAY)
     public static int[] b = new int[10];
-    @Visualize(type=AbstractType.ARRAY)
+    @Visualize(abstractType=AbstractType.ARRAY)
     public static int[][] c = new int[10][10];
-    @Visualize(type=AbstractType.ARRAY)
+    @Visualize(abstractType=AbstractType.ARRAY)
     public static int[][][] d = new int[10][10][10];
     
     public static int [] un = new int[10];

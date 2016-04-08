@@ -14,7 +14,7 @@ import com.dennisjonsson.markup.AbstractType;
 public class BubbleSortVisual{
 public static com.dennisjonsson.log.ast.ASTLogger logger = 
 new com.dennisjonsson.log.ast.ASTLogger(
-new com.dennisjonsson.log.ast.SourceHeader("BubbleSortVisual","",new String [] {"ARRAY","int[]","intArray"}));
+new com.dennisjonsson.log.ast.SourceHeader("BubbleSortVisual","",new com.dennisjonsson.markup.DataStructure [] {  com.dennisjonsson.markup.DataStructureFactory.getDataStructure("ARRAY","int[]","intArray")}));
 
     
     static int intArray[] = eval("intArray", write(null, new int[] { 5, 90, 35, 45, 150, 3 }, 3, 1), 0);

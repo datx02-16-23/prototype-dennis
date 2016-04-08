@@ -7,6 +7,7 @@ package com.dennisjonsson.annotation.processor.parser;
 
 import com.dennisjonsson.annotation.Print;
 import com.dennisjonsson.annotation.processor.VisualizeProcessor;
+import com.dennisjonsson.markup.Argument;
 import com.dennisjonsson.markup.DataStructure;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -33,6 +34,13 @@ public abstract class SourceProcessor {
     protected ArrayList<DataStructure> dataStructures;
     private boolean written = false;
     protected Element print;
+    
+    public SourceProcessor(String path, String className) {
+        this.path = path;
+        this.className = className;
+        this.source = source;
+        this.dataStructures = new ArrayList<>();
+    }
 
     public String getPrintingPath() {
         return "\""+print.getAnnotation(Print.class).path()+"\"";
@@ -80,12 +88,7 @@ public abstract class SourceProcessor {
     
     public abstract void processSource(Object arg);
 
-    public SourceProcessor(String path, String className, ArrayList<DataStructure> dataStructures) {
-        this.path = path;
-        this.className = className;
-        this.source = source;
-        this.dataStructures = dataStructures;
-    }
+    
     
     protected InputStream getInputStream(String path, String className){
         InputStream stream = null;

@@ -11,6 +11,9 @@ package com.dennisjonsson.markup;
  */
 public class DataStructureFactory {
     
+    public static final String CLASS_NAME = "com.dennisjonsson.markup.DataStructureFactory";
+    public static final String METHOD =  "getDataStructure";
+    
     public static DataStructure getDataStructure(
             String abstractType, String type, String identifier){
         type = type.toLowerCase();
