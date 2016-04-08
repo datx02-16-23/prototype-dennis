@@ -10,6 +10,7 @@
 <script  src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r71/three.min.js" ></script>
 <script  src="js/graphics/grid.js" ></script>
 <script  src="js/graphics/graph.js" ></script>
+<script  src="js/graphics/Tree2d.js" ></script>
 <script  src="js/graphics/boundingVolumes.js" ></script>
 
 <script  src="js/visualizers/bubbleSortVisualizer.js" ></script>
@@ -88,6 +89,17 @@
 			window.addEventListener( 'resize', onWindowResize, false );
 			window['onresize'] = onWindowResize;
 			onWindowResize();
+
+			
+			var v =new BinaryTreeVisualizer({
+						markup: null, 
+						environment: new Environment2D({
+							container: environment.DOM["container"], 
+							debugContainer: environment.DOM["debug_container"], 
+							browser: environment.browser
+						})});
+			v.init();
+			environment.DOM["container_window"].removeChild(environment.DOM["upload_file_window"]);
 		}
 		
 		function onWindowResize(){

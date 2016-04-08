@@ -5,13 +5,12 @@ var Environment2D =  function(args){
 	this.debugContainer = args.debugContainer,
 	this.browser = args.browser,
 	this.canvas,
-	this.context,
 	this.CANVAS_WIDTH,
 	this.CANVAS_HEIGHT,
 	
 	
 	this.init = function(){		
-		alert("init");
+	
 		this.canvas = document.createElement("canvas");
 		container.appendChild(this.canvas);
 		
@@ -19,12 +18,9 @@ var Environment2D =  function(args){
 		this.CANVAS_HEIGHT= window.innerHeight;
 		this.canvas.style.width = this.CANVAS_WIDTH*0.7+"px";
 		this.canvas.style.height = this.CANVAS_HEIGHT+"px";
-		
 		this.context = this.canvas.getContext('2d');
-
-		/*
+/*
 		var context = this.canvas.getContext('2d');
-
 		var centerX = this.canvas.width / 2;
 		var centerY = this.canvas.height / 2;
 		var radius = 70;
