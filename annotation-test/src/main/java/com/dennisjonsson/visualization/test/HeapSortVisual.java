@@ -5,68 +5,79 @@
  */
 package com.dennisjonsson.visualization.test;
 
-import com.dennisjonsson.annotation.Arg;
 import com.dennisjonsson.annotation.Print;
 import com.dennisjonsson.annotation.SourcePath;
-import com.dennisjonsson.annotation.VisualizeArg;
+import com.dennisjonsson.annotation.Visualize;
 import com.dennisjonsson.markup.AbstractType;
 import java.util.Arrays;
 
-/**
- *
- * @author dennis
- */
 
-public class QuickSortVisual{
+public class HeapSortVisual{
 public static com.dennisjonsson.log.ast.ASTLogger logger = 
 new com.dennisjonsson.log.ast.ASTLogger(
 new com.dennisjonsson.log.ast.SourceHeader(
-"QuickSortVisual",
+"HeapSortVisual",
 "",
-new com.dennisjonsson.markup.DataStructure [] {  com.dennisjonsson.markup.DataStructureFactory.getDataStructure("ARRAY","int[]","arr")},
+new com.dennisjonsson.markup.DataStructure [] {  com.dennisjonsson.markup.DataStructureFactory.getDataStructure("BINARY_TREE","int[]","a")},
 com.dennisjonsson.log.DefaultInterpreter.instance()));
 
-    public static void main(String[] args) {
-        int[] x = { 9, 22, 4, 7, 3, 7, 10, 15, 20, 5, 2, 7, 40, 16, 35, 8, 24 };
-        System.out.println(Arrays.toString(x));
-        int low = 0;
-        int high = x.length - 1;
-        quickSort(eval("arr", write(null, x, 3, 1), 3), low, high);
-        print();
-        System.out.println(Arrays.toString(x));
+    
+    private static int[] a;
+
+    private static int n;
+
+    private static int left;
+
+    private static int right;
+
+    private static int largest;
+
+    public static void buildheap(int[] a) {
+        n = a.length - 1;
+        for (int i = n / 2; i >= 0; i--) {
+            maxheap(a, i);
+        }
     }
 
-    
-    public static void quickSort(int[] arr, int low, int high) {
-        if (arr == null || arr.length == 0)
-            return;
-        if (low >= high)
-            return;
-        // pick the pivot
-        int middle = low + (high - low) / 2;
-        int pivot = eval("pivot", write("arr", arr[read("arr", "", 0, middle)], 0, 1), 0);
-        // make left < pivot and right > pivot
-        int i = low, j = high;
-        while (i <= j) {
-            while (eval(null, arr[read("arr", "", 0, i)], 2) < pivot) {
-                i++;
-            }
-            while (eval(null, arr[read("arr", "", 0, j)], 2) > pivot) {
-                j--;
-            }
-            if (i <= j) {
-                int temp = eval("temp", write("arr", arr[read("arr", "", 0, i)], 0, 1), 0);
-                eval("arr[i]", arr[read("arr", "", 0, i)] = write("arr", arr[read("arr", "", 0, j)], 0, 0), 0);
-                eval("arr[j]", arr[read("arr", "", 0, j)] = write("temp", temp, 1, 0), 0);
-                i++;
-                j--;
-            }
+    public static void maxheap(int[] a, int i) {
+        left = 2 * i;
+        right = 2 * i + 1;
+        if (left <= n && eval(null, a[read("a", "", 0, left)], 2) > eval(null, a[read("a", "", 0, i)], 2)) {
+            largest = left;
+        } else {
+            largest = i;
         }
-        // recursively sort two sub parts
-        if (low < j)
-            quickSort(eval("arr", write("arr", arr, 1, 1), 3), low, j);
-        if (high > i)
-            quickSort(eval("arr", write("arr", arr, 1, 1), 3), i, high);
+        if (right <= n && eval(null, a[read("a", "", 0, right)], 2) > eval(null, a[read("a", "", 0, largest)], 2)) {
+            largest = right;
+        }
+        if (largest != i) {
+            exchange(i, largest);
+            maxheap(a, largest);
+        }
+    }
+
+    public static void exchange(int i, int j) {
+        int t = eval("t", write("a", a[read("a", "", 0, i)], 0, 1), 0);
+        eval("a[i]", a[read("a", "", 0, i)] = write("a", a[read("a", "", 0, j)], 0, 0), 0);
+        eval("a[j]", a[read("a", "", 0, j)] = write("t", t, 1, 0), 0);
+    }
+
+    public static void sort(int[] myarray) {
+        eval("a", a = write("myarray", myarray, 1, 1), 0);
+        buildheap(a);
+        for (int i = n; i > 0; i--) {
+            exchange(0, i);
+            n = n - 1;
+            maxheap(a, 0);
+        }
+    }
+
+    public static void main(String[] args) {
+        int[] numbers = { 5, 6, 12, 2, 1, 11, 10 };
+        System.out.println(Arrays.toString(numbers));
+        sort(numbers);
+        System.out.println(Arrays.toString(numbers));
+        print();
     }
 
     

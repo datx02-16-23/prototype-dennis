@@ -1,6 +1,6 @@
 	
 	
-	var Environment3D =  function(container, debugContainer ,browser){
+	var Environment3D =  function(args){
 		// orientation 
 		this.prev_x = 0.0,
 		this.prev_y = 0.0,
@@ -28,10 +28,13 @@
 		this.mouse = new THREE.Vector2(),
 		
 		// DOM
-		this.container = container,
-		this.debugContainer = debugContainer,
+		this.container = args.container,
+		this.debugContainer = args.debugContainer,
 		// browser specifics
-		this.browser = browser,
+		this.browser = args.browser,
+		this.divisions = args.divisions,
+		this.position = args.position,
+		this.environmentContainer,
 		
 		/*
 			
@@ -40,6 +43,8 @@
 
 		this.init = function(){
 
+			this.environmentContainer = document.createElement("div");
+			this.environmentContainer.style.position = "absolute";
 		
 			/*
 				renderer
@@ -50,7 +55,7 @@
 			this.renderer.setSize( this.CANVAS_WIDTH, this.CANVAS_HEIGHT );
 			//this.renderer.setClearColor( 0xf8f8f8 );
 			//this.DOM["container"].appendChild( this.renderer.domElement );
-			container.appendChild( this.renderer.domElement );
+			this.environmentContainer.appendChild( this.renderer.domElement );
 			/*
 				scene
 			*/
@@ -93,33 +98,45 @@
 			//this.onWindowResize();
 			this.CANVAS_WIDTH = window.innerWidth;
 			this.CANVAS_HEIGHT= window.innerHeight;
+			
+			this.CANVAS_HEIGHT =  this.calculateHeight({height: this.CANVAS_HEIGHT, divisions: this.divisions});
+			this.CANVAS_WIDTH =  this.calculateWidth({width: this.CANVAS_WIDTH, divisions: this.divisions});
+			
+			
+			this.environmentContainer.style.width = this.CANVAS_WIDTH+"px";
+			this.environmentContainer.style.height = this.CANVAS_HEIGHT+"px";
+			
+			this.environmentContainer.style.marginLeft = (this.margins.w*this.CANVAS_WIDTH)+"px";
+			this.environmentContainer.style.marginTop = (this.margins.h*this.CANVAS_WIDTH)+"px";
+			
 			this.camera.aspect = (window.innerWidth*0.7)/ window.innerHeight;
 			this.camera.updateProjectionMatrix();
 			this.renderer.setSize( window.innerWidth*0.7, window.innerHeight );
 			
 			//onMouseDown="environment.mouseDown()" onMouseUp="environment.mouseUp()" onMouseMove="environment.motion()
 			var _this = this;
-			container.addEventListener( 'mousedown', function(){
+			this.environmentContainer.addEventListener( 'mousedown', function(){
 				_this.mouseDown();
 			}, false );
-			container.addEventListener( 'mouseup', function(){
+			this.environmentContainer.addEventListener( 'mouseup', function(){
 				_this.mouseUp();
 			}, false );
-			container.addEventListener( 'mousemove', function(){
+			this.environmentContainer.addEventListener( 'mousemove', function(){
 				_this.motion();
 			}, false );
 
-			container["onmouseup"] = function(){
+			this.environmentContainer["onmouseup"] = function(){
 				_this.mouseUp();
 			};
-			container["onmousemove"] = function(){
+			this.environmentContainer["onmousemove"] = function(){
 				_this.motion();
 			};
 			
-			container["onmousedown"] = function(){
+			this.environmentContainer["onmousedown"] = function(){
 				_this.mouseDown();
 			}
 			
+			this.container.appendChild(this.environmentContainer);
 			
 			this.display();
 			
@@ -271,6 +288,6 @@
 	}
 	
 	
-	
+	Environment3D.prototype = Environment;
 	
 	

@@ -11,7 +11,7 @@ public class MethodsSource{
         private ArrayList<String> primitives = 
                 new ArrayList<>();
         private ArrayList<String> looseTypes = 
-                new ArrayList<>(Arrays.asList("int", "String", "boolean", "char", "double", "float", "Object"));
+                new ArrayList<>(Arrays.asList("int", "java.lang.String", "boolean", "char", "double", "float", "java.lang.Object"));
 	public MethodsSource(){
 		types = new ArrayList<String>();
 
@@ -38,21 +38,30 @@ public class MethodsSource{
 		}
                 types.add(dStruct.getType());
               
-                String primitiveType = "";
+                String primitiveType = fixClassTypes(dStruct.getType());
                 if(dStruct.getType().contains("[")){
-                    primitiveType = dStruct.getType().toString().replaceAll("(\\[|\\])", "");
+                    primitiveType = primitiveType.replaceAll("(\\[|\\])", "");
                     return getReadMethod(dStruct.getType())
-                        + "\n"+getArrayEvalsAndWrites(
-                                countDimension(dStruct.getType()),
-                                primitiveType);
+                        + "\n"+getArrayEvalsAndWrites(countDimension(dStruct.getType()),primitiveType);
                 }
                
              
-                return getReadMethod(dStruct.getType())
+                return getReadMethod(primitiveType)
                         + "\n"+getWriteMethod(primitiveType,0)
+                        + "\n"+getEval(primitiveType,0)
                         + "\n"+getPrimitiveEvals();
 		
 	}
+        
+        public String fixClassTypes(String type){
+            if(!looseTypes.contains(type.replaceAll("(\\[|\\])", "")) || type.contains(".")){
+                int i = type.lastIndexOf(".") + 1;
+                String object = type.substring(i,i+1).toUpperCase()+type.substring(i+1,type.length());
+                return type.substring(0,i)+object;
+            }
+            return type;
+            
+        }
 	// logg(String op, String id, String uuid ,int index , int dimension){
 	public String getReadMethod(String type){
             

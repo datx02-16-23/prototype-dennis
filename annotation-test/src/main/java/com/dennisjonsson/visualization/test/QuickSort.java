@@ -5,6 +5,7 @@
  */
 package com.dennisjonsson.visualization.test;
 
+import com.dennisjonsson.annotation.Arg;
 import com.dennisjonsson.annotation.Print;
 import com.dennisjonsson.annotation.SourcePath;
 import com.dennisjonsson.annotation.VisualizeArg;
@@ -20,7 +21,7 @@ import java.util.Arrays;
         + "java/com/dennisjonsson/visualization/test/")
 public class QuickSort {
 	public static void main(String[] args) {
-		int[] x = { 9, 2, 4, 7, 3, 7, 10 };
+		int[] x = { 9, 22, 4, 7, 3, 7, 10,15,20,5,2,7,40,16,35,8,24  };
 		System.out.println(Arrays.toString(x));
  
 		int low = 0;
@@ -31,7 +32,7 @@ public class QuickSort {
 		System.out.println(Arrays.toString(x));
 	}
  
-        @VisualizeArg(name = "arr", abstractType = AbstractType.ARRAY, position = 0)
+        @VisualizeArg(args = {AbstractType.ARRAY})
 	public static void quickSort(int[] arr, int low, int high) {
 		if (arr == null || arr.length == 0)
 			return;

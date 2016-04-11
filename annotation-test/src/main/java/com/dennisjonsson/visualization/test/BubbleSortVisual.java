@@ -14,10 +14,14 @@ import com.dennisjonsson.markup.AbstractType;
 public class BubbleSortVisual{
 public static com.dennisjonsson.log.ast.ASTLogger logger = 
 new com.dennisjonsson.log.ast.ASTLogger(
-new com.dennisjonsson.log.ast.SourceHeader("BubbleSortVisual","",new com.dennisjonsson.markup.DataStructure [] {  com.dennisjonsson.markup.DataStructureFactory.getDataStructure("ARRAY","int[]","intArray")}));
+new com.dennisjonsson.log.ast.SourceHeader(
+"BubbleSortVisual",
+"",
+new com.dennisjonsson.markup.DataStructure [] {  com.dennisjonsson.markup.DataStructureFactory.getDataStructure("ARRAY","int[]","intArray")},
+com.dennisjonsson.log.DefaultInterpreter.instance()));
 
     
-    static int intArray[] = eval("intArray", write(null, new int[] { 5, 90, 35, 45, 150, 3 }, 3, 1), 0);
+    static int intArray[] = eval("intArray", write(null, new int[] { 5, 90, 9, 50, 10, 89, 62, 17, 43, 25, 66, 7, 8, 35, 45, 150, 3 }, 3, 1), 0);
 
     public static void main(String[] args) {
         //create an int array we want to sort using bubble sort algorithm
@@ -101,10 +105,10 @@ return value;
 public static int[][] write(String name, int[][] value, int sourceType, int targetType ){
 logger.write(name, new com.dennisjonsson.log.ast.LogUtils<int[][]>().deepCopy(value), sourceType, targetType);
 return value;
-}public static String write(String name, String value, int sourceType, int targetType ){
+}public static java.lang.String write(String name, java.lang.String value, int sourceType, int targetType ){
 logger.write(name, value, sourceType, targetType);
 return value;
-}public static String eval(String targetId, String value, int expressionType){
+}public static java.lang.String eval(String targetId, java.lang.String value, int expressionType){
 logger.eval(targetId, value, expressionType);
 return value;
 }
@@ -136,10 +140,10 @@ return value;
 logger.eval(targetId, value, expressionType);
 return value;
 }
-public static Object write(String name, Object value, int sourceType, int targetType ){
+public static java.lang.Object write(String name, java.lang.Object value, int sourceType, int targetType ){
 logger.write(name, value, sourceType, targetType);
 return value;
-}public static Object eval(String targetId, Object value, int expressionType){
+}public static java.lang.Object eval(String targetId, java.lang.Object value, int expressionType){
 logger.eval(targetId, value, expressionType);
 return value;
 }

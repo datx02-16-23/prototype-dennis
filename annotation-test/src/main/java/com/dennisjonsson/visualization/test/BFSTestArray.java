@@ -19,7 +19,7 @@ public class BFSTestArray {
 
     final int size = 20;
 
-    @Visualize(abstractType = AbstractType.ADJECENCY_MATRIX)
+    @Visualize(abstractType = AbstractType.ADJACENCY_MATRIX)
     int[][] adjList = new int[size][size];
 
     // this is a comment yo

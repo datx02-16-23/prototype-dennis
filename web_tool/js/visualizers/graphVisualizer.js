@@ -2,8 +2,9 @@
 var GraphVisualizer = function(args){
 	
 	this.graph,
-	this.sequence,
-	this.markup = args.markup,
+	//this.sequence,
+	//this.markup = args.markup,
+	this.dataStructure = args.dataStructure,
 	this.environment3d = args.environment,
 	this.arrayElements2d,
 	this.writeColor3d = 0xff6d6d,
@@ -16,38 +17,25 @@ var GraphVisualizer = function(args){
 	*/
 	
 	this.init = function(){
-	
 		this.environment3d.init();
 
 		this.arrayElements2d = [];
 		
-		var variables = this.markup.header.annotatedVariables;
-		var size = [];
-		var i = 0;
+	
 		// create 2d DOM elements of data structures
-		for(var key in variables){
-			if (variables.hasOwnProperty(key)) {
-
-				var arrayElement = new ArrayElement({
-					lengthX: 	variables[key].attributes.size[0], 
-					lengthY: 	variables[key].attributes.size[1],
-					id: 		variables[key].identifier });
-				
-				// sizes of each variable 			
-				size[i] = variables[key].attributes.size[0];
-				i++;
-					
-				arrayElement.init();
-				
-				this.arrayElements2d[arrayElement.identifier] = arrayElement;
-				
-				this.environment3d.debugContainer.appendChild(arrayElement.DOM);
-			}
-			
-		}
+		var arrayElement = new ArrayElement({
+			lengthX: 	this.dataStructure.attributes.size[0], 
+			lengthY: 	this.dataStructure.attributes.size[1],
+			id: 		this.dataStructure.identifier });
 		
+		// sizes of each variable 			
+		var size = this.dataStructure.attributes.size[0];
 		
+		arrayElement.init();
 		
+		this.arrayElements2d[arrayElement.identifier] = arrayElement;
+		
+		this.environment3d.debugContainer.appendChild(arrayElement.DOM);
 		
 		// create graph and insert nodes 
 		this.graph = new Graph({environment: this.environment3d});
@@ -55,7 +43,7 @@ var GraphVisualizer = function(args){
 		//console.log("scene: "+this.environment3d.scene);
 		//console.log(this.markup.header.variables[0].size[0]);
 		
-		for(var i = 0; i < size[0]; i ++){
+		for(var i = 0; i < size; i ++){
 			
 			var hex = 0x5fcbff;
 			var sphereGeometry = new THREE.SphereGeometry( 1, 20, 20 );
@@ -79,7 +67,8 @@ var GraphVisualizer = function(args){
 		}
 		
 		this.graph.positionNodes();
-		this.sequence = new Sequence({markup: this.markup, visualizer: this});
+		//this.sequence = new Sequence({markup: this.markup, visualizer: this});
+		this.sequence.addVisualizer(this);
 		
 	},
 	
@@ -87,7 +76,7 @@ var GraphVisualizer = function(args){
 	
 		CONTROLLS
 	*/
-	
+	/*
 	this.play = function(){
 		this.sequence.play(this);
 	},
@@ -99,7 +88,7 @@ var GraphVisualizer = function(args){
 	this.pause = function(){
 		this.sequence.pause(this);
 	},
-	
+	*/
 	this.display = function(evt){
 		//this.environment3d.displayData(evt.op+" <br>id: "+evt.id+"; <br>index: "+evt.index+"; <br>value: "+evt.value+"; ");
 		if(evt.operation == "read"){
@@ -295,3 +284,5 @@ var GraphVisualizer = function(args){
 	
 	
 }
+
+GraphVisualizer.prototype = Visualizer;

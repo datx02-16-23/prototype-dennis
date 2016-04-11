@@ -24,11 +24,10 @@ public class LogParser {
     private final CallStack callStack;
 
     public LogParser(
-            HashMap<String, DataStructure> dataStructures, 
             ArrayList<LogOperation> operations,
             Markup markup) {
         
-        this.dataStructures = dataStructures;
+        this.dataStructures = markup.header.annotatedVariables;
         this.operations = operations;
         this.composer = new MarkupComposer(markup);
         parserStack = new ArrayList<>();
@@ -59,7 +58,7 @@ public class LogParser {
         throw new RuntimeException("branch: unsupported logOperation: "+op.operation);
     }
     
-    private int visit(EvalOperation op, int i){
+    public int visit(EvalOperation op, int i){
         //System.out.println(op.operation);
         LogOperation nextOp = operations.get(i);
         switch(op.expressionType){
@@ -79,7 +78,7 @@ public class LogParser {
         throw new RuntimeException("visit: unsupported eval expression type: "+op.expressionType);
     }
     
-    private int visit(WriteOperation op, int i){
+    public int visit(WriteOperation op, int i){
         //System.out.println(op.operation);
         if(op.sourceType == WriteOperation.ARRAY &&
                 op.targetType == op.sourceType){
@@ -103,7 +102,7 @@ public class LogParser {
                 + ", target: "+op.targetType);      
     }
     
-    private int visit(IndexedReadOperation op, int i){
+    public int visit(IndexedReadOperation op, int i){
         
         //System.out.println(op.operation);
         EvalOperation eval = (EvalOperation)operations.get(i+2);

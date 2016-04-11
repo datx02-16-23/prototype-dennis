@@ -5,68 +5,48 @@
  */
 package com.dennisjonsson.visualization.test;
 
-import com.dennisjonsson.annotation.Arg;
 import com.dennisjonsson.annotation.Print;
 import com.dennisjonsson.annotation.SourcePath;
 import com.dennisjonsson.annotation.VisualizeArg;
 import com.dennisjonsson.markup.AbstractType;
-import java.util.Arrays;
 
 /**
  *
  * @author dennis
  */
 
-public class QuickSortVisual{
+public class LoopingVisual{
 public static com.dennisjonsson.log.ast.ASTLogger logger = 
 new com.dennisjonsson.log.ast.ASTLogger(
 new com.dennisjonsson.log.ast.SourceHeader(
-"QuickSortVisual",
+"LoopingVisual",
 "",
-new com.dennisjonsson.markup.DataStructure [] {  com.dennisjonsson.markup.DataStructureFactory.getDataStructure("ARRAY","int[]","arr")},
+new com.dennisjonsson.markup.DataStructure [] {  com.dennisjonsson.markup.DataStructureFactory.getDataStructure("ARRAY","int[]","first"),com.dennisjonsson.markup.DataStructureFactory.getDataStructure("ARRAY","int[]","second"),com.dennisjonsson.markup.DataStructureFactory.getDataStructure("ARRAY","int[]","third")},
 com.dennisjonsson.log.DefaultInterpreter.instance()));
 
+    /**
+     * @param args the command line arguments
+     */
     public static void main(String[] args) {
-        int[] x = { 9, 22, 4, 7, 3, 7, 10, 15, 20, 5, 2, 7, 40, 16, 35, 8, 24 };
-        System.out.println(Arrays.toString(x));
-        int low = 0;
-        int high = x.length - 1;
-        quickSort(eval("arr", write(null, x, 3, 1), 3), low, high);
-        print();
-        System.out.println(Arrays.toString(x));
+        // TODO code application logic here
+        int[] arr = new int[20];
+        looping(eval("first", write(null, arr, 3, 1), 3), eval("second", write(null, arr, 3, 1), 3), eval("third", write(null, arr, 3, 1), 3));
     }
 
     
-    public static void quickSort(int[] arr, int low, int high) {
-        if (arr == null || arr.length == 0)
-            return;
-        if (low >= high)
-            return;
-        // pick the pivot
-        int middle = low + (high - low) / 2;
-        int pivot = eval("pivot", write("arr", arr[read("arr", "", 0, middle)], 0, 1), 0);
-        // make left < pivot and right > pivot
-        int i = low, j = high;
-        while (i <= j) {
-            while (eval(null, arr[read("arr", "", 0, i)], 2) < pivot) {
-                i++;
-            }
-            while (eval(null, arr[read("arr", "", 0, j)], 2) > pivot) {
-                j--;
-            }
-            if (i <= j) {
-                int temp = eval("temp", write("arr", arr[read("arr", "", 0, i)], 0, 1), 0);
-                eval("arr[i]", arr[read("arr", "", 0, i)] = write("arr", arr[read("arr", "", 0, j)], 0, 0), 0);
-                eval("arr[j]", arr[read("arr", "", 0, j)] = write("temp", temp, 1, 0), 0);
-                i++;
-                j--;
-            }
+    public static void looping(int[] first, int[] second, int[] third) {
+        for (int i = 0; i < first.length; i++) {
+            eval("first[i]", first[read("first", "", 0, i)] = write("i", i, 1, 0), 0);
+            eval("second[i]", second[read("second", "", 0, i)] = write("i", i, 1, 0), 0);
+            eval("third[i]", third[read("third", "", 0, i)] = write("i", i, 1, 0), 0);
         }
-        // recursively sort two sub parts
-        if (low < j)
-            quickSort(eval("arr", write("arr", arr, 1, 1), 3), low, j);
-        if (high > i)
-            quickSort(eval("arr", write("arr", arr, 1, 1), 3), i, high);
+        for (int i = 0; i < second.length; i++) {
+            eval("second[i]", second[read("second", "", 0, i)] = write("i", i, 1, 0), 0);
+        }
+        for (int i = 0; i < third.length; i++) {
+            eval("third[i]", third[read("third", "", 0, i)] = write("i", i, 1, 0), 0);
+        }
+        print();
     }
 
     

@@ -5,6 +5,8 @@
  */
 package com.dennisjonsson.log.ast;
 
+import com.dennisjonsson.log.AbstractInterpreter;
+import com.dennisjonsson.log.Stream;
 import com.dennisjonsson.markup.Argument;
 import com.dennisjonsson.markup.DataStructure;
 
@@ -19,12 +21,16 @@ public class SourceHeader {
     public final String className;
     public final String printingPath;
     public final DataStructure [] dataStructures;
+    public final AbstractInterpreter interpreter;
 
-    public SourceHeader(String className, String printingPath, DataStructure[] dataStructures) {
+    public SourceHeader(String className, String printingPath, DataStructure[] dataStructures, AbstractInterpreter interpreter) {
         this.className = className;
         this.printingPath = printingPath;
         this.dataStructures = dataStructures;
+        this.interpreter = interpreter;
     }
+
+    
 
     
 

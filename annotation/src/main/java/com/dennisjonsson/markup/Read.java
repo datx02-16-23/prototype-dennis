@@ -13,7 +13,7 @@ import java.util.HashMap;
  */
 public class Read extends Operation{
     
-    private static final String OPERATION = "read";
+    public static final String OPERATION = "read";
     private static final String KEY_TARGET = "target";
     private static final String KEY_SOURCE = "source";
     private static final String KEY_VALUE = "value";

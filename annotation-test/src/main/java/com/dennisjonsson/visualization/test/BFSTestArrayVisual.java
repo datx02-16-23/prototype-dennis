@@ -15,7 +15,11 @@ import com.dennisjonsson.annotation.SourcePath;
 public class BFSTestArrayVisual{
 public static com.dennisjonsson.log.ast.ASTLogger logger = 
 new com.dennisjonsson.log.ast.ASTLogger(
-new com.dennisjonsson.log.ast.SourceHeader("BFSTestArrayVisual","",new com.dennisjonsson.markup.DataStructure [] {  com.dennisjonsson.markup.DataStructureFactory.getDataStructure("ADJECENCY_MATRIX","int[][]","adjList")}));
+new com.dennisjonsson.log.ast.SourceHeader(
+"BFSTestArrayVisual",
+"",
+new com.dennisjonsson.markup.DataStructure [] {  com.dennisjonsson.markup.DataStructureFactory.getDataStructure("ADJACENCY_MATRIX","int[][]","adjList")},
+com.dennisjonsson.log.DefaultInterpreter.instance()));
 
     final int size = 20;
 
@@ -89,10 +93,10 @@ return value;
 public static int[][][] write(String name, int[][][] value, int sourceType, int targetType ){
 logger.write(name, new com.dennisjonsson.log.ast.LogUtils<int[][][]>().deepCopy(value), sourceType, targetType);
 return value;
-}public static String write(String name, String value, int sourceType, int targetType ){
+}public static java.lang.String write(String name, java.lang.String value, int sourceType, int targetType ){
 logger.write(name, value, sourceType, targetType);
 return value;
-}public static String eval(String targetId, String value, int expressionType){
+}public static java.lang.String eval(String targetId, java.lang.String value, int expressionType){
 logger.eval(targetId, value, expressionType);
 return value;
 }
@@ -124,10 +128,10 @@ return value;
 logger.eval(targetId, value, expressionType);
 return value;
 }
-public static Object write(String name, Object value, int sourceType, int targetType ){
+public static java.lang.Object write(String name, java.lang.Object value, int sourceType, int targetType ){
 logger.write(name, value, sourceType, targetType);
 return value;
-}public static Object eval(String targetId, Object value, int expressionType){
+}public static java.lang.Object eval(String targetId, java.lang.Object value, int expressionType){
 logger.eval(targetId, value, expressionType);
 return value;
 }

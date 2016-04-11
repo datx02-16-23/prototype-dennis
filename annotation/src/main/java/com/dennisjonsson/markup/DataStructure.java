@@ -17,7 +17,7 @@ public class DataStructure {
     
     protected String abstractType;
     protected String rawType;
-    protected String identifier;
+    public String identifier;
     public final HashMap<String, Object> attributes;
 
     public DataStructure(String abstractType, String type, String name) {
@@ -25,7 +25,7 @@ public class DataStructure {
         this.rawType = type;
         this.identifier = name;
        // size = new ArrayList<Integer>();
-        attributes = new HashMap<String, Object>();
+        attributes = new HashMap<>();
     }
 
     public DataStructure(String abstractType, String type, 

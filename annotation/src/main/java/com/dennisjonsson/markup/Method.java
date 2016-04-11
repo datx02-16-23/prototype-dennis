@@ -35,6 +35,23 @@ public class Method {
         annotetedArguments.add(arg);
     }
     
+    public boolean compareTypes(String [] types){
+        if(arguments.length != types.length){
+            return false;   
+        }
+            
+        for(int i = 0; i < types.length; i++){
+            String t1 = types[i];
+            t1 = t1.substring(t1.lastIndexOf(".")+1);
+            String t2 = arguments[i];
+            t2 = t2.substring(t2.lastIndexOf(".")+1);
+            if(!t1.equalsIgnoreCase(t2)){
+                return false;
+            }
+        }
+        return true;
+    }
+    
     
     
 }

@@ -123,10 +123,7 @@ public class ASTParser extends ModifierVisitorAdapter
             }
            
         }
-        /*
-        else if(expr instanceof VariableDeclarationExpr){
-           setEval(n, (VariableDeclarationExpr)expr, arg);   
-        }  */ 
+     
         return super.visit(n, null); 
     }
     
@@ -168,7 +165,12 @@ public class ASTParser extends ModifierVisitorAdapter
         else if(init instanceof NameExpr){
             NameExpr varable = (NameExpr)init;
             call = setWtriteFromVariable(varable);
-        }else{
+        }
+        else if(init == null){
+            return;
+            //call = setWriteFromUndefined(new NullLiteralExpr());
+        }
+        else{
             call = setWriteFromUndefined(init);
         }
         
@@ -245,7 +247,12 @@ public class ASTParser extends ModifierVisitorAdapter
             call = setWriteFromArray((ArrayAccessExpr)value);
         }else if(value instanceof NameExpr){
             call = setWtriteFromVariable((NameExpr)value);
-        }else{
+        }
+        else if(value instanceof NullLiteralExpr){
+            // change 
+            call = setWriteFromUndefined(value);
+        }
+        else{
             call = setWriteFromUndefined(value);
         }
         
@@ -268,7 +275,7 @@ public class ASTParser extends ModifierVisitorAdapter
 
     
     private MethodCallExpr createWrite(ArrayList<Expression> args){
-        return new MethodCallExpr(null, "write",args);
+        return new MethodCallExpr(null, WriteOperation.OPERATION,args);
     }
     
     /*
@@ -276,6 +283,7 @@ public class ASTParser extends ModifierVisitorAdapter
     */
     
     private MethodCallExpr setWriteFromUndefined(Expression exp){
+        
         ArrayList<Expression> args = new ArrayList<>();
         args.add(new NullLiteralExpr());
         args.add(exp);

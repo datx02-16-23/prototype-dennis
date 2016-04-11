@@ -6,6 +6,8 @@
 		
 		// browser specifics
 		this.browser,
+		this.currentPrograms = [],
+		this.sequence,
 		
 		this.init = function(){
 			this.getClientBrowser();
@@ -113,52 +115,17 @@
 		},
 		
 		
-		this.currentProgram,
 		this.programs = {
-			"bubble sort": 
-			function(markup){
-				var currentProgram;
-				currentProgram = new BubbleSortVisualizer({markup: markup});
-				currentProgram.init();
-				currentProgram.sort();
-				return currentProgram;
-				//object["body"] = currentProgram.sequence.events;
-			},
-			"breadth first search":
-			function(markup){
-				var currentProgram;
-				currentProgram = new BFSVisualizer({markup: markup});
-				currentProgram.init();
-				currentProgram.search();
-				return currentProgram;
-			},
-			"3d grid":
-			function(markup){
-				var currentProgram;
-				currentProgram = new gridVisualizer({markup: markup});
-				currentProgram.init({size:10});
-				return currentProgram;
-			},
 			"ADJACENCY_MATRIX":
 			function(args){			
 				var currentProgram = new GraphVisualizer(
 					{
-						markup: args.markup, 
-						environment: new Environment3D(args.DOM["container"], args.DOM["debug_container"],args.browser)
-					}
-				);
-					
-				currentProgram.init({size:10});
-				
-				return currentProgram;
-			},
-			"BINARY_TREE":
-			function(args){			
-				var currentProgram = new BinaryTreeVisualizer({
-						markup: args.markup, 
-						environment: new Environment2D({
+						dataStructure: args.dataStructure, 
+						environment: new Environment3D({
+							position: args.position,
+							divisions: args.divisions,
 							container: args.DOM["container"], 
-							debugContainer: args.DOM["debug_container"], 
+							debugContainer: args.DOM["debug_container"],
 							browser: args.browser
 						})
 					}
@@ -167,7 +134,44 @@
 				currentProgram.init({size:10});
 				
 				return currentProgram;
+			},
+			"BINARY_TREE":
+			function(args){	
+			
+				var currentProgram = new BinaryTreeVisualizer(
+					{
+						dataStructure: args.dataStructure, 
+						environment: new Environment2D({
+							position: args.position,
+							divisions: args.divisions,
+							container: args.DOM["container"], 
+							debugContainer: args.DOM["debug_container"], 
+							browser: args.browser
+					})
+				});
+				currentProgram.init();
+
+				return currentProgram;
+			},
+			"ARRAY":
+			function(args){	
+			
+				var currentProgram = new StapleVisualizer(
+					{
+						dataStructure: args.dataStructure, 
+						environment: new Environment2D({
+							position: args.position,
+							divisions: args.divisions,
+							container: args.DOM["container"], 
+							debugContainer: args.DOM["debug_container"], 
+							browser: args.browser
+					})
+				});
+				currentProgram.init();
+
+				return currentProgram;
 			}
+			
 		},
 		
 		this.parseText = function(text){
@@ -186,18 +190,27 @@
 			
 			// choose program
 			var markup = object;
+			this.sequence = Visualizer.sequence;
+			Visualizer.sequence.setMarkup(markup);
 			
 			var variables = markup.header.annotatedVariables;
 
 			// create 2d DOM elements of data structures
+			var keys = Object.keys(variables).length;
+			var position = 0;
 			for(var key in variables){
 				if (variables.hasOwnProperty(key)) {
-					this.currentProgram = this.programs[variables[key].abstractType](
-					{
-						markup: markup, 
-						DOM: this.DOM, 
-						browser : this.browser
-					});
+					
+					this.currentPrograms.push(
+						this.programs[variables[key].abstractType](
+						{
+							position: position,
+							divisions: keys,
+							dataStructure: variables[key], 
+							DOM: this.DOM, 
+							browser : this.browser
+						}));
+					position++;
 				}
 			}
 			
@@ -205,21 +218,19 @@
 			this.DOM["upload_file_form"].removeChild(this.DOM["spinner"]);
 			this.DOM["container_window"].removeChild(this.DOM["upload_file_window"]);
 			this.DOM["container_window"].appendChild(this.DOM["player"]);
-			
-			
-		
+
 		},
 		
 		this.runVisualization = function(){
-			this.currentProgram.play();
+			this.sequence.play();
 		},
 		
 		this.pauseVisualization = function(){
-			this.currentProgram.pause();
+			this.sequence.pause();
 		},
 		
 		this.stopVisualization = function(){
-			this.currentProgram.stop();
+			this.sequence.stop();
 		},
 
 		

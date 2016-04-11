@@ -13,10 +13,10 @@ package com.dennisjonsson.markup;
 public class Argument {
     
     
-    public final String name;
+    public String name;
     public Method method;
     public final int position;
-    public final DataStructure dataStructure;
+    public DataStructure dataStructure;
 
     public Argument(String name, Method method, int position, DataStructure dataStructure) {
         this.name = name;

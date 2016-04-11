@@ -111,28 +111,36 @@ public class VisualizeProcessor extends AbstractProcessor {
             VisualizeArg annotation = (VisualizeArg)
                     annotatedElement.getAnnotation(VisualizeArg.class);
             
+            String [] args = annotation.args();
+
+            /*
             String name = annotation.name();
             AbstractType abstarctType = annotation.abstractType();
             int pos = annotation.position();
-
+*/
             Method method = new Method(
                     className, 
                     annotatedElement.getSimpleName().toString(),
                     annotatedElement.toString());
             
-            if(pos < 0 || pos >= method.arguments.length){
-                throw new RuntimeException("position must be in range of argument list");
-            }
+            for(int pos = 0; pos < args.length; pos++){
 
-            DataStructure ds = DataStructureFactory
-                    .getDataStructure(abstarctType.toString(), 
-                            method.arguments[pos].trim(), name);
+                DataStructure ds = DataStructureFactory
+                    .getDataStructure(args[pos], 
+                            method.arguments[pos].trim(), null);
             
-            addDataStructure(ds, className);
-            // Argument(String method, int position, DataStructure dataStructure)
-            addArgument(new Argument(name,method,pos, ds));
+                addDataStructure(ds, className);
+                // Argument(String method, int position, DataStructure dataStructure)
+                addArgument(new Argument(null,method,pos, ds));
+            }
+            
+           
+            
  
         }
+        
+       
+     
         
         private void addArgument(Argument arg){
             ASTProcessor processor = sourceFiles.get(arg.method.className);
@@ -201,9 +209,9 @@ public class VisualizeProcessor extends AbstractProcessor {
 
                 Visualize annotation = (Visualize)annotatedElement.getAnnotation(Visualize.class);
 
-                AbstractType abstractType = annotation.abstractType();
+                String abstractType = annotation.abstractType();
 
-                DataStructure dataStructure = DataStructureFactory.getDataStructure(abstractType.toString(), 
+                DataStructure dataStructure = DataStructureFactory.getDataStructure(abstractType, 
                         annotatedElement.asType().toString(), 
                         annotatedElement.toString());
  

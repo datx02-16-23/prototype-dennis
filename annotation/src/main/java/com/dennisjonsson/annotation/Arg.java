@@ -6,20 +6,15 @@
 package com.dennisjonsson.annotation;
 
 import com.dennisjonsson.markup.AbstractType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /**
  *
  * @author dennis
  */
-@Retention(RetentionPolicy.SOURCE)
-public @interface VisualizeArg {
-    String [] args();
-}
+public class Arg{
+  
+    public static String build(String name, AbstractType type, int position){
+        return name+","+type+","+position;
+    }
 
-/*
-    String name();
-    AbstractType abstractType();
-    int position();
-*/
+}

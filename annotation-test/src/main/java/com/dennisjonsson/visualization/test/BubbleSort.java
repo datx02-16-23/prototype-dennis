@@ -16,7 +16,7 @@ import com.dennisjonsson.markup.AbstractType;
 public class BubbleSort {
  
         @Visualize(abstractType = AbstractType.ARRAY)
-        static int intArray[] = new int[]{5,90,35,45,150,3};
+        static int intArray[] = new int[]{5,90,9,50,10,89,62,17,43,25,66,7,8,35,45,150,3};
         
         public static void main(String[] args) {
                

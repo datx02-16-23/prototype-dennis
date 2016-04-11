@@ -5,6 +5,8 @@
  */
 package com.dennisjonsson.annotation.processor.parser;
 
+import com.dennisjonsson.log.AbstractInterpreter;
+import com.dennisjonsson.log.DefaultInterpreter;
 import com.dennisjonsson.log.ast.ASTLogger;
 import com.dennisjonsson.log.ast.SourceHeader;
 import com.dennisjonsson.markup.Argument;
@@ -92,10 +94,12 @@ public class ASTProcessor extends SourceProcessor {
         String newClass = (String)arg;
         
         
+        PreParser pp = new PreParser(methods);
+        pp.visit(unit, null);
         
         adapter = new ASTParser(dataStructures, getPrintingMethod(), methods);
         adapter.visit(unit, null);
-        
+
         // textual changes
         TextParser parser = new TextParser(unit.toString());
         parser.renameClass(className, newClass);
@@ -104,12 +108,14 @@ public class ASTProcessor extends SourceProcessor {
         parser.insertInterceptorMethods(dataStructures);
         parser.insertField("public static "+ASTLogger.CLASS_NAME+" logger = \n"
                 +   "new "+ASTLogger.CLASS_NAME+"(\n"
-                +   "new "+SourceHeader.CLASS_NAME+"("
+                +   "new "+SourceHeader.CLASS_NAME+"(\n"
                 +   "\""+newClass+"\""
-                +   ","
+                +   ",\n"
                 +   getPrintingPath()
-                +   ","
-                +   parser.printDataStructures(dataStructures)
+                +   ",\n"
+                +   parser.printDataStructures(dataStructures) 
+                +   ",\n"
+                +   DefaultInterpreter.class.getName()+ ".instance()"
                 + "));", className);
         source = parser.getSource();
      

@@ -4,35 +4,48 @@ var Environment2D =  function(args){
 	this.container = args.container, 
 	this.debugContainer = args.debugContainer,
 	this.browser = args.browser,
+	this.divisions = args.divisions,
+	this.position = args.position,
 	this.canvas,
 	this.CANVAS_WIDTH,
 	this.CANVAS_HEIGHT,
+	this.context,
+	this.environmentContainer,
+	this.margins,
 	
-	
-	this.init = function(){		
-	
-		this.canvas = document.createElement("canvas");
-		container.appendChild(this.canvas);
+	this.init = function(){
 		
+		this.environmentContainer = document.createElement("div");
+		this.environmentContainer.style.position = "absolute";
+
+		this.canvas = document.createElement("canvas");
 		this.CANVAS_WIDTH = window.innerWidth;
 		this.CANVAS_HEIGHT= window.innerHeight;
-		this.canvas.style.width = this.CANVAS_WIDTH*0.7+"px";
-		this.canvas.style.height = this.CANVAS_HEIGHT+"px";
-		this.context = this.canvas.getContext('2d');
-/*
-		var context = this.canvas.getContext('2d');
-		var centerX = this.canvas.width / 2;
-		var centerY = this.canvas.height / 2;
-		var radius = 70;
 		
-		context.beginPath();
-		context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
-		context.fillStyle = 'green';
-		context.fill();
-		context.lineWidth = 5;
-		context.strokeStyle = '#003300';
-		context.stroke();
-*/
+		this.CANVAS_HEIGHT =  this.calculateHeight({height: this.CANVAS_HEIGHT, divisions: this.divisions});
+		this.CANVAS_WIDTH =  this.calculateWidth({width: this.CANVAS_WIDTH, divisions: this.divisions});
+		
+		this.margins = this.calculateMargin({position:this.position});
+		
+		console.log(this.position+": "+this.margins.w+", "+this.margins.h);
+		this.environmentContainer.style.marginLeft = (this.margins.w*this.CANVAS_WIDTH)+"px";
+		this.environmentContainer.style.marginTop = (this.margins.h*this.CANVAS_HEIGHT)+"px";
+
+		this.environmentContainer.style.width = this.CANVAS_WIDTH+"px";
+		this.environmentContainer.style.height = this.CANVAS_HEIGHT+"px";
+		
+		this.canvas.width = this.CANVAS_WIDTH;
+		this.canvas.height = this.CANVAS_HEIGHT;
+		this.canvas.style.width = this.CANVAS_WIDTH+"px";
+		this.canvas.style.height = this.CANVAS_HEIGHT+"px";
+		
+		this.environmentContainer.appendChild(this.canvas);
+		this.context = this.canvas.getContext('2d');
+
+		this.container.appendChild(this.environmentContainer);
+	
 		
 	}
 }
+
+Environment2D.prototype = Environment;

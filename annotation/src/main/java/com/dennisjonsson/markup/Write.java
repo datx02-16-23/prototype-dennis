@@ -14,7 +14,7 @@ import java.util.HashMap;
  */
 public class Write extends Operation{
     
-    private static final String OPERATION = "write";
+    public static final String OPERATION = "write";
     private static final String KEY_TARGET = "target";
     private static final String KEY_SOURCE = "source";
     private static final String KEY_VALUE = "value";

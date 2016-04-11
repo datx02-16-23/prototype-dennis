@@ -17,38 +17,29 @@ public class DataStructureFactory {
     public static DataStructure getDataStructure(
             String abstractType, String type, String identifier){
         type = type.toLowerCase();
+        
+        
         switch(abstractType){
-            case "ADJECENCY_MATRIX" :
-                return createAdjecencyMatrix(type, identifier);
+            case "ADJACENCY_MATRIX" :
+                return createArray(type, identifier, AbstractType.ADJACENCY_MATRIX);
             case "ARRAY" :
-                return createArray(type, identifier); 
-            case "UNKNOWN" :
-                return createPrimitve(type, identifier);
+                return createArray(type, identifier, AbstractType.ARRAY); 
+            case "BINARY_TREE" :
+                return createArray(type, identifier, AbstractType.BINARY_TREE);
+            default :
+                return createPrimitve(type, identifier, abstractType);
                 
         }
-        throw new RuntimeException("unknown abstract type: "
-                + abstractType.toString());
-        
+  
     }
     
-    public static DataStructure createPrimitve(String type, String identifier){
-        return new PrimitiveDataStructure(AbstractType.UNKNOWN.toString(),
-            type, identifier);
+    public static DataStructure createPrimitve(String type, String identifier, String abstractType){
+        return new PrimitiveDataStructure(abstractType,type, identifier);
     }
     
-    private static DataStructure createAdjecencyMatrix(String type, String identifier){
+    private static DataStructure createArray(String type, String identifier, String absType){
        
-        ArrayDataStructure dataStructure = new ArrayDataStructure(
-                AbstractType.ADJECENCY_MATRIX.toString(), type, identifier);
-        return dataStructure;
+        return new ArrayDataStructure(absType.toString(), type, identifier);
     }
-    
-    private static DataStructure createArray(String type, String identifier){
-       
-        ArrayDataStructure dataStructure = new ArrayDataStructure(
-                AbstractType.ARRAY.toString(), type, identifier);
-        return dataStructure;
-    }
-    
     
 }
