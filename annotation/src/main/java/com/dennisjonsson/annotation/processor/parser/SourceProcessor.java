@@ -43,6 +43,9 @@ public abstract class SourceProcessor {
     }
 
     public String getPrintingPath() {
+        if(print == null){
+            return null;
+        }
         return "\""+print.getAnnotation(Print.class).path()+"\"";
     }
     

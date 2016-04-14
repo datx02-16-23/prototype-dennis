@@ -1,13 +1,11 @@
 package com.dennisjonsson.annotation.processor;
 
 
+import com.dennisjonsson.annotation.Include;
 import com.dennisjonsson.annotation.Print;
-import com.dennisjonsson.annotation.processor.parser.TextProcessor;
 import com.dennisjonsson.markup.DataStructure;
-import com.dennisjonsson.markup.AbstractType;
 import com.dennisjonsson.annotation.Visualize;
 import com.dennisjonsson.annotation.processor.parser.ASTProcessor;
-import com.dennisjonsson.annotation.processor.parser.SourceProcessor;
 import com.dennisjonsson.annotation.processor.parser.SourceProcessorFactory;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
@@ -29,7 +27,6 @@ import com.dennisjonsson.annotation.SourcePath;
 import com.dennisjonsson.annotation.VisualizeArg;
 import com.dennisjonsson.markup.Argument;
 import com.dennisjonsson.markup.Method;
-import javax.lang.model.type.DeclaredType;
 
 
 //@AutoService(Processor.class)
@@ -41,8 +38,9 @@ public class VisualizeProcessor extends AbstractProcessor {
         private HashMap<String, ArrayList<DataStructure>> looseDataStructures;
         private HashMap<String, Element> loosePrints;
         private HashMap<String, HashMap<String, Method>> looseMethods;
+        private HashMap<String, ArrayList<String>> includes;
         
-	private static final String PREFIX = "Visual";
+	
         
         
 	
@@ -54,6 +52,7 @@ public class VisualizeProcessor extends AbstractProcessor {
                 looseDataStructures = new HashMap<>();
                 loosePrints = new HashMap<>();
                 looseMethods = new HashMap<>();
+                includes = new HashMap<>();
 	}
         
 
@@ -67,19 +66,21 @@ public class VisualizeProcessor extends AbstractProcessor {
 		processVisualize(env);
                 processVisualizeArg(env);
                 processPrint(env);
+                processInclude(env);
                 
-		for(SourceProcessor sourceProcessor : sourceFiles.values()){
-                    String sourceStr = null;
+		for(ASTProcessor sourceProcessor : sourceFiles.values()){
 
-                    //TextProcessor processor = (TextProcessor)sourceProcessor;
-                    String newClass = sourceProcessor.getClassName() + PREFIX;
                     if(!sourceProcessor.isWritten()){
-
+                        
+                        ArrayList<String> inc = includes.get(sourceProcessor.fullName);
+                        if(inc != null){
+                            sourceProcessor.setIncludes(inc);
+                        }
+                        
                         sourceProcessor.written();
-
                         // process new source file
                         sourceProcessor.loadSource();
-                        sourceProcessor.processSource(newClass);
+                        sourceProcessor.processSource(null);
                         sourceProcessor.writeSource();
 
                     }
@@ -88,10 +89,33 @@ public class VisualizeProcessor extends AbstractProcessor {
 		return true;
 	}
         
+        private void processInclude(RoundEnvironment env){
+             for (Element annotatedElement : env.getElementsAnnotatedWith(Include.class)) {
+                 if(annotatedElement.getKind() == ElementKind.CLASS){
+                     addInclude(annotatedElement.toString(), 
+                             ((Include)annotatedElement
+                                     .getAnnotation(Include.class)).classes());
+                 }
+             }
+        }
+        
+        private void addInclude(String className, String [] include){
+                 ArrayList<String> inc = includes.get(className);
+                 if(inc == null){
+                     inc = new ArrayList<>();
+                     includes.put(className, inc);
+                 }
+                 for(String str :include){
+                     inc.add(str);
+                 }
+                 
+                 
+        }
+        
         private void processVisualizeArg(RoundEnvironment env){
             for (Element annotatedElement : env.getElementsAnnotatedWith(VisualizeArg.class)) {
                 
-                Element classElement = getNextElementOf(annotatedElement, ElementKind.CLASS);
+                Element classElement = findTop(annotatedElement, ElementKind.CLASS);
                 
                 
                 if(classElement != null && annotatedElement.getKind() 
@@ -113,11 +137,6 @@ public class VisualizeProcessor extends AbstractProcessor {
             
             String [] args = annotation.args();
 
-            /*
-            String name = annotation.name();
-            AbstractType abstarctType = annotation.abstractType();
-            int pos = annotation.position();
-*/
             Method method = new Method(
                     className, 
                     annotatedElement.getSimpleName().toString(),
@@ -125,17 +144,18 @@ public class VisualizeProcessor extends AbstractProcessor {
             
             for(int pos = 0; pos < args.length; pos++){
 
-                DataStructure ds = DataStructureFactory
+                if(args[pos] != null){
+                    
+                    DataStructure ds = DataStructureFactory
                     .getDataStructure(args[pos], 
                             method.arguments[pos].trim(), null);
             
-                addDataStructure(ds, className);
-                // Argument(String method, int position, DataStructure dataStructure)
-                addArgument(new Argument(null,method,pos, ds));
+                    addDataStructure(ds, className);
+                    // Argument(String method, int position, DataStructure dataStructure)
+                    addArgument(new Argument(null,method,pos, ds));
+                }
+                
             }
-            
-           
-            
  
         }
         
@@ -172,7 +192,7 @@ public class VisualizeProcessor extends AbstractProcessor {
                 
                 //Print annotation = (Print)annotatedElement.getAnnotation(Print.class);
                 
-                Element classElement = getNextElementOf(annotatedElement, ElementKind.CLASS);
+                Element classElement = findTop(annotatedElement, ElementKind.CLASS);
                 
              
                 if(classElement != null){
@@ -215,8 +235,7 @@ public class VisualizeProcessor extends AbstractProcessor {
                         annotatedElement.asType().toString(), 
                         annotatedElement.toString());
  
-                Element classElement = getNextElementOf(annotatedElement, ElementKind.CLASS);
-                Element packageElement = getNextElementOf(annotatedElement, ElementKind.PACKAGE);
+                Element classElement = findTop(annotatedElement, ElementKind.CLASS);
 			
                 if(classElement != null){	
                     
@@ -259,12 +278,9 @@ public class VisualizeProcessor extends AbstractProcessor {
 
                 String className = annotatedElement.getSimpleName().toString();
                 String path = annotation.path();
-                Element packageElement = getNextElementOf(annotatedElement, ElementKind.PACKAGE);
+ 
 
-
-
-                if(!(sourceFiles.containsKey(annotatedElement.toString()) || 
-                        sourceFiles.containsKey(annotatedElement.toString()+PREFIX))){
+                if(!(sourceFiles.containsKey(annotatedElement.toString()))){
 
 
                     ASTProcessor sourceProcessor = 
@@ -272,7 +288,8 @@ public class VisualizeProcessor extends AbstractProcessor {
                                 .getProcessor(
                                         SourceProcessorFactory.Type.AST, 
                                         path, 
-                                        className);
+                                        className,
+                                        annotatedElement.toString());
 
                     // add loose dataStructures
                     if(looseDataStructures.containsKey(annotatedElement.toString())){
@@ -302,8 +319,22 @@ public class VisualizeProcessor extends AbstractProcessor {
         }
    
 	
-	
-	/*
+        /*
+            finds top parent Element of ElementKind kind from Element 'elm'
+        */
+        private Element findTop(Element elm, ElementKind kind){
+            
+            Element classElm = null;
+            while( elm != null){
+                elm = getNextElementOf(elm, kind);
+                if(elm != null){
+                     classElm = elm;
+                }
+            }
+            return classElm;
+        }
+        
+        /*
 		finds next parent Element of ElementKind kind from Element 'elm'  
 	*/
 	private Element getNextElementOf(Element elm, ElementKind kind){
@@ -317,7 +348,7 @@ public class VisualizeProcessor extends AbstractProcessor {
 				nextOuter = temp.getEnclosingElement();
 		}
 		
-		if(nextOuter.getKind() != kind ){
+		if(nextOuter == null || nextOuter.getKind() != kind ){
 			return null;
 		}
 
@@ -346,8 +377,10 @@ public class VisualizeProcessor extends AbstractProcessor {
 	@Override
 	public Set<String> getSupportedAnnotationTypes() { 
 		Set<String> set = new LinkedHashSet<String>();
+                set.add(SourcePath.class.getCanonicalName());
 		set.add(Visualize.class.getCanonicalName());
-		set.add(SourcePath.class.getCanonicalName());
+                set.add(VisualizeArg.class.getCanonicalName());
+                set.add(Include.class.getCanonicalName());
                 set.add(Print.class.getCanonicalName());
 		return set;
 	}

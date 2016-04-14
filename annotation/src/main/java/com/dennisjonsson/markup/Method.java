@@ -42,9 +42,11 @@ public class Method {
             
         for(int i = 0; i < types.length; i++){
             String t1 = types[i];
-            t1 = t1.substring(t1.lastIndexOf(".")+1);
+            t1 = t1.substring(t1.lastIndexOf(".")+1)
+                    .replaceAll("(\\[|\\])", "").trim();
             String t2 = arguments[i];
-            t2 = t2.substring(t2.lastIndexOf(".")+1);
+            t2 = t2.substring(t2.lastIndexOf(".")+1)
+                    .replaceAll("(\\[|\\])", "").trim();
             if(!t1.equalsIgnoreCase(t2)){
                 return false;
             }

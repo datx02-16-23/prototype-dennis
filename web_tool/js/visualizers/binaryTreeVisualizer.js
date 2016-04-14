@@ -8,13 +8,14 @@ var BinaryTreeVisualizer = function(args){
 	this.init = function(){
 	
 		this.environment2d.init();
+		this.environment2d.setHeader({ds:this.dataStructure});
 		var maxHeight = Math.ceil(Math.log2(this.dataStructure.attributes.size[0] + 1) - 1) + 1;
 		
 		this.binaryTree = new Tree2d({
 			arity: 2,
 			treeHeight: 0,
-			width: this.environment2d.CANVAS_WIDTH,
-			height: this.environment2d.CANVAS_HEIGHT
+			width: this.environment2d.ENV_WIDTH,
+			height: this.environment2d.getCanvasHeight()
 		});
 
 		this.sequence.addVisualizer(this);
@@ -30,27 +31,20 @@ var BinaryTreeVisualizer = function(args){
 	
 	this.display = function(evt){
 		//this.environment3d.displayData(evt.op+" <br>id: "+evt.id+"; <br>index: "+evt.index+"; <br>value: "+evt.value+"; ");
-		console.log("display");
 		
-		if(evt.operation == "read" 
-			&& this.checkId(evt.operationBody.source, this.dataStructure)){
+		if(evt.operation == "read" ){
 				
 			this.read(evt.operationBody);
-			
-			this.binaryTree.update({
-				context: this.environment2d.context
-			});
-			
-		}else if(evt.operation == "write" 
-			){
+
+		}else if(evt.operation == "write"){
 			
 			this.write(evt.operationBody);
 			
-			this.binaryTree.update({
-				context: this.environment2d.context
-			});,
-			
 		}
+		
+		this.binaryTree.update({
+				context: this.environment2d.context
+			});
 		
 		
 	},
@@ -61,22 +55,24 @@ var BinaryTreeVisualizer = function(args){
 		console.log("write");
 		console.log(opt);
 		var value = opt.value;
-		if(value instanceof Array 
-			&& this.checkId(opt.target, this.dataStructure)){
-				
+		if(value instanceof Array ){
+			
+			if(!this.checkId(opt.target, this.dataStructure)){
+				return;
+			}
+			this.binaryTree.clear();	
 			for(var i = 0; i < value.length; i++){
 				this.writeOperation(i, value[i]);
 			}
 			
 		}else{
 			
-			if(this.checkId(opt.source, this.dataStructure)){
+			if(this.checkId(opt.target, this.dataStructure)){
 				this.writeOperation(opt.target.index[0], opt.value);
 			}
 			
 			
-			if(opt.source != null 
-				&& this.checkId(opt.source, this.dataStructure)){
+			if(this.checkId(opt.source, this.dataStructure)){
 				if(opt.source.index != null){
 					this.read(opt);
 				}
@@ -103,7 +99,7 @@ var BinaryTreeVisualizer = function(args){
 			
 		}else{
 			
-			this.readOperation(opt.source.index[0]);
+			this.readOperation(opt.source.index[0], value);
 		}
 		
 	},

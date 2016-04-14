@@ -43,7 +43,6 @@
 			}
 			*/
 			// debug
-			this.DOM["debug_container"] = document.getElementById("debug_container");
 			// spinner
 			var spinner = new Spinner();
 			this.DOM["spinner"] = spinner.getSpinner("spinner");
@@ -101,11 +100,8 @@
 			this.DOM["container_window"].style.width = this.CANVAS_WIDTH+"px";
 			this.DOM["container_window"].style.height = this.CANVAS_HEIGHT+"px";
 			
-			this.DOM["container"].style.width = (this.CANVAS_WIDTH*0.7)+"px";
+			this.DOM["container"].style.width = (this.CANVAS_WIDTH)+"px";
 			this.DOM["container"].style.height = this.CANVAS_HEIGHT+"px";
-			
-			this.DOM["debug_container"].style.width = (this.CANVAS_WIDTH*0.3)+"px";
-			this.DOM["debug_container"].style.height = this.CANVAS_HEIGHT+"px";
 			
 		},
 		
@@ -116,7 +112,7 @@
 		
 		
 		this.programs = {
-			"ADJACENCY_MATRIX":
+			"adjacencymatrix":
 			function(args){			
 				var currentProgram = new GraphVisualizer(
 					{
@@ -135,7 +131,7 @@
 				
 				return currentProgram;
 			},
-			"BINARY_TREE":
+			"binarytree":
 			function(args){	
 			
 				var currentProgram = new BinaryTreeVisualizer(
@@ -145,7 +141,6 @@
 							position: args.position,
 							divisions: args.divisions,
 							container: args.DOM["container"], 
-							debugContainer: args.DOM["debug_container"], 
 							browser: args.browser
 					})
 				});
@@ -153,7 +148,7 @@
 
 				return currentProgram;
 			},
-			"ARRAY":
+			"array":
 			function(args){	
 			
 				var currentProgram = new StapleVisualizer(
@@ -163,7 +158,6 @@
 							position: args.position,
 							divisions: args.divisions,
 							container: args.DOM["container"], 
-							debugContainer: args.DOM["debug_container"], 
 							browser: args.browser
 					})
 				});
@@ -198,18 +192,24 @@
 			// create 2d DOM elements of data structures
 			var keys = Object.keys(variables).length;
 			var position = 0;
+			var programConstructor;
 			for(var key in variables){
 				if (variables.hasOwnProperty(key)) {
+					programConstructor = this.programs[variables[key].abstractType];
+					if(programConstructor != null){
+						this.currentPrograms.push(
+							programConstructor({
+								position: position,
+								divisions: keys,
+								dataStructure: variables[key], 
+								DOM: this.DOM, 
+								browser : this.browser
+							})
+						);
+					}else{
+						alert("no suitable program found for abstractType: "+variables[key].abstractType);
+					}
 					
-					this.currentPrograms.push(
-						this.programs[variables[key].abstractType](
-						{
-							position: position,
-							divisions: keys,
-							dataStructure: variables[key], 
-							DOM: this.DOM, 
-							browser : this.browser
-						}));
 					position++;
 				}
 			}
@@ -232,6 +232,19 @@
 		this.stopVisualization = function(){
 			this.sequence.stop();
 		},
+		
+		this.fastForwardVisualization = function(){
+			this.sequence.fastForward(2);
+		},
+		
+		this.slowDownVisualization = function(){
+			this.sequence.slowDown(2);
+		},
+		
+		this.stepVisualization = function(){
+			this.sequence.step();
+		},
+		
 
 		
 		/*

@@ -86,6 +86,8 @@
 	
 		function initWebGL(){	
 		
+			
+		
 			environment.init();
 			setTimeout("environment.endLoad()", 500);
 			
@@ -267,10 +269,20 @@
 				</td>
 				-->
 				<td>
-					<button onclick="environment.runVisualization()">play</button>
+					<img src="slowdown.png" width="35px" height="30px" onclick="environment.slowDownVisualization()"  />
 				</td>
 				<td>
-					<button onclick="environment.pauseVisualization()">pause</button>
+				
+					<img src="play.png" width="35px" height="30px" onclick="environment.runVisualization()"  />
+				</td>
+				<td>
+					<img src="pause.png" width="35px" height="30px" onclick="environment.pauseVisualization()"  />
+				</td>
+				<td>
+					<img src="fastforward.png" width="35px" height="30px" onclick="environment.fastForwardVisualization()"  />
+				</td>
+				<td>
+					<img src="step.png" width="35px" height="30px" onclick="environment.stepVisualization()"  />
 				</td>
 				</tr>
 			</table>
@@ -285,9 +297,7 @@
 		<!--<div id="container" onMouseDown="environment.mouseDown()" onMouseUp="environment.mouseUp()" onMouseMove="environment.motion()"></div>
 			-->	
 		<div id="container"></div>
-		<div id="debug_container" ></div>
 			
-		
 
 	</div>
 	<div id="footer">	

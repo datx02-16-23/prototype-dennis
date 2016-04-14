@@ -20,7 +20,6 @@ var Sequence = function(){
 	},
 	
 	this.display = function(operation){
-		console.log("sequence: display: "+this.visualizers.length);
 		for(var i = 0; i < this.visualizers.length; i++ ){
 			this.visualizers[i].display(operation);
 		}
@@ -41,14 +40,6 @@ var Sequence = function(){
 	},*/
 	
 	
-	this.slowDown =  function(times){
-		this.MILI_SECONDS = MILI_SECONDS/times;
-	},
-	
-	this.speedUp = function(times){
-		
-		MILI_SECONDS = MILI_SECONDS*times;
-	},
 	
 	this.stop = function(){
 		this.running = false;
@@ -60,8 +51,30 @@ var Sequence = function(){
 	},
 	
 	this.play = function(){
-		this.running = true;
-		this.iterate();
+		if(this.running == false){
+			this.running = true;
+			this.iterate();
+		}
+	},
+	
+	this.fastForward = function(times){
+		this.MILI_SECONDS = this.MILI_SECONDS/times;
+	},
+	
+	this.slowDown = function(times){
+		this.MILI_SECONDS = this.MILI_SECONDS*times;
+	},
+	
+	this.step = function(){
+		if(this.running){
+			this.running = false;
+		}else{
+			this.running = true;
+			this.iterate();
+			this.running = false;
+		}
+		
+		
 	},
 	
 	this.iterate = function(){
@@ -84,7 +97,8 @@ var Sequence = function(){
 var Visualizer = {
 	sequence: new Sequence(),
 	checkId : function(ds1, ds2){
-		return (ds1.identifier == ds2.identifier);
+		
+		return ((ds1 != null && ds2 != null) && (ds1.identifier == ds2.identifier));
 	},
 	
 	play : function(){

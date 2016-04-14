@@ -6,7 +6,7 @@ var Tree2d = function(args){
 	this.width = args.width,
 	this.height = args.height,
 	this.tree = [],
-	this.nodeList = [];
+	this.nodeList = [],
 	this.nodeSize,
 	this.maxSize = Math.pow(this.arity, this.treeHeight + 1) - 1,
 	
@@ -86,6 +86,14 @@ var Tree2d = function(args){
 			
 			this.nodeList[i].color = this.defaultColor;
 		}
+	},
+	
+	
+	
+	this.clear = function(){
+		this.tree = [];
+		this.nodeList = [];
+		this.maxSize = Math.pow(this.arity, this.treeHeight + 1) - 1;
 	}
 	
 }
@@ -134,5 +142,6 @@ var TreeNode = function(args){
 		context.stroke();
 		
 	}
+	
 
 } 

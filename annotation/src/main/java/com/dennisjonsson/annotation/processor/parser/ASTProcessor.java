@@ -31,10 +31,19 @@ public class ASTProcessor extends SourceProcessor {
     private ASTParser adapter;
     private CompilationUnit unit;
     public HashMap<String, Method> methods;
+    public final String fullName;
+    public ArrayList<String> includes;
+    private static final String SUFFIX = "Visual";
     
-    ASTProcessor(String path, String className) {
+    ASTProcessor(String path, String className, String fullName) {
         super(path, className);
+        this.fullName = fullName;
         methods = new HashMap<>();
+        includes = new ArrayList<>();
+    }
+    
+    public void setIncludes(ArrayList<String> includes){
+        this.includes = includes;
     }
     
     public void addArgument(Argument arg){
@@ -81,6 +90,13 @@ public class ASTProcessor extends SourceProcessor {
         
        return unit;
    }
+   
+    private void replaceIncludes(TextParser parser){
+        for(String incl : includes){
+            parser.renameType(incl, incl + SUFFIX);
+            System.out.println("include: "+incl+" -> "+(incl + SUFFIX));
+        }
+    }
 
     @Override
     public void processSource(Object arg) {
@@ -88,26 +104,32 @@ public class ASTProcessor extends SourceProcessor {
         if(unit == null){
             throw new RuntimeException("ASTPRocessor: CompilationUnit is null");
         }
+        /*
         if(print == null){
             throw new RuntimeException("ASTPRocessor: No printing method found");
-        }
-        String newClass = (String)arg;
+        }*/
+        String newClass = className + SUFFIX;
         
         
         PreParser pp = new PreParser(methods);
         pp.visit(unit, null);
         
-        adapter = new ASTParser(dataStructures, getPrintingMethod(), methods);
+        adapter = new ASTParser(className, dataStructures, getPrintingMethod(), methods);
         adapter.visit(unit, null);
 
         // textual changes
         TextParser parser = new TextParser(unit.toString());
         parser.renameClass(className, newClass);
+        
+        String oldClassName = className;
         className = newClass;
+        
         parser.removeAnnotations();
-        parser.insertInterceptorMethods(dataStructures);
+        // replace type of included sources
+        replaceIncludes(parser);
+        parser.insertInterceptorMethods(className, dataStructures);
         parser.insertField("public static "+ASTLogger.CLASS_NAME+" logger = \n"
-                +   "new "+ASTLogger.CLASS_NAME+"(\n"
+                +   ASTLogger.CLASS_NAME+".instance(\n"
                 +   "new "+SourceHeader.CLASS_NAME+"(\n"
                 +   "\""+newClass+"\""
                 +   ",\n"

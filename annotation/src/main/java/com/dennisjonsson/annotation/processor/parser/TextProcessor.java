@@ -38,7 +38,7 @@ public class TextProcessor extends SourceProcessor{
         parser.renameClass(className, newClass);
         className = newClass;
        // parser.insertInterceptionCalls(dataStructures);
-        parser.insertInterceptorMethods(dataStructures); 
+        //parser.insertInterceptorMethods(dataStructures); 
         parser.insertField("public static com.dennisjonsson.log.Logger logger = \n"
                 +   "new com.dennisjonsson.log.Logger(\n"
                 +   parser.printDataStructures(dataStructures)

@@ -18,17 +18,14 @@ public class DataStructureFactory {
             String abstractType, String type, String identifier){
         type = type.toLowerCase();
         
+        String absType = abstractType.toLowerCase().replaceAll(" ", "");
         
-        switch(abstractType){
-            case "ADJACENCY_MATRIX" :
-                return createArray(type, identifier, AbstractType.ADJACENCY_MATRIX);
-            case "ARRAY" :
-                return createArray(type, identifier, AbstractType.ARRAY); 
-            case "BINARY_TREE" :
-                return createArray(type, identifier, AbstractType.BINARY_TREE);
+        switch(absType){
+            case "variable" :
+                return createPrimitve(type, identifier, absType);
             default :
-                return createPrimitve(type, identifier, abstractType);
-                
+                return createArray(type, identifier, absType);
+ 
         }
   
     }
@@ -39,7 +36,7 @@ public class DataStructureFactory {
     
     private static DataStructure createArray(String type, String identifier, String absType){
        
-        return new ArrayDataStructure(absType.toString(), type, identifier);
+        return new ArrayDataStructure(absType, type, identifier);
     }
     
 }

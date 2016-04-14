@@ -32,7 +32,8 @@ public class PreParser extends ModifierVisitorAdapter{
         
 
         String m = n.getDeclarationAsString(false, false,true);
-        String [] parts = m.substring(m.indexOf(" ")+1).trim().split("\\(");
+        String [] parts = m.replaceAll("(\\[|\\])","")
+                .substring(m.indexOf(" ")+1).trim().split("\\(");
         
         String name = parts[0].trim();
         String arguments = parts[1].trim();
@@ -62,7 +63,7 @@ public class PreParser extends ModifierVisitorAdapter{
             for(Argument argument : method.annotetedArguments){
                 argument.name = argList[argument.position];
                 argument.dataStructure.identifier = argument.name;
-                System.out.println("got name: "+argument.name);
+                //System.out.println("got name: "+argument.name);
             }
         }
         

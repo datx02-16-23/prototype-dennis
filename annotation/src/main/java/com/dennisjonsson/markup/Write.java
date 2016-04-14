@@ -62,8 +62,8 @@ public class Write extends Operation{
    }
 
 
-   public String getValue(){
-           return (String)this.operationBody.get(KEY_VALUE);
+   public Object getValue(){
+           return this.operationBody.get(KEY_VALUE);
    }
 
  

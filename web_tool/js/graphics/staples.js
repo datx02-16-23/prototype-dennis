@@ -56,10 +56,9 @@ var Staples = function(args){
 		
 		for(var i = 0; i < this.stapleList.length; i++){
 			
-			
-			height = this.height/this.maxHeight *this.stapleList[i].height;
+			height = (this.height - 30)/this.maxHeight *this.stapleList[i].height;
 			posX = this.width/this.stapleList.length*this.stapleList[i].position;
-			posY = this.height - (height+50);
+			posY = this.height - height;
 			context.beginPath();
 			context.rect(posX, posY, width, height);
 			context.fillStyle = this.stapleList[i].color;
@@ -70,14 +69,16 @@ var Staples = function(args){
 			
 			var string = this.stapleList[i].value+"";
 			var strLen = string.length;
-			var fontSize = Math.ceil(width/(strLen+1));
+			var fontSize = Math.min(Math.ceil(width/(strLen)),30);
 			textPosY = posY;
+			
+			/*
 			if(this.stapleList[i].height >= this.maxHeight/2){
 				textPosY = textPosY + (fontSize + 2);
 			}
 			if(this.stapleList[i].height == this.maxHeight){
 				textPosY = fontSize + 2;
-			}
+			}*/
 			
 			context.beginPath();
 			context.strokeStyle = "#000000";

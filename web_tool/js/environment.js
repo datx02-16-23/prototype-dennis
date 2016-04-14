@@ -34,7 +34,7 @@ var Environment = {
 		}
 		
 		var w = Math.floor(Math.sqrt(args.position));
-		pos = w;
+		pos = Math.pow(w,2);
 		for(var i =0; i < w; i++){
 			if(pos == args.position){
 				return {w:w,h:i};
@@ -42,14 +42,13 @@ var Environment = {
 			pos++;
 		}
 		
+		pos = 0;
 
 		// lower half
-		for(var h = 0; h < this.maxSize; h++){
-			pos = h*2;
-			if(pos == args.position){
-				return {w:0,h:h};
-			}
-			for(var i =0; i < h; i++){
+		for(var h = 1; h <= this.maxSize; h++){
+			pos = pos*2 + 2;
+		
+			for(var i =0; i <= h+1; i++){
 				if((pos + i)== args.position){
 					return {w:i,h:h};
 				}

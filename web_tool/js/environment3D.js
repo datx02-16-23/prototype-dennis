@@ -29,12 +29,15 @@
 		
 		// DOM
 		this.container = args.container,
-		this.debugContainer = args.debugContainer,
 		// browser specifics
 		this.browser = args.browser,
 		this.divisions = args.divisions,
 		this.position = args.position,
 		this.environmentContainer,
+		this.debugContainer,
+		this.ENV_HEIGHT,
+		this.ENV_WIDTH,
+		
 		
 		/*
 			
@@ -45,6 +48,32 @@
 
 			this.environmentContainer = document.createElement("div");
 			this.environmentContainer.style.position = "absolute";
+			
+			this.debugContainer = document.createElement("div");
+			this.debugContainer.id = "debug_container";
+			
+			
+			
+			this.ENV_WIDTH = window.innerWidth;
+			this.ENV_HEIGHT= window.innerHeight -50;
+			this.ENV_HEIGHT =  this.calculateHeight({height: this.ENV_HEIGHT, divisions: this.divisions});
+			this.ENV_WIDTH =  this.calculateWidth({width: this.ENV_WIDTH, divisions: this.divisions});
+			this.margins = this.calculateMargin({position:this.position});
+
+			this.DEBUG_WIDTH = this.ENV_WIDTH*0.3;
+			this.CANVAS_WIDTH = this.ENV_WIDTH;
+			this.HEADER_HEIGHT = Math.min( Math.max( this.ENV_HEIGHT/10, 30), 30 );
+			this.CANVAS_HEIGHT = this.ENV_HEIGHT - this.HEADER_HEIGHT;
+			this.DEBUG_HEIGHT = this.CANVAS_HEIGHT;
+			
+			this.environmentContainer.style.marginLeft = (this.margins.w*this.ENV_WIDTH)+"px";
+			this.environmentContainer.style.marginTop = (this.margins.h*this.ENV_HEIGHT)+"px";
+			this.environmentContainer.style.width = this.ENV_WIDTH+"px";
+			this.environmentContainer.style.height = this.ENV_HEIGHT+"px";
+			this.environmentContainer.style.marginLeft = (this.margins.w*this.ENV_WIDTH)+"px";
+			this.environmentContainer.style.marginTop = (this.margins.h*this.ENV_HEIGHT)+"px";
+			
+			
 		
 			/*
 				renderer
@@ -55,7 +84,12 @@
 			this.renderer.setSize( this.CANVAS_WIDTH, this.CANVAS_HEIGHT );
 			//this.renderer.setClearColor( 0xf8f8f8 );
 			//this.DOM["container"].appendChild( this.renderer.domElement );
-			this.environmentContainer.appendChild( this.renderer.domElement );
+			var canvas = this.renderer.domElement;
+			canvas.style.position = "absolute";
+			this.environmentContainer.appendChild( canvas );
+			
+			this.environmentContainer.appendChild(this.debugContainer);
+			
 			/*
 				scene
 			*/
@@ -96,22 +130,11 @@
 			//window.addEventListener( 'resize', this.onWindowResize, false );
 			//window['onresize'] = this.onWindowResize;
 			//this.onWindowResize();
-			this.CANVAS_WIDTH = window.innerWidth;
-			this.CANVAS_HEIGHT= window.innerHeight;
-			
-			this.CANVAS_HEIGHT =  this.calculateHeight({height: this.CANVAS_HEIGHT, divisions: this.divisions});
-			this.CANVAS_WIDTH =  this.calculateWidth({width: this.CANVAS_WIDTH, divisions: this.divisions});
 			
 			
-			this.environmentContainer.style.width = this.CANVAS_WIDTH+"px";
-			this.environmentContainer.style.height = this.CANVAS_HEIGHT+"px";
-			
-			this.environmentContainer.style.marginLeft = (this.margins.w*this.CANVAS_WIDTH)+"px";
-			this.environmentContainer.style.marginTop = (this.margins.h*this.CANVAS_WIDTH)+"px";
-			
-			this.camera.aspect = (window.innerWidth*0.7)/ window.innerHeight;
+			this.camera.aspect = (this.CANVAS_WIDTH)/ this.CANVAS_HEIGHT;
 			this.camera.updateProjectionMatrix();
-			this.renderer.setSize( window.innerWidth*0.7, window.innerHeight );
+			this.renderer.setSize( this.CANVAS_WIDTH, this.CANVAS_HEIGHT );
 			
 			//onMouseDown="environment.mouseDown()" onMouseUp="environment.mouseUp()" onMouseMove="environment.motion()
 			var _this = this;
@@ -135,6 +158,7 @@
 			this.environmentContainer["onmousedown"] = function(){
 				_this.mouseDown();
 			}
+			
 			
 			this.container.appendChild(this.environmentContainer);
 			

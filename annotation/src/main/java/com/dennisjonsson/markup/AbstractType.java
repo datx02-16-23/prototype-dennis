@@ -10,9 +10,9 @@ package com.dennisjonsson.markup;
  * @author dennis
  */
 public class AbstractType {
-    public static final String ARRAY = "ARRAY";
-    public static final String ADJECENCY_LIST = "ADJECENCY_LIST";
-    public static final String ADJACENCY_MATRIX = "ADJACENCY_MATRIX";
-    public static final String BINARY_TREE = "BINARY_TREE";
-    public static final String UNKNOWN = "UNKNOWN";
+    public static final String ARRAY = "array";
+    public static final String ADJECENCY_LIST = "adjacency list";
+    public static final String ADJACENCY_MATRIX = "adjacency matrix";
+    public static final String BINARY_TREE = "binary tree";
+    public static final String UNKNOWN = "unknown";
 }

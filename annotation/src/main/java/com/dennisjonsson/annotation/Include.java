@@ -11,14 +11,8 @@ import java.lang.annotation.RetentionPolicy;
 /**
  *
  * @author dennis
- */
+ * */
 @Retention(RetentionPolicy.SOURCE)
-public @interface VisualizeArg {
-    String [] args();
+public @interface Include {
+    String [] classes();
 }
-
-/*
-    String name();
-    AbstractType abstractType();
-    int position();
-*/

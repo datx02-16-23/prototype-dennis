@@ -59,8 +59,8 @@ public class LogParser {
     }
     
     public int visit(EvalOperation op, int i){
-        //System.out.println(op.operation);
         LogOperation nextOp = operations.get(i);
+
         switch(op.expressionType){
             case EvalOperation.ASSIGNMENT :
                 if(!(nextOp.operation.equalsIgnoreCase(WriteOperation.OPERATION))){
@@ -79,6 +79,7 @@ public class LogParser {
     }
     
     public int visit(WriteOperation op, int i){
+        
         //System.out.println(op.operation);
         if(op.sourceType == WriteOperation.ARRAY &&
                 op.targetType == op.sourceType){

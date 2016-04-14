@@ -16,21 +16,10 @@ import java.util.*;
         + "java/com/dennisjonsson/visualization/test/")
 public class MergeSort 
 {
-    public static void main(String[] args) 
-    {
-        //Unsorted array
-        Integer[] a = { 2, 6, 3, 5, 1 };
-         
-        //Call merge sort
-        mergeSort(a);
-         
-        //Check the output which is sorted array
-        System.out.println(Arrays.toString(a));
-    }
  
     
     @VisualizeArg(args = {AbstractType.ARRAY})
-    public static Comparable[] mergeSort(Comparable[] list) 
+    public static Comparable[] sort(Comparable[] list) 
     {
         //If list is empty; no need to do anything
         if (list.length <= 1) {
@@ -44,8 +33,8 @@ public class MergeSort
         System.arraycopy(list, first.length, second, 0, second.length);
          
         //Sort each half recursively
-        mergeSort(first);
-        mergeSort(second);
+        sort(first);
+        sort(second);
          
         //Merge both halves together, overwriting to original array
         merge(first, second, list);
@@ -85,6 +74,5 @@ public class MergeSort
         System.arraycopy(second, iSecond, result, iMerged, second.length - iSecond);
     }
     
-    @Print(path="")
-    public static void print(){}
+ 
 }

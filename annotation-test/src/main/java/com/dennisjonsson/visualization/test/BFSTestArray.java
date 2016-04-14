@@ -16,14 +16,12 @@ import com.dennisjonsson.annotation.SourcePath;
         + "annotation-test/src/main/" 
         + "java/com/dennisjonsson/visualization/test/")
 public class BFSTestArray {
-
-    final int size = 20;
-
-    @Visualize(abstractType = AbstractType.ADJACENCY_MATRIX)
-    int[][] adjList = new int[size][size];
-
+    
     // this is a comment yo
-    public void bfs(int start) {
+    public void bfs(int[][] adjList,  int start) {
+        
+        int size = adjList.length;
+        
         boolean[] marked = new boolean[size];
         for (int k = 0; k < adjList.length; k++) {
             for (int i = size - 1 - k; i < size - (k / 2); i++) {
@@ -46,14 +44,4 @@ public class BFSTestArray {
         }
     }
 
-    public static void main(String[] args) {
-        BFSTestArray bfs = new BFSTestArray();
-        bfs.bfs(0);
-        bfs.print();
-    /*end visualize*/
-    }
-    
-   @Print(path = "")
-    public void print(){
-    } 
 }

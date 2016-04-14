@@ -30,7 +30,7 @@ public class TextParser {
     }
     
     public void removeAnnotations(){
-            source = source.replaceAll("(\\@VisualizeArg|\\@Visualize|\\@SourcePath|\\@Print)(\\((.|\\=|\")*\\))?+","");
+            source = source.replaceAll("(\\@VisualizeArg|\\@Visualize|\\@SourcePath|\\@Print|\\@Include)(\\((.|\\=|\")*\\))?+","");
             /*
             source = source.replaceAll("\\@(SourcePath)(\\([^\\(\\)]*\\))","");
             source = source.replaceAll("\\@(Print)(\\([^\\(\\)]*\\))","");
@@ -53,6 +53,15 @@ public class TextParser {
            // className = newName;
            // source.replaceAll(className, newName);
     }
+    
+    public void renameType(String className, String newName){
+            source = source.replaceAll(className, newName);
+            int i = className.lastIndexOf(".") + 1;
+            rename("(\\)|\\(|\\{|\\}|\\n|\\s|\\.)", "(\\(|\\{|\\}|\\n|\\s|\\.)", className.substring(i), newName);
+           // className = newName;
+           // source.replaceAll(className, newName);
+    }
+    
     
     public void insertField(String field, String className){
         source = source.replaceFirst("\\sclass\\s++"+className+"\\s*\\{", " class "+className+"{\n"+field);
@@ -133,8 +142,8 @@ public class TextParser {
             source = builder.toString();
     }
 
-    public void insertInterceptorMethods(ArrayList<DataStructure> dataStructures){
-            MethodsSource methods = new MethodsSource();
+    public void insertInterceptorMethods(String className, ArrayList<DataStructure> dataStructures){
+            MethodsSource methods = new MethodsSource(className);
             int i = source.lastIndexOf("}");
 
             StringBuilder builder = new StringBuilder();
@@ -142,7 +151,7 @@ public class TextParser {
             for(DataStructure struct : dataStructures){  
                 builder.append(methods.getMethods(struct));     
             }
-            builder.append(methods.getPrimitiveEvals());
+            builder.append(methods.getReadMethod());
             builder.append(source.substring(i, source.length()));
             
            source = builder.toString();
@@ -197,6 +206,7 @@ public class TextParser {
 
     public void replace(String old, String replacement){
         source = source.replace(old, replacement);
+   
     }
     
     

@@ -24,14 +24,14 @@ public class HeapSort {
    private static int largest;
  
  
-   public static void buildheap(int []a) {
+   public void buildheap(int []a) {
       n = a.length-1;
       for(int i=n/2; i>=0; i--){
          maxheap(a,i);
       }
    }
  
-   public static void maxheap(int[] a, int i) { 
+   public void maxheap(int[] a, int i) { 
       left = 2*i;
       right = 2*i+1;
  
@@ -50,13 +50,13 @@ public class HeapSort {
       }
    }
  
-   public static void exchange(int i, int j) {
+   public void exchange(int i, int j) {
         int t = a[i];
         a[i] = a[j];
         a[j] = t; 
    }
  
-   public static void sort(int[] myarray) {
+   public void sort(int[] myarray) {
       a = myarray;
       buildheap(a);
       for(int i=n; i>0; i--) {
@@ -66,17 +66,5 @@ public class HeapSort {
       }
    }
  
-   public static void main(String[] args) {
-      int []numbers={5,6,12,2,1,11,10};
-      System.out.println(Arrays.toString(numbers));
-      sort(numbers);
-      System.out.println(Arrays.toString(numbers));
-      print();
-   }
-   
-   @Print(path ="")
-   public static void print(){
-   
-   }
 }
 

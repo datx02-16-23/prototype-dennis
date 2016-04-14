@@ -33,7 +33,6 @@ public class MarkupComposer {
             ArrayList<ParseOperation> toSection, 
             WriteOperation op){
         
-        
         ArrayEntity from = toArrayEntity((ReadArray)fromSection.get(0));
         collectNestedReads(fromSection);
         ArrayEntity to = toArrayEntity((ReadArray)toSection.get(0));
@@ -48,8 +47,11 @@ public class MarkupComposer {
             EvalOperation eval){
         
         ArrayEntity from = toArrayEntity((ReadArray)fromSection.get(0));
-        collectNestedReads(fromSection);
         VariableEntity to = new VariableEntity(eval.identifier);
+        //System.out.print("\nwrite from "+from.getId()+" to "+to.getId());
+        
+        collectNestedReads(fromSection);
+        
         markup.body.add(createWrite(from, to, eval.value));
         
     }
@@ -60,6 +62,8 @@ public class MarkupComposer {
         
         VariableEntity from = new VariableEntity(write.identifier);
         ArrayEntity to = toArrayEntity((ReadArray)toSection.get(0));
+        //System.out.print("\nwrite from "+from.getId()+" to "+to.getId());
+        
         collectNestedReads(toSection);
         
         markup.body.add(createWrite(from, to, write.value));
@@ -107,10 +111,13 @@ public class MarkupComposer {
     
     private void collectNestedReads(ArrayList<ParseOperation> operations){
         if(operations.size() > 1){
-            composeReadArrayToUknown((ArrayList<ParseOperation>) 
-                    operations.subList(1, operations.size()-1));
+            ArrayList<ParseOperation> subSequent = new ArrayList<>();
+            subSequent.addAll(operations.subList(1, operations.size()-1));
+            composeReadArrayToUknown(subSequent);
         }
     }
+    
+    
     
     public Operation createWrite(Entity from, Entity to, Object value){
         if(!isAnnotated(to)){
