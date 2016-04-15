@@ -46,7 +46,7 @@ com.dennisjonsson.log.DefaultInterpreter.instance()));
 
     // Reasonable number of iterations
     // - results typically settle down by 500
-    private int maxIterations = 5;
+    private int maxIterations = 10;
 
     int size = 10;
 

@@ -6,6 +6,7 @@
 package com.dennisjonsson.log.ast;
 import com.dennisjonsson.markup.DataStructure;
 import com.dennisjonsson.markup.Markup;
+import com.dennisjonsson.markup.Source;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,13 +24,12 @@ public class LogParser {
     private final ArrayList<ParseOperation> parserStack;
     private final CallStack callStack;
 
-    public LogParser(
-            ArrayList<LogOperation> operations,
+    public LogParser( String className, ArrayList<LogOperation> operations,
             Markup markup) {
         
-        this.dataStructures = markup.header.annotatedVariables;
+        this.dataStructures = markup.header.sources.get(className).annotatedVariables;
         this.operations = operations;
-        this.composer = new MarkupComposer(markup);
+        this.composer = new MarkupComposer(className, markup);
         parserStack = new ArrayList<>();
         callStack = new CallStack(dataStructures, operations, parserStack);
     }

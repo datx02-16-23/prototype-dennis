@@ -32,12 +32,16 @@ public class Test1 {
     
     public static int c [] = new int [2];
     
+    @Visualize(abstractType = AbstractType.ADJACENCY_MATRIX)
+    public static int [][] e = new int [10][10];
+    
     public static void main(String[] args) {
         // TODO code application logic here
         
         int d = a[1];
         
         a = new int []{1,2,3,4,5,6};
+        
         a = b; 
         a[1] = b[1];
         d = a[1];
@@ -48,6 +52,12 @@ public class Test1 {
         c[1] = d;
         c[1] = c[0];
         d = d;
+        
+        a[0] = b[0];
+        a[0] = 1;
+        a[0] = b[0] + a[1];
+        
+        e[a[0]][b[0]] = e[c[1]][b[2]];
         
        // Node d = c[1];
        print();

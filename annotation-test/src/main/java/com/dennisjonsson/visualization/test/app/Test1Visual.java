@@ -22,7 +22,7 @@ com.dennisjonsson.log.ast.ASTLogger.instance(
 new com.dennisjonsson.log.ast.SourceHeader(
 "Test1Visual",
 "",
-new com.dennisjonsson.markup.DataStructure [] {  com.dennisjonsson.markup.DataStructureFactory.getDataStructure("array","int[]","a"),com.dennisjonsson.markup.DataStructureFactory.getDataStructure("array","int[]","b")},
+new com.dennisjonsson.markup.DataStructure [] {  com.dennisjonsson.markup.DataStructureFactory.getDataStructure("array","int[]","a"),com.dennisjonsson.markup.DataStructureFactory.getDataStructure("array","int[]","b"),com.dennisjonsson.markup.DataStructureFactory.getDataStructure("adjacencymatrix","int[][]","e")},
 com.dennisjonsson.log.DefaultInterpreter.instance()));
 
     /**
@@ -35,6 +35,9 @@ com.dennisjonsson.log.DefaultInterpreter.instance()));
     public static int[] b = eval("b", write(null, new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 }, 3, 1), 0);
 
     public static int c[] = new int[2];
+
+    
+    public static int[][] e = eval("e", write(null, new int[10][10], 3, 1), 0);
 
     public static void main(String[] args) {
         // TODO code application logic here
@@ -49,6 +52,10 @@ com.dennisjonsson.log.DefaultInterpreter.instance()));
         c[1] = d;
         c[1] = c[0];
         d = d;
+        eval("a[0]", a[read("a", 0, 0)] = write("b", b[read("b", 0, 0)], 0, 0), 0);
+        eval("a[0]", a[read("a", 0, 0)] = write(null, 1, 3, 0), 0);
+        eval("a[0]", a[read("a", 0, 0)] = write(null, eval(null, b[read("b", 0, 0)], 2) + eval(null, a[read("a", 0, 1)], 2), 3, 0), 0);
+        eval("e[a[0]][b[0]]", e[read("e", 0, a[read("a", 0, 0)])][read("e", 1, b[read("b", 0, 0)])] = write("e", e[read("e", 0, c[1])][read("e", 1, b[read("b", 0, 2)])], 0, 0), 0);
         // Node d = c[1];
         print();
     }

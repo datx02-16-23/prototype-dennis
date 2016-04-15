@@ -89,14 +89,15 @@ public class TestApp {
         new Thread(r2).start();
         
         new Thread(r3).start();
-
+        
+        
+        aquire();
+        
         try {
             sleep(500);
         } catch (InterruptedException ex) {
             Logger.getLogger(TestApp.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        aquire();
         
         print();
     }
