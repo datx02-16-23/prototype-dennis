@@ -4,9 +4,9 @@ var StapleVisualizer = function(args){
 	this.environment2d = args.environment,
 	this.staples,
 	
-	this.init = function(){
+	this.init = function(args){
 	
-		this.environment2d.init();
+		this.environment2d.init(args);
 		this.environment2d.setHeader({ds:this.dataStructure});
 
 		this.staples = new Staples({

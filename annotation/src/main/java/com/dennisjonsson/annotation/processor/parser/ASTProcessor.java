@@ -15,10 +15,14 @@ import com.dennisjonsson.markup.Method;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,7 +32,7 @@ import java.util.logging.Logger;
  */
 public class ASTProcessor extends SourceProcessor {
     
-    private ASTParser adapter;
+    private MainParser adapter;
     private CompilationUnit unit;
     public HashMap<String, Method> methods;
     public final String fullName;
@@ -97,6 +101,48 @@ public class ASTProcessor extends SourceProcessor {
             System.out.println("include: "+incl+" -> "+(incl + SUFFIX));
         }
     }
+    
+    private Object [] getSourceLines(String str){
+        //Scanner scanner = new Scanner(str);
+        ArrayList<String> lines = new ArrayList<>();
+        // all empty lines are needed
+        final BufferedReader br = new BufferedReader(new StringReader(str));
+        String line;
+        try {
+            while ((line = br.readLine()) != null) {
+                lines.add(line);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(ASTProcessor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        /*
+        while(scanner.hasNext()){
+            String n = scanner.next("\\n");
+            if(n != null){
+                lines.add(n);
+            }
+            else{
+                lines.add(scanner.nextLine());
+                return lines.toArray();
+            }
+            
+        }*/
+        return lines.toArray();
+    }
+    
+    public String getSourceLinesAsString(String str){
+        Object [] lines = getSourceLines(str);
+        StringBuilder builder = new StringBuilder();
+        builder.append("new String [] { ");
+        for(Object line : lines){
+            builder.append("\"");
+            builder.append(line.toString().replaceAll("\"", "'"));
+            builder.append("\",");
+        }
+        builder.deleteCharAt(builder.length()-1);
+        builder.append("}");
+        return builder.toString();
+    }
 
     @Override
     public void processSource(Object arg) {
@@ -104,17 +150,20 @@ public class ASTProcessor extends SourceProcessor {
         if(unit == null){
             throw new RuntimeException("ASTPRocessor: CompilationUnit is null");
         }
+        
         /*
         if(print == null){
             throw new RuntimeException("ASTPRocessor: No printing method found");
         }*/
-        String newClass = className + SUFFIX;
         
+        String newClass = className + SUFFIX;
+        String lines = getSourceLinesAsString(unit.toString());
         
         PreParser pp = new PreParser(methods);
         pp.visit(unit, null);
         
-        adapter = new ASTParser(className, dataStructures, getPrintingMethod(), methods);
+        
+        adapter = new MainParser(className, dataStructures, getPrintingMethod(), methods);
         adapter.visit(unit, null);
 
         // textual changes
@@ -129,14 +178,12 @@ public class ASTProcessor extends SourceProcessor {
         replaceIncludes(parser);
         parser.insertInterceptorMethods(className, dataStructures);
         parser.insertField("public static "+ASTLogger.CLASS_NAME+" logger = \n"
-                +   ASTLogger.CLASS_NAME+".instance(\n"
-                +   "new "+SourceHeader.CLASS_NAME+"(\n"
-                +   "\""+newClass+"\""
-                +   ",\n"
-                +   getPrintingPath()
-                +   ",\n"
-                +   parser.printDataStructures(dataStructures) 
-                +   ",\n"
+                +   ASTLogger.CLASS_NAME+".instance("
+                +   "new "+SourceHeader.CLASS_NAME+"("
+                +   "\""+newClass+"\","
+                +   ""+lines+","
+                +   getPrintingPath()+","
+                +   parser.printDataStructures(dataStructures) +","
                 +   DefaultInterpreter.class.getName()+ ".instance()"
                 + "));", className);
         source = parser.getSource();

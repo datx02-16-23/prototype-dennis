@@ -14,12 +14,13 @@ import java.util.HashMap;
  */
 public class Source {
     
-    public final ArrayList<String> lines;
+    public final String [] lines;
+    
     public final HashMap<String, DataStructure> annotatedVariables;
 
-    public Source(ArrayList<String> lines, HashMap<String, DataStructure> annotatedVariables) {
+    public Source(String [] lines) {
         this.lines = lines;
-        this.annotatedVariables = annotatedVariables;
+        this.annotatedVariables = new HashMap<>();
     }
     
     public void addDataStructure(DataStructure dataStructure){

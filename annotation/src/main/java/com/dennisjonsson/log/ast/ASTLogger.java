@@ -10,6 +10,7 @@ import com.dennisjonsson.markup.DataStructure;
 import com.dennisjonsson.markup.Header;
 import com.dennisjonsson.markup.Markup;
 import com.dennisjonsson.markup.Operation;
+import com.dennisjonsson.markup.Source;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.FileNotFoundException;
@@ -53,11 +54,10 @@ public class ASTLogger {
         return logger;
     }
  
-
     private ASTLogger(SourceHeader sourceHeader) {
         
         streamParsers = new HashMap<>();
-        Header header = new Header();
+        Header header = new Header(new HashMap<String, Source>());
         markup = new Markup(header, new ArrayList<>());
         this.sourceHeader = sourceHeader;
         this.interpreter = sourceHeader.interpreter;
@@ -68,21 +68,26 @@ public class ASTLogger {
     
     private void appendHeader(SourceHeader sourceHeader){
         
-        this.streamParsers.put(
-                sourceHeader.className,
-                new LogParser(
-                    new ArrayList<LogOperation>(),
-                    markup
-                ));
+        
+         markup.header.sources.put(
+                 sourceHeader.className, 
+                 new Source(sourceHeader.source)
+         );
         
         for( DataStructure ds : sourceHeader.dataStructures){
            System.out.println("adding: "+ds.identifier);
-           markup.header.addDataStructure(ds);
+           markup.header.addDataStructure(sourceHeader.className ,ds);
         }
         
+        this.streamParsers.put(
+                sourceHeader.className,
+                new LogParser(
+                    sourceHeader.className,
+                    new ArrayList<LogOperation>(),
+                    markup
+                ));
     }
     
- 
     public synchronized void read(String className, String id, int index, int dimension){
         // IndexRead(String identifier, int index, int dimension, String statementId)
         streamParsers.get(className).operations.add(new IndexedReadOperation(id, index, dimension));
@@ -93,9 +98,9 @@ public class ASTLogger {
         streamParsers.get(className).operations.add(new WriteOperation(name, value, sourceType, targetType));
     }
     
-    public synchronized void eval(String className, String targetId, Object value, int expressionType){
+    public synchronized void eval(String className, String targetId, Object value, int expressionType, int [] line){
         //EvalOperation(String value, String statementId)
-        EvalOperation eval = new EvalOperation(targetId, value, expressionType);
+        EvalOperation eval = new EvalOperation(targetId, value, expressionType, line);
         streamParsers.get(className).operations.add(eval);
         streamOperation(className, eval);
         

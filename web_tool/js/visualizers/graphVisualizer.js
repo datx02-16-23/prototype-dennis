@@ -14,8 +14,9 @@ var GraphVisualizer = function(args){
 			INIT
 	*/
 	
-	this.init = function(){
-		this.environment3d.init();
+	this.init = function(args){
+		
+		this.environment3d.init(args);
 		
 
 		// create 2d DOM elements of data structures

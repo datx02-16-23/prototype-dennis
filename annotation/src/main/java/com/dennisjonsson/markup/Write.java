@@ -20,8 +20,9 @@ public class Write extends Operation{
     private static final String KEY_VALUE = "value";
     
 
-    public Write(Entity source, Entity target, Object value) {
-        super(OPERATION, new HashMap<>());
+    public Write(Entity source, Entity target, Object value, 
+            String className, int beginLine, int endLine) {
+        super(OPERATION, new HashMap<>(), className, beginLine, endLine);
         this.operationBody.put(KEY_SOURCE, source);
         this.operationBody.put(KEY_TARGET, target);
         this.operationBody.put(KEY_VALUE, value);

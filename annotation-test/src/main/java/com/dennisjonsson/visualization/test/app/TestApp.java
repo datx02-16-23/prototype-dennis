@@ -12,7 +12,6 @@ import com.dennisjonsson.visualization.test.BubbleSort;
 import com.dennisjonsson.visualization.test.HeapSort;
 import com.dennisjonsson.visualization.test.MergeSort;
 import com.dennisjonsson.visualization.test.QuickSort;
-import com.dennisjonsson.visualization.test.app.ds.Node;
 import static java.lang.Thread.sleep;
 import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
@@ -34,7 +33,7 @@ import java.util.logging.Logger;
         + "java/com/dennisjonsson/visualization/test/app/")
 public class TestApp {
     
-    public static Semaphore s = new Semaphore(3, true);
+    public static Semaphore s = new Semaphore(4, true);
 
     public static void aquire(){
         try {
@@ -54,6 +53,8 @@ public class TestApp {
         int [] b = { 22,25,2, 6, 3, 5, 1 ,7,8,34,22,32,21,16,10,19,30,15,10,
             55,10,22,66,55,44,77,88,99,33,22,51,65,54,21,32,23,56,12,45,56,23,12,45,25,4,5,2,1};
         int [] c = { 22,25,2, 6, 3, 5, 1 ,7,8,34,22,32,21,16,10,19,30,15,10,
+            55,10,22,66,55,44,77,88,99,33,22,51,65,54,21,32,23,56,12,45,56,23,12,45,25,4,5,2,1};
+        Integer [] d = { 22,25,2, 6, 3, 5, 1 ,7,8,34,22,32,21,16,10,19,30,15,10,
             55,10,22,66,55,44,77,88,99,33,22,51,65,54,21,32,23,56,12,45,56,23,12,45,25,4,5,2,1};
         
         Runnable r1 = new Runnable(){
@@ -84,12 +85,22 @@ public class TestApp {
             }
         };
         
+        Runnable r4 = new Runnable(){
+            @Override
+            public void run() {
+                aquire();
+                MergeSort.sort(d);
+                 s.release();
+            }
+        };
+        
         new Thread(r1).start();
         
-        new Thread(r2).start();
+       new Thread(r2).start();
         
         new Thread(r3).start();
-        
+       
+        new Thread(r4).start();
         
         aquire();
         

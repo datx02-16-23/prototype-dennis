@@ -15,12 +15,17 @@ public abstract class Operation {
     
     public final String operation;
     public final HashMap<String, Object> operationBody;
+    public final String source;
+    public final int beginLine;
+    public final int endLine;
 
-    public Operation(String op, HashMap<String, Object> operationBody) {
-        this.operation = op;
+    public Operation(String operation, HashMap<String, Object> operationBody, String source, int beginLine, int endLine) {
+        this.operation = operation;
         this.operationBody = operationBody;
+        this.source = source;
+        this.beginLine = beginLine;
+        this.endLine = endLine;
     }
-     
 
     public String getOp() {
         return operation;

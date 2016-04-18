@@ -19,16 +19,21 @@ public class SourceHeader {
     public static final String CLASS_NAME = "com.dennisjonsson.log.ast.SourceHeader";
     
     public final String className;
+    public final String [] source;
     public final String printingPath;
     public final DataStructure [] dataStructures;
     public final AbstractInterpreter interpreter;
 
-    public SourceHeader(String className, String printingPath, DataStructure[] dataStructures, AbstractInterpreter interpreter) {
+    public SourceHeader(String className, String [] source, String printingPath, 
+            DataStructure[] dataStructures, AbstractInterpreter interpreter) {
         this.className = className;
+        this.source = source;
         this.printingPath = printingPath;
         this.dataStructures = dataStructures;
         this.interpreter = interpreter;
     }
+
+    
 
     
 

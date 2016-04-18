@@ -85,7 +85,7 @@ public class MethodsSource{
             return "public static int read("
                     + "String name,"
                     + "int dimension, "
-                    + "int index){ "
+                    + "int index ){ "
                     + "\nlogger.read(\""+className+"\", name ,index ,dimension);\n"
 
                     + "return index; \n}\n";
@@ -100,9 +100,9 @@ public class MethodsSource{
 	}
         
         public String getEval(String primitiveType, int dimension){
-            return "public static "+primitiveType+" eval( String targetId, "+primitiveType+" value, int expressionType){"
+            return "public static "+primitiveType+" eval( String targetId, "+primitiveType+" value, int expressionType, int [] line){"
                     + "\n"
-                    + "logger.eval(\""+className+"\", targetId, "+getValue(dimension,primitiveType,"value")+", expressionType);\n"
+                    + "logger.eval(\""+className+"\", targetId, "+getValue(dimension,primitiveType,"value")+", expressionType, line);\n"
                     + "return value;\n"
                     + "}\n";
         }

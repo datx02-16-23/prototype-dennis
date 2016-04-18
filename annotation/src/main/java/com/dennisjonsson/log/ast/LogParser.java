@@ -6,6 +6,7 @@
 package com.dennisjonsson.log.ast;
 import com.dennisjonsson.markup.DataStructure;
 import com.dennisjonsson.markup.Markup;
+import com.dennisjonsson.markup.Source;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,17 +20,17 @@ public class LogParser {
     public final HashMap<String, DataStructure> dataStructures;
     public final ArrayList<LogOperation> operations;
     public final MarkupComposer composer;
+    public final String className;
     
     private final ArrayList<ParseOperation> parserStack;
     private final CallStack callStack;
 
-    public LogParser(
-            ArrayList<LogOperation> operations,
+    public LogParser( String className, ArrayList<LogOperation> operations,
             Markup markup) {
-        
-        this.dataStructures = markup.header.annotatedVariables;
+        this.className = className;
+        this.dataStructures = markup.header.sources.get(className).annotatedVariables;
         this.operations = operations;
-        this.composer = new MarkupComposer(markup);
+        this.composer = new MarkupComposer(className, markup);
         parserStack = new ArrayList<>();
         callStack = new CallStack(dataStructures, operations, parserStack);
     }
@@ -133,6 +134,7 @@ public class LogParser {
     private int writeVariableToArray(WriteOperation op, int i){
         ArrayList<ParseOperation> to = new ArrayList<>();
         
+        EvalOperation eval = (EvalOperation)operations.get(i+2);
         
         // jump over expressions
         while(operations.get(i).operation
@@ -146,7 +148,7 @@ public class LogParser {
         
         callStack.next(to);
         
-        composer.composeWriteVariableToArray(op, to);
+        composer.composeWriteVariableToArray(op, to, eval);
         
         return i - 1;
     }
@@ -171,6 +173,7 @@ public class LogParser {
     private int assignArraytoArray(WriteOperation op, int i){
         
         //System.out.println("at "+i+": "+operations.get(i).operation);
+        EvalOperation eval = (EvalOperation)operations.get(i+2);
         
         ArrayList<ParseOperation> from = new ArrayList<>();
 
@@ -182,7 +185,7 @@ public class LogParser {
         i = callStack.collect(i-1);
         callStack.next(to);
         
-        composer.composeWriteArrayToArray(from, to, op);
+        composer.composeWriteArrayToArray(from, to, op, eval);
         // (Entity source, Entity target, String[] value)
         // Reads
         

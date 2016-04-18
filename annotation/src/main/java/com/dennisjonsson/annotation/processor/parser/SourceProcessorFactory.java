@@ -19,8 +19,6 @@ public class SourceProcessorFactory {
     public static SourceProcessor getProcessor(Type type, 
             String path, String className, String fullName){
         switch(type.toString()){
-            case "TEXT":
-                return new TextProcessor(path, className);
             case "AST" :
                 return new ASTProcessor(path, className, fullName);
             default:

@@ -17,6 +17,7 @@
 <script  src="js/markup/markup.js" ></script>
 <script  src="js/markup/arrayElement.js" ></script>
 
+
 <script  src="js/visualizers/bubbleSortVisualizer.js" ></script>
 <script  src="js/visualizers/BFSVisualizer.js" ></script>
 <script  src="js/visualizers/gridVisualizer.js" ></script>
@@ -28,14 +29,12 @@
 <script  src="js/utils/spinner.js" ></script>
 <script  src="js/utils/shaderUtils.js" ></script>
 
+<script  src="js/codeVisualizer.js" ></script>
 <script  src="js/environment.js" ></script>
 <script  src="js/environment3D.js" ></script>
 <script  src="js/environment2D.js" ></script>
-<script  src="js/glScript.js" ></script>
-
-
-
-
+<script  src="js/program.js" ></script>
+<script  src="js/visualizationEnvironment.js" ></script>
 
 
 
@@ -85,8 +84,6 @@
 		var environment = new VisualizationEnvironment();
 	
 		function initWebGL(){	
-		
-			
 		
 			environment.init();
 			setTimeout("environment.endLoad()", 500);

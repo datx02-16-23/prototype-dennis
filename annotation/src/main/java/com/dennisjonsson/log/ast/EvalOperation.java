@@ -19,11 +19,15 @@ public class EvalOperation extends LogOperation {
     
     public final Object value;
     public final int expressionType;
+    public final int beginLine;
+    public final int endLine;
     
-    public EvalOperation(String targetId, Object value, int expressionType) {
+    public EvalOperation(String targetId, Object value, int expressionType, int [] line) {
         super(OPERATION, targetId);
         this.value = value;
         this.expressionType = expressionType;
+        this.beginLine = line[0];
+        this.endLine = line[1];
     }
 
   

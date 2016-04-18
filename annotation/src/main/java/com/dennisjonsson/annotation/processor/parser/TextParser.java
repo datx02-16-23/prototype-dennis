@@ -202,6 +202,8 @@ public class TextParser {
         }
         return result;
     }
+    
+    
 
 
     public void replace(String old, String replacement){

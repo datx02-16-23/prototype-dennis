@@ -21,25 +21,22 @@ public class Markup {
         this.body = body;
     }
     
-    public void appendDataStructure(DataStructure dataStructure){
-        this.header.addDataStructure(dataStructure);
-    }
  
-    public void appendOperation(Read read){
+    public void appendOperation(String className, Read read){
         this.body.add(read);
         Entity source =  read.getSource();
-        source.update(header.annotatedVariables.get(source.getId()));
+        source.update(header.getDataStructure(className,source.getId()));
        // updateSize(read.getSource().getId(), read.getSource().getIndex());
     }
     
-    public void appendOperation(Write write){
+    public void appendOperation(String className, Write write){
         this.body.add(write);
         Entity source = write.getSource();
         if(!source.getId().equalsIgnoreCase(UndefinedEntity.UNDEFINED)){
-            source.update(header.annotatedVariables.get(source.getId())); 
+            source.update(header.getDataStructure(className,source.getId())); 
         }
         Entity target = write.getTarget();
-        target.update(header.annotatedVariables.get(target.getId()));
+        target.update(header.getDataStructure(className,target.getId()));
        // updateSize(write.getTarget().getId(), write.getTarget().getIndex());
     }
      

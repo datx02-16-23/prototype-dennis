@@ -416,6 +416,44 @@ position:absolute;
 	z-index:1;
 }
 
+/* ------------------------- program -------------------------------*/
+
+.program_window{
+	position:absolute;
+	background: #f9f9f9;
+}
+
+.source_window{
+	position:absolute;
+	float:left;
+	height:inherit;
+	overflow:scroll;
+}
+
+.visualization_window{
+	position:absolute;
+	float:right;
+	height:inherit;
+}
+
+/* -------------------------- code -----------------------------------*/
+
+.code_table{
+	overflow:hidden;
+}
+.code_line{
+	
+}
+
+.code_line code{
+	
+} 
+.line_number{
+	
+}
+.line_code{
+	
+}
 /* ------------------------ environment  -----------------------------*/
 #environment_container{
 	position:absolute;

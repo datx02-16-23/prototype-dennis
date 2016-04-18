@@ -16,24 +16,34 @@ import java.util.HashMap;
 public class Header {
     
     public final int version = 2;
+    public final HashMap<String, Source> sources;
+    
+    // old version
     public final HashMap<String, DataStructure> annotatedVariables;
 
-    public Header() {
-        this.annotatedVariables = new HashMap<String, DataStructure> ();
-
+    public Header(HashMap<String, Source> sources) {
+        this.sources = sources;
+        
+        // old version
+        annotatedVariables = new HashMap<>();
     }
     
-    public void addDataStructure(DataStructure dataStructure){
-        this.annotatedVariables.put( dataStructure.getIdentifier(),dataStructure);
+    
+    public void addDataStructure(String className, DataStructure dataStructure){
+        this.sources.get(className).addDataStructure(dataStructure);
+        
+        // old version
+        annotatedVariables.put(dataStructure.identifier, dataStructure);
+    }
+    
+    public DataStructure getDataStructure(String className, String identifier){
+        return this.sources.get(className).annotatedVariables.get(identifier);
     }
 
- 
+    
     @Override
     public String toString() {
-        return "{\n "
-                + "\"version\": "+version+", \n"
-                + "\"AnnotatedVariables\": "+Arrays.toString(annotatedVariables.values().toArray())+" \n"
-                + "}";
+        return super.toString();
     }
     
     
