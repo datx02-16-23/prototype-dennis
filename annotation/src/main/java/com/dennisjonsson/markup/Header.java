@@ -17,7 +17,6 @@ public class Header {
     
     public final int version = 2;
     public final HashMap<String, Source> sources;
-    
     // old version
     public final HashMap<String, DataStructure> annotatedVariables;
 

@@ -38,12 +38,17 @@ public class ASTProcessor extends SourceProcessor {
     public final String fullName;
     public ArrayList<String> includes;
     private static final String SUFFIX = "Visual";
+    private String interpreterClass = DefaultInterpreter.class.getName();
     
     ASTProcessor(String path, String className, String fullName) {
         super(path, className);
         this.fullName = fullName;
         methods = new HashMap<>();
         includes = new ArrayList<>();
+    }
+    
+    public void setInterpreter(String interpreterClass){
+        this.interpreterClass = interpreterClass;
     }
     
     public void setIncludes(ArrayList<String> includes){
@@ -184,7 +189,7 @@ public class ASTProcessor extends SourceProcessor {
                 +   ""+lines+","
                 +   getPrintingPath()+","
                 +   parser.printDataStructures(dataStructures) +","
-                +   DefaultInterpreter.class.getName()+ ".instance()"
+                +   "new " + interpreterClass + "()"
                 + "));", className);
         source = parser.getSource();
      

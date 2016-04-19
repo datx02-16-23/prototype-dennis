@@ -7,6 +7,7 @@ package com.dennisjonsson.log;
 
 import com.dennisjonsson.markup.Header;
 import com.dennisjonsson.markup.Markup;
+import com.dennisjonsson.markup.Operation;
 import com.dennisjonsson.markup.Read;
 import com.dennisjonsson.markup.Write;
 import java.util.HashMap;
@@ -17,18 +18,16 @@ import java.util.HashMap;
  */
 public abstract class AbstractInterpreter implements Stream{
     
-    protected final HashMap<String, Markup> classes;
-    
-    protected AbstractInterpreter() {
-        classes = new HashMap<>();
-    }
+    protected Markup markup;
+  
 
     @Override
-    public void addMarkup(String className, Markup markup) {
-        classes.put(className, markup);
+    public void addMarkup(Markup markup) {
+        this.markup = markup;
     }
 
-    public abstract void interpret(String className, int position);
+    public abstract void interpret(String className, Operation operation);
+    public abstract void print(String json);
    
 
 

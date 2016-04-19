@@ -28,43 +28,35 @@ import wrapper.Locator;
 */
 public class DefaultInterpreter extends AbstractInterpreter {
     
-    public static AbstractInterpreter interperter;
-    
+  
     //LogStreamManager manager = new LogStreamManager(false);
-    
-    public static AbstractInterpreter instance(){
-        if(interperter == null){
-            interperter = new DefaultInterpreter();
-        }
-        return interperter;
-    }
 
-    private DefaultInterpreter() {
+    public DefaultInterpreter() {
     }
 
     @Override
-    public void interpret(String className, int position) {
-        Operation op = this.classes.get(className).body.get(position);
-        
+    public void interpret(String className, Operation operation) {
+        //Operation op = this.classes.get(className).body.get(position);
+        /*
         if(op.operation.equalsIgnoreCase(Write.OPERATION)){
-            Write write = (Write)op;
-            /*
+           // Write write = (Write)op;
+         
             OP_Write r= new OP_Write();
             setLocators(r,write.getSource(),write.getTarget());
-            manager.stream(r);*/
+            manager.stream(r);
             // do your work here
-            System.out.println(Write.OPERATION + " to "+write.getTarget().getId());
+           // System.out.println(Write.OPERATION + " to "+write.getTarget().getId());
         }
         else if(op.operation.equalsIgnoreCase(Read.OPERATION)){
-            Read read = (Read)op;
-            /*
+            //Read read = (Read)op;
+            
             OP_Read r= new OP_Read();
             setLocators(r,read.getSource(),read.getTarget());
-            manager.stream(r);*/
-            System.out.println(Read.OPERATION + " from "+read.getSource().getId());
+            manager.stream(r);
+            //System.out.println(Read.OPERATION + " from "+read.getSource().getId());
             // do your work here
         }
-        
+        */
     }
     
     /*
@@ -85,5 +77,10 @@ public class DefaultInterpreter extends AbstractInterpreter {
         }
        
     }*/
+
+    @Override
+    public void print(String json) {
+       
+    }
     
 }

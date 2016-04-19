@@ -16,7 +16,7 @@ import com.dennisjonsson.markup.Write;
  */
 public interface Stream {
     
-    public void addMarkup(String className, Markup markup);
+    public void addMarkup(Markup markup);
     //public void read(String className, int position);
     //public void write(String className, int position);
     

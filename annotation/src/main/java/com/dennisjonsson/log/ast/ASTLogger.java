@@ -63,11 +63,11 @@ public class ASTLogger {
     private ASTLogger(SourceHeader sourceHeader) {
         
         streamParsers = new HashMap<>();
-        Header header = new Header(new HashMap<String, Source>());
+        Header header = new Header(new HashMap<>());
         markup = new Markup(header, new ArrayList<>());
         this.sourceHeader = sourceHeader;
         this.interpreter = sourceHeader.interpreter;
-        this.interpreter.addMarkup(sourceHeader.className, markup);
+        this.interpreter.addMarkup(markup);
 
         appendHeader(sourceHeader);
     }
@@ -113,10 +113,9 @@ public class ASTLogger {
     }
     
     private void streamOperation(String className, EvalOperation op){
-        
         streamParsers.get(className).visit(op, streamParsers.get(className).operations.size()-2);
-        //this.interpreter.interpret(sourceHeader.className, 
-          //      this.streamParser.composer.markup.body.size()-1);
+        int index = this.markup.body.size()-1;
+        this.interpreter.interpret(className, this.markup.body.get(index));
     }
     
 
@@ -127,6 +126,8 @@ public class ASTLogger {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         //Collections.reverse(markup.body);
         json = gson.toJson(markup);
+        this.interpreter.print(json);
+        
         PrintWriter writer = null;
         try {
             writer = new PrintWriter(sourceHeader.printingPath+sourceHeader.className+".json", "UTF-8");

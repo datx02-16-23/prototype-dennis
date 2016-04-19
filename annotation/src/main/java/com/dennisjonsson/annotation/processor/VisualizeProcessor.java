@@ -2,6 +2,7 @@ package com.dennisjonsson.annotation.processor;
 
 
 import com.dennisjonsson.annotation.Include;
+import com.dennisjonsson.annotation.Interpreter;
 import com.dennisjonsson.annotation.Print;
 import com.dennisjonsson.markup.DataStructure;
 import com.dennisjonsson.annotation.Visualize;
@@ -39,10 +40,8 @@ public class VisualizeProcessor extends AbstractProcessor {
         private HashMap<String, Element> loosePrints;
         private HashMap<String, HashMap<String, Method>> looseMethods;
         private HashMap<String, ArrayList<String>> includes;
-        
-	
-        
-        
+        private String interpreterClassName = null;
+
 	
 	@Override
 	public synchronized void init(ProcessingEnvironment env){
@@ -67,6 +66,7 @@ public class VisualizeProcessor extends AbstractProcessor {
                 processVisualizeArg(env);
                 processPrint(env);
                 processInclude(env);
+                processInterpreter(env);
                 
 		for(ASTProcessor sourceProcessor : sourceFiles.values()){
 
@@ -75,6 +75,9 @@ public class VisualizeProcessor extends AbstractProcessor {
                         ArrayList<String> inc = includes.get(sourceProcessor.fullName);
                         if(inc != null){
                             sourceProcessor.setIncludes(inc);
+                        }
+                        if(interpreterClassName != null){
+                            sourceProcessor.setInterpreter(interpreterClassName);
                         }
                         
                         sourceProcessor.written();
@@ -159,9 +162,7 @@ public class VisualizeProcessor extends AbstractProcessor {
  
         }
         
-       
-     
-        
+
         private void addArgument(Argument arg){
             ASTProcessor processor = sourceFiles.get(arg.method.className);
             
@@ -317,6 +318,17 @@ public class VisualizeProcessor extends AbstractProcessor {
                 }
             }
         }
+        
+        private void processInterpreter(RoundEnvironment env){
+		
+            for (Element annotatedElement : 
+                env.getElementsAnnotatedWith(Interpreter.class)) {
+                if(annotatedElement.getKind() == ElementKind.CLASS){
+                    this.interpreterClassName = annotatedElement.toString();
+                }
+            }
+        
+        }
    
 	
         /*
@@ -381,6 +393,7 @@ public class VisualizeProcessor extends AbstractProcessor {
 		set.add(Visualize.class.getCanonicalName());
                 set.add(VisualizeArg.class.getCanonicalName());
                 set.add(Include.class.getCanonicalName());
+                set.add(Interpreter.class.getCanonicalName());
                 set.add(Print.class.getCanonicalName());
 		return set;
 	}
