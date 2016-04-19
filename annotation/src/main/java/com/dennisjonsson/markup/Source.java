@@ -16,16 +16,16 @@ public class Source {
     
     public final String [] lines;
     
-    public final HashMap<String, DataStructure> annotatedVariables;
+    //public final HashMap<String, DataStructure> annotatedVariables;
 
     public Source(String [] lines) {
         this.lines = lines;
-        this.annotatedVariables = new HashMap<>();
+      //  this.annotatedVariables = new HashMap<>();
     }
-    
+    /*
     public void addDataStructure(DataStructure dataStructure){
         this.annotatedVariables.put(dataStructure.getIdentifier(), 
                 dataStructure);
-    }
+    }*/
 
 }

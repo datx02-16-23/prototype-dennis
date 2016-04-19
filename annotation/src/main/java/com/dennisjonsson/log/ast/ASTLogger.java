@@ -13,13 +13,19 @@ import com.dennisjonsson.markup.Operation;
 import com.dennisjonsson.markup.Source;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.awt.Desktop;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -125,11 +131,17 @@ public class ASTLogger {
         try {
             writer = new PrintWriter(sourceHeader.printingPath+sourceHeader.className+".json", "UTF-8");
             writer.print(json);
-        } catch (FileNotFoundException | UnsupportedEncodingException ex) {
+            //Desktop.getDesktop().browse(new URI("http://blog-dennisjonsson.rhcloud.com/visualizer/visualizer.html"));
+        } 
+        catch (FileNotFoundException | UnsupportedEncodingException ex) {
             throw new RuntimeException(ex.getMessage());
-           // java.util.logging.Logger.getLogger(BFStest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        // java.util.logging.Logger.getLogger(BFStest.class.getName()).log(Level.SEVERE, null, ex);
+        }/*
+        catch (IOException ex) {
+            throw new RuntimeException(ex.getMessage());
+        } 
+        catch (URISyntaxException ex) {
+            Logger.getLogger(ASTLogger.class.getName()).log(Level.SEVERE, null, ex);
+        }*/
         finally{
             if(writer != null)
                 writer.close();

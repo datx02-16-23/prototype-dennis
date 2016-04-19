@@ -30,17 +30,22 @@ public class Header {
     
     
     public void addDataStructure(String className, DataStructure dataStructure){
-        this.sources.get(className).addDataStructure(dataStructure);
-        
-        // old version
+        //this.sources.get(className).addDataStructure(dataStructure);
+     
         annotatedVariables.put(dataStructure.identifier, dataStructure);
     }
     
     public DataStructure getDataStructure(String className, String identifier){
-        return this.sources.get(className).annotatedVariables.get(identifier);
+        return annotatedVariables.get(identifier);
+      //  return this.sources.get(className).annotatedVariables.get(identifier);
+    }
+    
+    public HashMap<String, DataStructure> getDataStructures(String className){
+        return annotatedVariables;
+        //  return this.sources.get(className);
     }
 
-    
+
     @Override
     public String toString() {
         return super.toString();

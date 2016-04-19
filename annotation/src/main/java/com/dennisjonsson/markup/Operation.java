@@ -18,6 +18,8 @@ public abstract class Operation {
     public final String source;
     public final int beginLine;
     public final int endLine;
+    public final int beginColumn = 0;
+    public final int endColumn = 0;
 
     public Operation(String operation, HashMap<String, Object> operationBody, String source, int beginLine, int endLine) {
         this.operation = operation;

@@ -28,7 +28,7 @@ public class LogParser {
     public LogParser( String className, ArrayList<LogOperation> operations,
             Markup markup) {
         this.className = className;
-        this.dataStructures = markup.header.sources.get(className).annotatedVariables;
+        this.dataStructures = markup.header.getDataStructures(className);
         this.operations = operations;
         this.composer = new MarkupComposer(className, markup);
         parserStack = new ArrayList<>();

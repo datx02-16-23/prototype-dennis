@@ -48,8 +48,8 @@
           </goals>
             <dependencies>
               <dependency>
-                <groupId>com.dennisjonsson.annotationprocessor</groupId>
-                <artifactId>annotationprocessor</artifactId>
+                <groupId>com.dennisjonsson</groupId>
+                <artifactId>annotation</artifactId>
                 <version>1.0-SNAPSHOT</version>
             </dependency> 
             </dependencies>
