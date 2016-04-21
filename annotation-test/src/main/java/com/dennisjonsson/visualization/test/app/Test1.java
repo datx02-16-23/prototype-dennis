@@ -6,18 +6,15 @@
 package com.dennisjonsson.visualization.test.app;
 
 import com.dennisjonsson.annotation.Print;
-import com.dennisjonsson.annotation.SourcePath;
 import com.dennisjonsson.annotation.Visualize;
-import com.dennisjonsson.markup.AbstractType;
+import com.dennisjonsson.annotation.markup.AbstractType;
 import com.github.javaparser.ast.Node;
 
 /**
  *
  * @author dennis
  */
-@SourcePath(path = "C:/Users/dennis/Documents/NetBeansProjects/" 
-        + "annotation-test/src/main/" 
-        + "java/com/dennisjonsson/visualization/test/app/")
+
 public class Test1 {
 
     /**

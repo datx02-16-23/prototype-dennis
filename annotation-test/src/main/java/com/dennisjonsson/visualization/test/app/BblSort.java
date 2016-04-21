@@ -1,16 +1,12 @@
 
 package com.dennisjonsson.visualization.test.app;
 
-import com.dennisjonsson.annotation.Include;
+
 import com.dennisjonsson.annotation.Print;
-import com.dennisjonsson.annotation.SourcePath;
+import com.dennisjonsson.annotation.VisualClass;
 import com.dennisjonsson.visualization.test.BubbleSort;
 
-@Include(classes = {"com.dennisjonsson.visualization.test.BubbleSort"})
-
-@SourcePath(path = "C:/Users/dennis/Documents/NetBeansProjects/" 
-        + "annotation-test/src/main/" 
-        + "java/com/dennisjonsson/visualization/test/app/")
+@VisualClass
 public class BblSort {
     
     public static void main(String [] args){

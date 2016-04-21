@@ -9,8 +9,9 @@ package com.dennisjonsson.visualization.test.tsp;
 import com.dennisjonsson.visualization.test.*;
 import com.dennisjonsson.annotation.Print;
 import com.dennisjonsson.annotation.SourcePath;
+import com.dennisjonsson.annotation.VisualClass;
 import com.dennisjonsson.annotation.Visualize;
-import com.dennisjonsson.markup.AbstractType;
+import com.dennisjonsson.annotation.markup.AbstractType;
 import java.util.Random;
 /*
  *  === Implementation of ant swarm TSP solver. ===
@@ -42,10 +43,7 @@ import java.util.Random;
  * ftp://iridia.ulb.ac.be/pub/mdorigo/journals/IJ.10-SMC96.pdf
  * 
  */
-
-@SourcePath(path = "C:/Users/dennis/Documents/NetBeansProjects/" 
-        + "annotation-test/src/main/" 
-        + "java/com/dennisjonsson/visualization/test/tsp/")
+@VisualClass
 public class AntTsp {
     // Algorithm parameters:
     // original amount of trail

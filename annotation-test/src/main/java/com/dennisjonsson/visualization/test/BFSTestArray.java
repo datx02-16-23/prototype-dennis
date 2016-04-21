@@ -6,19 +6,17 @@
 package com.dennisjonsson.visualization.test;
 
 
-import com.dennisjonsson.annotation.Print;
-import com.dennisjonsson.markup.AbstractType;
+import com.dennisjonsson.annotation.VisualClass;
+import com.dennisjonsson.annotation.markup.AbstractType;
 import com.dennisjonsson.annotation.Visualize;
 import java.util.ArrayList;
-import com.dennisjonsson.annotation.SourcePath;
 
-@SourcePath(path = "C:/Users/dennis/Documents/NetBeansProjects/" 
-        + "annotation-test/src/main/" 
-        + "java/com/dennisjonsson/visualization/test/")
+
+@VisualClass
 public class BFSTestArray {
     
     // this is a comment yo
-    public void bfs(int[][] adjList,  int start) {
+    public void bfs(@Visualize(abstractType="array")int[][] adjList,  int start) {
         
         int size = adjList.length;
         

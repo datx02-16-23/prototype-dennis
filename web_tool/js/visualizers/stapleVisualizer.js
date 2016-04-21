@@ -57,7 +57,8 @@ var StapleVisualizer = function(args){
 			
 		}else{
 			
-			if(this.checkId(opt.target, this.dataStructure)){
+			if(this.checkId(opt.target, this.dataStructure) 
+				&& opt.target.index != null){
 				this.writeOperation(opt.target.index[0], opt.value);
 			}
 			

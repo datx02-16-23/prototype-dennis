@@ -5,8 +5,8 @@
  */
 package com.dennisjonsson.annotation.processor.parser;
 
-import com.dennisjonsson.log.ast.LogUtils;
-import com.dennisjonsson.markup.DataStructure;
+import com.dennisjonsson.annotation.log.ast.LogUtils;
+import com.dennisjonsson.annotation.markup.DataStructure;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.expr.ClassExpr;

@@ -1,10 +1,9 @@
 package com.dennisjonsson.annotation.processor;
 
 
-import com.dennisjonsson.annotation.Include;
 import com.dennisjonsson.annotation.Interpreter;
 import com.dennisjonsson.annotation.Print;
-import com.dennisjonsson.markup.DataStructure;
+import com.dennisjonsson.annotation.markup.DataStructure;
 import com.dennisjonsson.annotation.Visualize;
 import com.dennisjonsson.annotation.processor.parser.ASTProcessor;
 import com.dennisjonsson.annotation.processor.parser.SourceProcessorFactory;
@@ -23,11 +22,11 @@ import java.util.Set;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.HashMap;
-import com.dennisjonsson.markup.DataStructureFactory;
+import com.dennisjonsson.annotation.markup.DataStructureFactory;
 import com.dennisjonsson.annotation.SourcePath;
-import com.dennisjonsson.annotation.VisualizeArg;
-import com.dennisjonsson.markup.Argument;
-import com.dennisjonsson.markup.Method;
+import com.dennisjonsson.annotation.VisualClass;
+import com.dennisjonsson.annotation.markup.Argument;
+import com.dennisjonsson.annotation.markup.Method;
 
 
 //@AutoService(Processor.class)
@@ -39,8 +38,10 @@ public class VisualizeProcessor extends AbstractProcessor {
         private HashMap<String, ArrayList<DataStructure>> looseDataStructures;
         private HashMap<String, Element> loosePrints;
         private HashMap<String, HashMap<String, Method>> looseMethods;
-        private HashMap<String, ArrayList<String>> includes;
+        //private HashMap<String, ArrayList<String>> includes;
         private String interpreterClassName = null;
+        private String SOURCE_PATH = null;
+        private ArrayList<String> annotatedClasses;
 
 	
 	@Override
@@ -51,7 +52,8 @@ public class VisualizeProcessor extends AbstractProcessor {
                 looseDataStructures = new HashMap<>();
                 loosePrints = new HashMap<>();
                 looseMethods = new HashMap<>();
-                includes = new HashMap<>();
+               // includes = new HashMap<>();
+                annotatedClasses = new ArrayList<>();
 	}
         
 
@@ -61,24 +63,25 @@ public class VisualizeProcessor extends AbstractProcessor {
 	@Override
 	public boolean process(Set<? extends TypeElement> annoations, RoundEnvironment env) { 
 		
-                processVisualClassPath(env);
+                processVisualClass(env);
+                processSourcePath(env);
 		processVisualize(env);
-                processVisualizeArg(env);
                 processPrint(env);
-                processInclude(env);
                 processInterpreter(env);
                 
 		for(ASTProcessor sourceProcessor : sourceFiles.values()){
 
                     if(!sourceProcessor.isWritten()){
                         
-                        ArrayList<String> inc = includes.get(sourceProcessor.fullName);
-                        if(inc != null){
-                            sourceProcessor.setIncludes(inc);
-                        }
+                        //ArrayList<String> inc = includes.get(sourceProcessor.fullName);
+                        //if(inc != null){
+                        sourceProcessor.setIncludes(annotatedClasses);
+                        //}
                         if(interpreterClassName != null){
                             sourceProcessor.setInterpreter(interpreterClassName);
                         }
+                        
+                        sourceProcessor.setPath(SOURCE_PATH);
                         
                         sourceProcessor.written();
                         // process new source file
@@ -92,6 +95,17 @@ public class VisualizeProcessor extends AbstractProcessor {
 		return true;
 	}
         
+        private void processSourcePath(RoundEnvironment env){
+            for (Element annotatedElement : env.getElementsAnnotatedWith(SourcePath.class)) {
+                if(annotatedElement.getKind() == ElementKind.CLASS){
+                    SourcePath annotation = 
+                        (SourcePath)annotatedElement.getAnnotation(SourcePath.class);
+                    SOURCE_PATH = annotation.path();
+                }
+            }
+        }
+        
+        /*
         private void processInclude(RoundEnvironment env){
              for (Element annotatedElement : env.getElementsAnnotatedWith(Include.class)) {
                  if(annotatedElement.getKind() == ElementKind.CLASS){
@@ -113,53 +127,16 @@ public class VisualizeProcessor extends AbstractProcessor {
                  }
                  
                  
-        }
+        }*/
         
-        private void processVisualizeArg(RoundEnvironment env){
-            for (Element annotatedElement : env.getElementsAnnotatedWith(VisualizeArg.class)) {
-                
-                Element classElement = findTop(annotatedElement, ElementKind.CLASS);
-                
-                
-                if(classElement != null && annotatedElement.getKind() 
-                    == ElementKind.METHOD){
-                    
-                    addArgument(annotatedElement, classElement.toString());
-                }else{
-                    throw new RuntimeException("No enclosing class "
-                                + "found for Print");
-                }
-            }
-            
-        }
-        
-        private void addArgument(Element annotatedElement, String className){
-            
-            VisualizeArg annotation = (VisualizeArg)
-                    annotatedElement.getAnnotation(VisualizeArg.class);
-            
-            String [] args = annotation.args();
-
-            Method method = new Method(
-                    className, 
-                    annotatedElement.getSimpleName().toString(),
-                    annotatedElement.toString());
-            
-            for(int pos = 0; pos < args.length; pos++){
-
-                if(args[pos] != null){
-                    
-                    DataStructure ds = DataStructureFactory
-                    .getDataStructure(args[pos], 
-                            method.arguments[pos].trim(), null);
-            
-                    addDataStructure(ds, className);
-                    // Argument(String method, int position, DataStructure dataStructure)
-                    addArgument(new Argument(null,method,pos, ds));
-                }
-                
-            }
  
+        private void addArgument(String className, Element methodElm, DataStructure ds){
+            
+            Method method = new Method(className, methodElm.toString()); 
+         
+            addDataStructure(ds, className);
+            addArgument(new Argument(ds.identifier,method,ds));
+                
         }
         
 
@@ -167,11 +144,9 @@ public class VisualizeProcessor extends AbstractProcessor {
             ASTProcessor processor = sourceFiles.get(arg.method.className);
             
             if(processor != null){
-               // Argument(String method, int position, DataStructure dataStructure) {
-               
+              
                 processor.addArgument(arg);
-                //throw new RuntimeException("added: "+arg.method.name+", "+arg.name);
-                //throw new RuntimeException("adding print to processor");
+           
             }else{
                 HashMap<String, Method> methods = looseMethods.get(arg.method.className);
                 if(methods == null){
@@ -183,7 +158,7 @@ public class VisualizeProcessor extends AbstractProcessor {
                 }
                 
                 methods.get(arg.method.name).addArgument(arg);
-                //throw new RuntimeException("adding print to loose prints");
+           
             }
         }
         
@@ -191,12 +166,10 @@ public class VisualizeProcessor extends AbstractProcessor {
         private void processPrint(RoundEnvironment env){
             for (Element annotatedElement : env.getElementsAnnotatedWith(Print.class)) {
                 
-                //Print annotation = (Print)annotatedElement.getAnnotation(Print.class);
-                
                 Element classElement = findTop(annotatedElement, ElementKind.CLASS);
                 
-             
-                if(classElement != null){
+                if((annotatedElement.getKind() == ElementKind.METHOD) && 
+                        classElement != null){
                     
                     addPrint(annotatedElement, classElement.toString());
                 }else{
@@ -211,13 +184,10 @@ public class VisualizeProcessor extends AbstractProcessor {
             ASTProcessor processor = sourceFiles.get(className);
             
             if(processor != null){
-                
                 processor.setPrint(annotatedElement);
-                //throw new RuntimeException("adding print to processor");
             }else{
 
                 loosePrints.put(className , annotatedElement);
-                //throw new RuntimeException("adding print to loose prints");
             }
         }
 	
@@ -231,24 +201,31 @@ public class VisualizeProcessor extends AbstractProcessor {
                 Visualize annotation = (Visualize)annotatedElement.getAnnotation(Visualize.class);
 
                 String abstractType = annotation.abstractType();
-
+                Element classElement = findTop(annotatedElement, ElementKind.CLASS);
+                
+                if(classElement == null){
+                    throw new RuntimeException("No enclosing class "
+                                + "found for dataStructure");
+                }
+                
                 DataStructure dataStructure = DataStructureFactory.getDataStructure(abstractType, 
                         annotatedElement.asType().toString(), 
                         annotatedElement.toString());
- 
-                Element classElement = findTop(annotatedElement, ElementKind.CLASS);
-			
-                if(classElement != null){	
+                
+                if(annotatedElement.getKind() == ElementKind.PARAMETER ){
+                    addArgument(
+                            classElement.toString(), 
+                            annotatedElement.getEnclosingElement(), 
+                            dataStructure);
+                    //System.out.println("parameter: "+annotatedElement.toString());
+                    //System.out.println("enclosing: "+annotatedElement.getEnclosingElement().toString());
                     
+                }else if(annotatedElement.getKind() == ElementKind.FIELD){
                     addDataStructure(dataStructure, classElement.toString());
-                //throw new RuntimeException(classElement.toString());	
-                }else{
-                        // no enclosing class was found
-                        messager.printMessage(Diagnostic.Kind.ERROR,
-                                "enclosing class not found.");
-                        throw new RuntimeException("No enclosing class "
-                                + "found for dataStructure");
+                    
                 }
+
+                
 
             }
 	}
@@ -269,26 +246,22 @@ public class VisualizeProcessor extends AbstractProcessor {
             }
         }
         
-        private void processVisualClassPath(RoundEnvironment env){
+        private void processVisualClass(RoundEnvironment env){
 		
             for (Element annotatedElement : 
-                env.getElementsAnnotatedWith(SourcePath.class)) {
-
-                SourcePath annotation = 
-                        (SourcePath)annotatedElement.getAnnotation(SourcePath.class);
+                env.getElementsAnnotatedWith(VisualClass.class)) {
 
                 String className = annotatedElement.getSimpleName().toString();
-                String path = annotation.path();
- 
-
-                if(!(sourceFiles.containsKey(annotatedElement.toString()))){
-
+                
+                addAnnotatedClass(annotatedElement.toString());
+               
+                if((annotatedElement.getKind() == ElementKind.CLASS) && 
+                        !(sourceFiles.containsKey(annotatedElement.toString()))){
 
                     ASTProcessor sourceProcessor = 
                         (ASTProcessor)SourceProcessorFactory
                                 .getProcessor(
                                         SourceProcessorFactory.Type.AST, 
-                                        path, 
                                         className,
                                         annotatedElement.toString());
 
@@ -298,7 +271,6 @@ public class VisualizeProcessor extends AbstractProcessor {
                         sourceProcessor.getDataStructures()
                                 .addAll(looseDataStructures
                                         .get(annotatedElement.toString()));
-
                     }
 
                     // loose prints
@@ -317,6 +289,13 @@ public class VisualizeProcessor extends AbstractProcessor {
                     //throw new RuntimeException(annotatedElement.toString());
                 }
             }
+        }
+        
+        private void addAnnotatedClass(String fullClassName){
+            if(!annotatedClasses.contains(fullClassName)){
+                annotatedClasses.add(fullClassName);
+            }
+            
         }
         
         private void processInterpreter(RoundEnvironment env){
@@ -391,9 +370,8 @@ public class VisualizeProcessor extends AbstractProcessor {
 		Set<String> set = new LinkedHashSet<String>();
                 set.add(SourcePath.class.getCanonicalName());
 		set.add(Visualize.class.getCanonicalName());
-                set.add(VisualizeArg.class.getCanonicalName());
-                set.add(Include.class.getCanonicalName());
                 set.add(Interpreter.class.getCanonicalName());
+                set.add(VisualClass.class.getCanonicalName());
                 set.add(Print.class.getCanonicalName());
 		return set;
 	}

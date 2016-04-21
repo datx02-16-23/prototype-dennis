@@ -186,7 +186,7 @@ var GraphVisualizer = function(args){
 			}
 		}
 		// init edges
-		else if(index.length == 1){
+		else if(index != null && index.length == 1){
 			this.connectAll({
 				node: evt.target,
 				nodes: value

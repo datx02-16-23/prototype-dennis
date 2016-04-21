@@ -1,23 +1,20 @@
 
 package com.dennisjonsson.visualization.test;
 
-import com.dennisjonsson.annotation.Print;
-import com.dennisjonsson.annotation.SourcePath;
-import com.dennisjonsson.annotation.VisualizeArg;
-import com.dennisjonsson.markup.AbstractType;
+
+import com.dennisjonsson.annotation.VisualClass;
+import com.dennisjonsson.annotation.Visualize;
+import com.dennisjonsson.annotation.markup.AbstractType;
 import java.util.Arrays;
 
-@SourcePath(path = "C:/Users/dennis/Documents/NetBeansProjects/" 
-        + "annotation-test/src/main/" 
-        + "java/com/dennisjonsson/visualization/test/")
+@VisualClass
 public class QuickSort {
     
     public static void sort(int[] array){
         quickSort(array, 0 ,array.length-1);
     }
 	
-    @VisualizeArg(args = {AbstractType.ARRAY})
-    public static void quickSort(int[] arr, int low, int high) {
+    public static void quickSort(@Visualize(abstractType="array")int[] arr, int low, int high) {
             if (arr == null || arr.length == 0)
                     return;
             if (low >= high)

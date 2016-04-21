@@ -65,7 +65,7 @@ var BinaryTreeVisualizer = function(args){
 				this.writeOperation(i, value[i]);
 			}
 			
-		}else{
+		}else if(opt.target.index != null){
 			
 			if(this.checkId(opt.target, this.dataStructure)){
 				this.writeOperation(opt.target.index[0], opt.value);

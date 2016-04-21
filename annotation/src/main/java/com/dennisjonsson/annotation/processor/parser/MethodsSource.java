@@ -1,7 +1,7 @@
 package com.dennisjonsson.annotation.processor.parser;
 
-import com.dennisjonsson.log.ast.LogUtils;
-import com.dennisjonsson.markup.DataStructure;
+import com.dennisjonsson.annotation.log.ast.LogUtils;
+import com.dennisjonsson.annotation.markup.DataStructure;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -110,7 +110,7 @@ public class MethodsSource{
         public String getValue(int dimension, String type, String name){
             String value = name;
             if(dimension > 1){
-                 value = "new "+LogUtils.CLASS_NAME+"<"+type+">()."+LogUtils.COPY+"("+name+")";
+                 value = "new "+LogUtils.class.getName()+"<"+type+">()."+LogUtils.COPY+"("+name+")";
             }
             if(dimension == 1){
                 value = "java.util.Arrays.copyOf("+name+","+name+".length)";

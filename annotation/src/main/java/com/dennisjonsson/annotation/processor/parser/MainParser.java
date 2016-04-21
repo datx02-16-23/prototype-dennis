@@ -5,12 +5,13 @@
  */
 package com.dennisjonsson.annotation.processor.parser;
 
-import com.dennisjonsson.log.ast.EvalOperation;
-import com.dennisjonsson.log.ast.WriteOperation;
-import com.dennisjonsson.markup.Argument;
-import com.dennisjonsson.markup.ArrayDataStructure;
-import com.dennisjonsson.markup.DataStructure;
-import com.dennisjonsson.markup.Method;
+import com.dennisjonsson.annotation.log.ast.EvalOperation;
+import com.dennisjonsson.annotation.log.ast.WriteOperation;
+import com.dennisjonsson.annotation.markup.Argument;
+import com.dennisjonsson.annotation.markup.ArrayDataStructure;
+import com.dennisjonsson.annotation.markup.DataStructure;
+import com.dennisjonsson.annotation.markup.Header;
+import com.dennisjonsson.annotation.markup.Method;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.VariableDeclarator;
@@ -65,6 +66,8 @@ public class MainParser extends ModifierVisitorAdapter
     }
     
     private Level level = Level.CLASS; 
+    
+    private String methodScope = null;
 
 
     public MainParser(String className, ArrayList<DataStructure> dataStruct, Element printMethod, 
@@ -78,9 +81,30 @@ public class MainParser extends ModifierVisitorAdapter
     }
     
  
+    private String concatIdentifier(String id){
+        
+        if(methodScope != null){
+              return className + Header.CONCAT + methodScope + Header.CONCAT + id;
+        }
+        return className + Header.CONCAT + id;
+        
+        
+        //return id;
+        
+    }
   
     private boolean arrayMatchesIdentifier(String identifier, String arrayAccess){
-        return arrayAccess.matches(identifier+"(\\s*(\\[(.*)\\]))*");
+        
+        if(methodScope != null){
+              return ( className + Header.CONCAT + methodScope + Header.CONCAT + arrayAccess)
+                      .matches(identifier+"(\\s*(\\[(.*)\\]))*");
+        }
+        return (className + Header.CONCAT + arrayAccess)
+                .matches(identifier+"(\\s*(\\[(.*)\\]))*");
+        
+        
+        //return arrayAccess.matches(identifier+"(\\s*(\\[(.*)\\]))*");
+        
     }
     
     private DataStructure isAnnotated(String identifier){
@@ -292,7 +316,7 @@ public class MainParser extends ModifierVisitorAdapter
         
         if(dataStructure != null){
             ArrayList<Expression> args = new ArrayList<>(); 
-            args.add(new StringLiteralExpr(dataStructure.getIdentifier()));
+            args.add(new StringLiteralExpr(concatIdentifier(dataStructure.getIdentifier())));
             args.add(aValueExp);
             args.add(new IntegerLiteralExpr(WriteOperation.ARRAY+""));
             return createWrite(args);
@@ -322,7 +346,7 @@ public class MainParser extends ModifierVisitorAdapter
     
     private MethodCallExpr setWtriteFromVariable(NameExpr nExpr){
         ArrayList<Expression> args = new ArrayList<>();  
-        args.add(new StringLiteralExpr(nExpr.getName()));
+        args.add(new StringLiteralExpr(concatIdentifier(nExpr.getName())));
         args.add(nExpr);
         args.add(new IntegerLiteralExpr(WriteOperation.VARIABLE+""));
         return createWrite(args);
@@ -395,12 +419,12 @@ public class MainParser extends ModifierVisitorAdapter
     }
     
     private void handleArguments(MethodCallExpr n){
-        Method method = methods.get(n.getName());
         
+        Method method = methods.get(n.getName());
         if(method != null){
+          
             for(Argument argItem : method.annotetedArguments){
-                MethodCallExpr call = 
-                        handleArgument(n.getArgs().get(argItem.position),argItem);
+               MethodCallExpr call = handleArgument(n.getArgs().get(argItem.position),argItem);
                 n.getArgs().set(argItem.position, call);
             }
         }
@@ -409,12 +433,13 @@ public class MainParser extends ModifierVisitorAdapter
     private MethodCallExpr handleArgument(Expression expr, Argument arg){
         
         DataStructure ds = isAnnotated(expr.toString());
+        
         Expression source;
         int writeSourceContext;
         int writeTargetContext = WriteOperation.VARIABLE;
         
         if(ds != null){
-            source = new StringLiteralExpr(ds.getIdentifier());
+            source = new StringLiteralExpr(concatIdentifier(ds.getIdentifier()));
             if(expr instanceof ArrayAccessExpr){
                 writeSourceContext = WriteOperation.ARRAY;
             }else{
@@ -436,7 +461,7 @@ public class MainParser extends ModifierVisitorAdapter
     public MethodCallExpr setEvalCall(String target, Expression value, 
             int context, int [] line){
         return setEvalCall(
-                new StringLiteralExpr(target),
+                new StringLiteralExpr(concatIdentifier(target)),
                 value,
                 context,
                 line

@@ -5,9 +5,9 @@
  */
 package com.dennisjonsson.visualization.test.app;
 
-import com.dennisjonsson.annotation.Include;
 import com.dennisjonsson.annotation.Print;
 import com.dennisjonsson.annotation.SourcePath;
+import com.dennisjonsson.annotation.VisualClass;
 import com.dennisjonsson.visualization.test.BubbleSort;
 import com.dennisjonsson.visualization.test.HeapSort;
 import com.dennisjonsson.visualization.test.MergeSort;
@@ -22,15 +22,8 @@ import java.util.logging.Logger;
  * @author dennis
  */
 
-
-@Include(classes = {"com.dennisjonsson.visualization.test.BubbleSort",
-                    "com.dennisjonsson.visualization.test.QuickSort",
-                    "com.dennisjonsson.visualization.test.MergeSort",
-                    "com.dennisjonsson.visualization.test.HeapSort"})
-
-@SourcePath(path = "C:/Users/dennis/Documents/NetBeansProjects/" 
-        + "annotation-test/src/main/" 
-        + "java/com/dennisjonsson/visualization/test/app/")
+@SourcePath(path = "C:/Users/dennis/Documents/NetBeansProjects/annotation-test")
+@VisualClass
 public class TestApp {
     
     public static Semaphore s = new Semaphore(3, true);

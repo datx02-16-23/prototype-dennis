@@ -50,9 +50,9 @@
 			this.DOM["spinner"] = spinner.getSpinner("spinner");
 			document.body.appendChild(this.DOM["spinner"]);
 			// input text
-			document.getElementById("text_input").value="";
-			this.DOM["input_text_window"] = document.getElementById("input_text_window");
-			this.DOM["container_window"].removeChild(this.DOM["input_text_window"]);
+			//document.getElementById("text_input").value="";
+			//this.DOM["input_text_window"] = document.getElementById("input_text_window");
+			//this.DOM["container_window"].removeChild(this.DOM["input_text_window"]);
 			
 			// uplaod file window
 			this.DOM["upload_file_window"] = document.getElementById("upload_file_window");
@@ -189,13 +189,17 @@
 			this.sequence = Visualizer.sequence;
 			this.sequence.setMarkup(markup);
 			
-			this.initSources(markup.header.sources);
+			// v2.1 log specification
+			if(markup.header.metadata != null){
+				this.initSources(markup.header.metadata.sources);
+			}else{
+				this.initSources(markup.header.sources);
+			}
 			
-			// backup init
+			// annotated variables are in header
 			if(this.allVisualizations.length <= 0){
 				this.backup(markup);
 			}
-			
 			
 			this.DOM["upload_file_form"].removeChild(this.DOM["spinner"]);
 			this.DOM["container_window"].removeChild(this.DOM["upload_file_window"]);
@@ -234,12 +238,23 @@
 						container: this.DOM["container"],
 						name: key
 					});
+			
 					var variables = sources[key].annotatedVariables;
-					var visualizations = this.initVariables(variables);
-					program.init({
-						visualizations: visualizations,
-					    codeLines: sources[key].lines
-					});
+					
+					if(variables != null){
+						var visualizations = this.initVariables(variables);
+						program.init({
+							visualizations: visualizations,
+							codeLines: sources[key].sourceLines
+						});
+					}else{
+						program.init({
+							visualizations: [],
+							codeLines: sources[key].sourceLines
+						});
+					}
+					
+					
 					// adding program to sequence here
 					Visualizer.sequence.addProgram({
 						program: program

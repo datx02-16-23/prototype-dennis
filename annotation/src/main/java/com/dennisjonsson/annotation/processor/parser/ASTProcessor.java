@@ -5,13 +5,14 @@
  */
 package com.dennisjonsson.annotation.processor.parser;
 
-import com.dennisjonsson.log.AbstractInterpreter;
-import com.dennisjonsson.log.DefaultInterpreter;
-import com.dennisjonsson.log.ast.ASTLogger;
-import com.dennisjonsson.log.ast.SourceHeader;
-import com.dennisjonsson.markup.Argument;
-import com.dennisjonsson.markup.DataStructure;
-import com.dennisjonsson.markup.Method;
+import com.dennisjonsson.annotation.log.AbstractInterpreter;
+import com.dennisjonsson.annotation.log.DefaultInterpreter;
+import com.dennisjonsson.annotation.log.ast.ASTLogger;
+import com.dennisjonsson.annotation.log.ast.SourceHeader;
+import com.dennisjonsson.annotation.markup.Argument;
+import com.dennisjonsson.annotation.markup.DataStructure;
+import com.dennisjonsson.annotation.markup.Header;
+import com.dennisjonsson.annotation.markup.Method;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
@@ -40,12 +41,14 @@ public class ASTProcessor extends SourceProcessor {
     private static final String SUFFIX = "Visual";
     private String interpreterClass = DefaultInterpreter.class.getName();
     
-    ASTProcessor(String path, String className, String fullName) {
-        super(path, className);
+    ASTProcessor(String className, String fullName) {
+        super(className);
         this.fullName = fullName;
         methods = new HashMap<>();
         includes = new ArrayList<>();
     }
+    
+  
     
     public void setInterpreter(String interpreterClass){
         this.interpreterClass = interpreterClass;
@@ -79,7 +82,8 @@ public class ASTProcessor extends SourceProcessor {
 
    CompilationUnit readFile(){
        
-       InputStream stream = this.getInputStream(path, className);
+       System.out.println("loading source: "+this.fullPath.toString());
+       InputStream stream = this.getInputStream(this.fullPath);
        
        CompilationUnit unit = null;
        
@@ -102,8 +106,11 @@ public class ASTProcessor extends SourceProcessor {
    
     private void replaceIncludes(TextParser parser){
         for(String incl : includes){
-            parser.renameType(incl, incl + SUFFIX);
-            System.out.println("include: "+incl+" -> "+(incl + SUFFIX));
+            if(!incl.equalsIgnoreCase(fullName)){
+                String classname =incl.replaceAll("(\\w*\\.)", "");
+                parser.renameType(classname, classname + SUFFIX);
+                System.out.println("include: "+incl+" -> "+(incl + SUFFIX));
+            }
         }
     }
     
@@ -148,6 +155,12 @@ public class ASTProcessor extends SourceProcessor {
         builder.append("}");
         return builder.toString();
     }
+    
+    public void concatClassName(String className){
+        for(DataStructure ds : dataStructures){
+            ds.identifier =  className + Header.CONCAT + ds.identifier;
+        }
+    }
 
     @Override
     public void processSource(Object arg) {
@@ -160,14 +173,14 @@ public class ASTProcessor extends SourceProcessor {
         if(print == null){
             throw new RuntimeException("ASTPRocessor: No printing method found");
         }*/
-        
+       
         String newClass = className + SUFFIX;
         String lines = getSourceLinesAsString(unit.toString());
         
         PreParser pp = new PreParser(methods);
         pp.visit(unit, null);
-        
-        
+   
+        concatClassName(className);
         adapter = new MainParser(className, dataStructures, getPrintingMethod(), methods);
         adapter.visit(unit, null);
 
@@ -182,9 +195,9 @@ public class ASTProcessor extends SourceProcessor {
         // replace type of included sources
         replaceIncludes(parser);
         parser.insertInterceptorMethods(className, dataStructures);
-        parser.insertField("public static "+ASTLogger.CLASS_NAME+" logger = \n"
-                +   ASTLogger.CLASS_NAME+".instance("
-                +   "new "+SourceHeader.CLASS_NAME+"("
+        parser.insertField("public static "+ASTLogger.class.getName()+" logger = \n"
+                +   ASTLogger.class.getName()+".instance("
+                +   "new "+SourceHeader.class.getName()+"("
                 +   "\""+newClass+"\","
                 +   ""+lines+","
                 +   getPrintingPath()+","

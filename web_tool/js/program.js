@@ -13,6 +13,7 @@ var VisualizationProgram = function(args){
 		this.codeLines = args.codeLines;
 		this.mainDiv = this.createWindow(args.visualizations);
 		this.codeVisualizer = new CodeVisualizer();
+		
 		this.codeVisualizer.init({
 			container: 	this.mainDiv.childNodes[0],
 			lines: 		this.codeLines,

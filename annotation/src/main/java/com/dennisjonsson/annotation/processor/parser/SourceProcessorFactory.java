@@ -17,10 +17,13 @@ public class SourceProcessorFactory {
     }
     
     public static SourceProcessor getProcessor(Type type, 
-            String path, String className, String fullName){
+            String className, String fullName){
         switch(type.toString()){
             case "AST" :
-                return new ASTProcessor(path, className, fullName);
+            
+                return new ASTProcessor(className, fullName);
+               
+                
             default:
                 throw new RuntimeException(
                         "SourceProcessorFactory: "
