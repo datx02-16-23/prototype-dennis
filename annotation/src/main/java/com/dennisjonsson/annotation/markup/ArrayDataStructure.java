@@ -15,8 +15,8 @@ public class ArrayDataStructure extends DataStructure {
     
     private static final String SIZE = "size";
     
-    public ArrayDataStructure(String abstractType, String type, String name) {
-        super(abstractType, type, name);
+    public ArrayDataStructure(String abstractType, String rawType, String type, String name) {
+        super(abstractType, rawType, type, name);
         this.attributes.put(SIZE, new ArrayList<Integer>());
         
     }

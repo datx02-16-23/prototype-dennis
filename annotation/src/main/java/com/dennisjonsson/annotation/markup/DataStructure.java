@@ -17,31 +17,27 @@ public class DataStructure {
     
     protected String abstractType;
     protected String rawType;
+    protected transient String type;
     public String identifier;
     public final HashMap<String, Object> attributes;
 
-    public DataStructure(String abstractType, String type, String name) {
+    public DataStructure(String abstractType, String rawType, String type, String name) {
         this.abstractType = abstractType;
-        this.rawType = type;
+        this.rawType = rawType;
+        this.type = type;
         this.identifier = name;
        // size = new ArrayList<Integer>();
         attributes = new HashMap<>();
     }
 
-    public DataStructure(String abstractType, String type, 
-            String name, HashMap<String, Object> attributes) {
-        this.abstractType = abstractType;
-        this.rawType = type;
-        this.identifier = name;
-        this.attributes = attributes;
-    }
+  
 
     public String getAbstractType() {
         return abstractType;
     }
 
     public String getType() {
-        return rawType;
+        return type;
     }
 
     public String getIdentifier() {

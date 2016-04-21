@@ -18,11 +18,11 @@ public class Header {
     public static final String CONCAT = ":";
     
     public final int version = 2;
-    public final HashMap<String, Source> sources;
+    public final HashMap<String, String []> sources;
     // old version
     public final HashMap<String, DataStructure> annotatedVariables;
 
-    public Header(HashMap<String, Source> sources) {
+    public Header(HashMap<String, String []> sources) {
         this.sources = sources;
         
         // old version

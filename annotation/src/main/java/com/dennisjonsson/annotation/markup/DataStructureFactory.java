@@ -15,7 +15,9 @@ public class DataStructureFactory {
     public static final String METHOD =  "getDataStructure";
     
     public static DataStructure getDataStructure(
-            String abstractType, String type, String identifier){
+            String abstractType, 
+            String type, 
+            String identifier){
         type = type.toLowerCase();
         
         String absType = abstractType.toLowerCase().replaceAll(" ", "");
@@ -31,12 +33,19 @@ public class DataStructureFactory {
     }
     
     public static DataStructure createPrimitve(String type, String identifier, String abstractType){
-        return new PrimitiveDataStructure(abstractType,type, identifier);
+        return new PrimitiveDataStructure(abstractType,getRawType(type),type,identifier);
     }
     
-    private static DataStructure createArray(String type, String identifier, String absType){
+    private static DataStructure createArray(String type, String identifier, String abstractType){
        
-        return new ArrayDataStructure(absType, type, identifier);
+        return new ArrayDataStructure(abstractType, getRawType(type), type,identifier);
+    }
+    
+    public static String getRawType(String type){
+        if(type != null && type.contains("[")){
+            return "array";
+        }
+        return "independent variable";
     }
     
 }

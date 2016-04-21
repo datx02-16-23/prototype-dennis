@@ -77,7 +77,7 @@ public class ASTLogger {
         
          markup.header.sources.put(
                  sourceHeader.className, 
-                 new Source(sourceHeader.source)
+                 sourceHeader.source
          );
         
         for( DataStructure ds : sourceHeader.dataStructures){

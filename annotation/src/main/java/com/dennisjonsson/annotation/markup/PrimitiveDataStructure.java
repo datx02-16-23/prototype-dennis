@@ -11,8 +11,8 @@ package com.dennisjonsson.annotation.markup;
  */
 public class PrimitiveDataStructure extends DataStructure {
     
-    public PrimitiveDataStructure(String abstractType, String type, String name) {
-        super(abstractType, type, name);
+    public PrimitiveDataStructure(String abstractType, String rawType, String type,String name) {
+        super(abstractType, rawType,type, name);
     }
     
 }
