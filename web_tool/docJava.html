@@ -1,0 +1,203 @@
+<!doctype html>
+<html>
+<head>
+
+<title>visualization</title>
+
+<link rel="stylesheet" href="css/layout.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="css/button_styles.css" type="text/css" media="screen" />
+
+<script  src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r71/three.min.js" ></script>
+<script  src="js/graphics/graph.js" ></script>
+
+
+	
+	
+	<script>
+		
+		
+		// DOM
+		var DOM;
+		
+		var CANVAS_WIDTH;
+		var CANVAS_HEIGHT;
+		
+		// browser specifics
+		var browser;
+		
+		
+		
+		function initWebGL(){
+		
+			CANVAS_WIDTH = window.innerWidth;
+			CANVAS_HEIGHT = window.innerHeight;
+			initDOM();
+			onWindowResize();
+		}
+	
+		
+		function initDOM(){
+			DOM = [];
+			DOM["header"] = document.getElementById("header");
+			DOM["header_bg"] = document.getElementById("header_bg");
+			DOM["header_graphics"] = document.getElementById("header_graphics");
+			DOM["content"] = document.getElementById("content");
+			DOM["content_header"] = document.getElementById("content_header");
+		}
+		
+		
+		function onWindowResize(){
+		
+			// header
+			CANVAS_WIDTH = window.innerWidth;
+			CANVAS_HEIGHT = window.innerHeight*0.7;
+			
+			if(CANVAS_WIDTH < 1080){
+				CANVAS_WIDTH = 1080;
+			}
+			
+			if(CANVAS_HEIGHT < 500){
+				CANVAS_HEIGHT = 500;
+			}
+
+			DOM["header"].style.width = CANVAS_WIDTH + "px";
+			DOM["header"].style.height = CANVAS_HEIGHT + "px";
+			
+			
+			// content
+			var contentWidth = CANVAS_WIDTH;
+			var margin = contentWidth*0.4/2;
+			contentWidth = contentWidth*0.6;
+			
+			DOM["content"].style.width = contentWidth + "px";
+			DOM["content"].style.marginLeft = margin + "px";
+			DOM["content_header"].style.height = CANVAS_HEIGHT + "px";
+			//DOM["contentHeader"].style.width = CANVAS_WIDTH*0.7 + "px";
+			
+			DOM["header_bg"].style.width = CANVAS_WIDTH + "px";
+			DOM["header_bg"].style.height = CANVAS_HEIGHT + "px";
+			//DOM["HeaderContainer"].style.width = CANVAS_WIDTH + "px";
+			//DOM["HeaderContainer"].style.height = CANVAS_HEIGHT + "px";
+			
+		}
+		
+		
+
+	</script>
+	
+
+</head>
+
+<body onload="initWebGL()">
+	<id id="header" onMouseMove="motion()">
+		<div id="header_bg">
+		</div>
+		<div id="header_graphics">
+		</div>
+	</div>
+	<div id="content">
+		<div id="content_header">
+			<div class="banner">
+				<div class="title">
+					<h1>
+						Visualizer
+					</h1>
+				</div>
+				<div class="links">
+					<a href="#about_section">
+						about the project
+					</a>
+					<a href="visualizer.html">
+						demo
+					</a>
+				</div>
+			</div>
+			<div class="middle">
+				<div class="social">
+					<img src="circle.png">
+					<img src="circle.png">
+					<img src="circle.png">
+				</div>
+				<div class="slogan">
+					<h3>
+						Documentation:
+					</h3>
+					<h2>
+						Java annoations
+					</h2>
+				</div>
+				
+				
+			</div>
+			<div class="bottom">
+				<div class="try_it">
+					<button id="quick start" onClick="#get_started" >try it</button>
+				</div> 
+			</div>
+		</div>
+		<div id="content_body">
+			<div class="content">
+				<div class="quick_info">
+				<div>
+				<!--
+					<img src="box_dark.png">
+					<img src="box_dark.png"> 
+					<img src="box_dark.png">
+					<img src="box_dark.png"> 	-->				
+				</div>
+			</div>
+			<div id="about_section" class="section">
+				<h2 id ="get_started">
+					Getting started with annotations
+				</h2>
+				<h3>
+					In Maven
+				</h3>
+				<p>
+				First we need to setup the maven dependencies and compiler plugin. 
+				Copy paste the following into your Project “pom.xml”.
+				</p>
+				<code>
+					
+			&#60;dependencies&#62;<br>
+					&#60;dependency&#62;<br>
+						&#60;groupId&#62;<br>com.dennisjonsson&#60;/groupId&#62;<br>
+						&#60;artifactId&#62;<br>annotation&#60;/artifactId&#62;<br>
+						&#60;version&#62;<br>1.0-SNAPSHOT&#60;/version&#62;<br>
+					&#60;/dependency&#62;<br>
+				&#60;/dependencies&#62;<br>
+				
+				&#60;build&#62;<br>
+					&#60;plugins&#62;<br>
+					  &#60;plugin&#62;<br>
+						&#60;groupId&#62;<br>org.apache.maven.plugins&#60;/groupId&#62;<br>
+						&#60;artifactId&#62;<br>maven-compiler-plugin&#60;/artifactId&#62;<br>
+						&#60;version&#62;<br>3.0&#60;/version&#62;<br>
+						&#60;configuration&#62;<br>
+						  &#60;annotationProcessors&#62;<br>
+							&#60;annotationProcessor&#62;<br>
+								com.dennisjonsson.annotation.processor.VisualizeProcessor
+							  &#60;/annotationProcessor&#62;<br>
+						  &#60;/annotationProcessors&#62;<br>
+						  &#60;source&#62;<br>1.8&#60;/source&#62;<br>
+						  &#60;target&#62;<br>1.8&#60;/target&#62;<br>
+						&#60;/configuration&#62;<br>
+					  &#60;/plugin&#62;<br>
+					&#60;/plugins&#62;<br>
+				&#60;/build&#62;<br>
+
+				</code>
+			</div>
+			<div id="content_body_bg">
+			
+			</div>
+		</div>
+		
+	</div>
+	</div>
+	<div id="index_footer">	
+	</div>
+	
+</body>
+
+</html>

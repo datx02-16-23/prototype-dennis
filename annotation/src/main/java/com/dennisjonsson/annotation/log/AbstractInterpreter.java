@@ -16,18 +16,22 @@ import java.util.HashMap;
  *
  * @author dennis
  */
-public abstract class AbstractInterpreter implements Stream{
+public abstract class AbstractInterpreter {
     
     protected Markup markup;
+    protected String rootDirectory;
   
-
-    @Override
     public void addMarkup(Markup markup) {
         this.markup = markup;
     }
 
+    public void setRootDirectory(String rootDirectory) {
+        this.rootDirectory = rootDirectory;
+    }
+    
+
     public abstract void interpret(String className, Operation operation);
-    public abstract void print(String json);
+    public abstract void print( String json);
    
 
 

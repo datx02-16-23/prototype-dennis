@@ -11,6 +11,13 @@ import com.dennisjonsson.annotation.markup.Entity;
 import com.dennisjonsson.annotation.markup.Operation;
 import com.dennisjonsson.annotation.markup.Read;
 import com.dennisjonsson.annotation.markup.Write;
+import java.awt.Desktop;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -36,7 +43,18 @@ public class MyInterpreter extends AbstractInterpreter {
 
     @Override
     public void print(String json) {
-       System.out.println("printing!");
+        
+        try {
+            Desktop.getDesktop().browse(
+                    new URI("http://blog-dennisjonsson.rhcloud.com/visualizer/visualizer.html"));
+            System.out.println("opening: "+rootDirectory);
+            Desktop.getDesktop().open(new File(rootDirectory));
+            System.out.println("printing!");
+        } catch (IOException ex) {
+            Logger.getLogger(MyInterpreter.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(MyInterpreter.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     

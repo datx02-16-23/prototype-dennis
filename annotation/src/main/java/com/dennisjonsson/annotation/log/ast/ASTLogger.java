@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Stack;
+import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -68,13 +69,40 @@ public class ASTLogger {
         this.sourceHeader = sourceHeader;
         this.interpreter = sourceHeader.interpreter;
         this.interpreter.addMarkup(markup);
-
+        this.interpreter.setRootDirectory(sourceHeader.rootDirectory);
         appendHeader(sourceHeader);
+        
+        enablePrint();
+    }
+    
+    private boolean aquired = false;
+    
+    Runnable print = new Runnable(){
+        @Override
+        public void run() {
+            //aquire();
+            print();
+        }
+        
+    };
+
+    
+    private void enablePrint(){
+        if(!aquired){
+            //aquire();
+            Thread t = new Thread(print);
+            try {
+                t.join();
+            } catch (InterruptedException ex) {
+                Logger.getLogger(ASTLogger.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            t.start();
+            aquired = true;
+        }
     }
     
     private void appendHeader(SourceHeader sourceHeader){
-        
-        
+
          markup.header.sources.put(
                  sourceHeader.className, 
                  sourceHeader.source
@@ -132,17 +160,10 @@ public class ASTLogger {
         try {
             writer = new PrintWriter(sourceHeader.printingPath+sourceHeader.className+".json", "UTF-8");
             writer.print(json);
-            //Desktop.getDesktop().browse(new URI("http://blog-dennisjonsson.rhcloud.com/visualizer/visualizer.html"));
         } 
         catch (FileNotFoundException | UnsupportedEncodingException ex) {
             throw new RuntimeException(ex.getMessage());
-        }/*
-        catch (IOException ex) {
-            throw new RuntimeException(ex.getMessage());
-        } 
-        catch (URISyntaxException ex) {
-            Logger.getLogger(ASTLogger.class.getName()).log(Level.SEVERE, null, ex);
-        }*/
+        }
         finally{
             if(writer != null)
                 writer.close();

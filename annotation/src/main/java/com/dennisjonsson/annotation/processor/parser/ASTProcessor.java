@@ -202,7 +202,8 @@ public class ASTProcessor extends SourceProcessor {
                 +   ""+lines+","
                 +   getPrintingPath()+","
                 +   parser.printDataStructures(dataStructures) +","
-                +   "new " + interpreterClass + "()"
+                +   "new " + interpreterClass + "(),"
+                +   "\""+rootDirectory+"\""
                 + "));", className);
         source = parser.getSource();
      

@@ -193,7 +193,8 @@
 			if(markup.header.metadata != null){
 				this.initSources(markup.header.metadata.sources);
 			}else{
-				this.initSources(markup.header.sources);
+				//this.initSources(markup.header.sources);
+				this.initSourceArrays(markup.header.sources);
 			}
 			
 			// annotated variables are in header
@@ -228,6 +229,30 @@
 					this.sequence.addVisualizer(visualizers[i]);
 				}
 				this.DOM["container"].appendChild(this.backupWindow); 
+		},
+		
+		this.initSourceArrays = function(sources){
+			for(var key in sources){
+				
+				if (sources.hasOwnProperty(key)) {
+					
+					var program = new VisualizationProgram({
+						container: this.DOM["container"],
+						name: key
+					});
+					
+					program.init({
+						visualizations: [],
+						codeLines: sources[key]
+					});
+					
+					Visualizer.sequence.addProgram({
+						program: program
+						});
+						
+					this.currentPrograms[key] = program;
+				}
+			}
 		},
 		
 		this.initSources = function(sources){

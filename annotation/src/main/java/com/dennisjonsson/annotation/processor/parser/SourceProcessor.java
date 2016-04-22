@@ -38,6 +38,7 @@ public abstract class SourceProcessor {
     private boolean written = false;
     protected Element print;
     protected Path fullPath;
+    protected String rootDirectory;
     
     public SourceProcessor(String className) {
         this.className = className;
@@ -48,7 +49,7 @@ public abstract class SourceProcessor {
 
     public String getPrintingPath() {
         if(print == null){
-            return null;
+            return "\"\"";
         }
         return "\""+print.getAnnotation(Print.class).path()+"\"";
     }
@@ -75,7 +76,7 @@ public abstract class SourceProcessor {
                     + "Please provide a path to your project "
                     + "source using @SourcePath(path = your/path/to/source)");
         }
-        
+        this.rootDirectory = path;
         Path root = FileSystems.getDefault().getPath(path);
         SourceFinder sf = new SourceFinder(className+".java");
         

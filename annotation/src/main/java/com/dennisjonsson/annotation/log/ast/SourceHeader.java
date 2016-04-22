@@ -23,14 +23,16 @@ public class SourceHeader {
     public final String printingPath;
     public final DataStructure [] dataStructures;
     public final AbstractInterpreter interpreter;
+    public final String rootDirectory;
 
     public SourceHeader(String className, String [] source, String printingPath, 
-            DataStructure[] dataStructures, AbstractInterpreter interpreter) {
+            DataStructure[] dataStructures, AbstractInterpreter interpreter, String rootDirectory) {
         this.className = className;
         this.source = source;
         this.printingPath = printingPath;
         this.dataStructures = dataStructures;
         this.interpreter = interpreter;
+        this.rootDirectory = rootDirectory;
     }
 
     

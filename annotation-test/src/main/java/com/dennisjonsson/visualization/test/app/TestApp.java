@@ -98,10 +98,7 @@ public class TestApp {
         } catch (InterruptedException ex) {
             Logger.getLogger(TestApp.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        print();
+     
     }
     
-    @Print(path="")
-    public static void print(){}
 }
