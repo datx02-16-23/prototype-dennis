@@ -209,6 +209,7 @@
 		},
 		
 		this.backup = function(markup){
+			
 			console.log("running backup");
 			var visualizers = this.initVariables(markup.header.annotatedVariables);
 				this.backupWindow = document.createElement("div");

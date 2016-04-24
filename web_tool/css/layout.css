@@ -188,6 +188,12 @@ position:absolute;
 	font-family:helvetica;
 }
 
+#content_body h3{
+	color:#353535;
+	font-size:30px;
+	font-family:helvetica;
+}
+
 #content_body p{
 	color:#353535;
 	font-size:25px;
@@ -355,14 +361,14 @@ position:absolute;
 #player{
 	position:absolute;
 	float:left;
-	margin-top:100px;
+	margin-top:50px;
 	margin-left:20px;
 	background:transparent;
 }
 
 #player_buttons{
 	padding:10px;
-	background:#fefefe;
+	background:transparent;
 	border: none;
 	border-radius: 10px;
     -moz-border-radius: 10px;
@@ -372,6 +378,14 @@ position:absolute;
 #player_buttons img{
 	width:30px;
 	height:30px;
+}
+
+#player_buttons button{
+	width:45px;
+	height:30px;
+	color:#fefefe;
+	background:#030303;
+	border:none;
 }
 
 #data_display{
@@ -440,6 +454,7 @@ position:absolute;
 
 .code_table{
 	overflow:hidden;
+	margin-top:50px;
 }
 .code_line{
 	

@@ -84,6 +84,8 @@ var Sequence = function(){
 				this.time = setTimeout(function(){
 					_this.iterate();
 				}, this.MILI_SECONDS);
+			}else{
+				alert("End of visualization");
 			}
 		}
 	}
