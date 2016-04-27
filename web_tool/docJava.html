@@ -9,6 +9,7 @@
 
 <script  src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r71/three.min.js" ></script>
 <script  src="js/graphics/graph.js" ></script>
+<script  src="js/links.js" ></script>
 
 
 	
@@ -56,9 +57,7 @@
 				CANVAS_WIDTH = 1080;
 			}
 			
-			if(CANVAS_HEIGHT < 500){
-				CANVAS_HEIGHT = 500;
-			}
+			CANVAS_HEIGHT = 340;
 
 			DOM["header"].style.width = CANVAS_WIDTH + "px";
 			DOM["header"].style.height = CANVAS_HEIGHT + "px";
@@ -103,25 +102,29 @@
 		<div id="content_header">
 			<div class="banner">
 				<div class="title">
-					<h1>
-						Visualizer
+					<h1 onclick="navToHome()">
+						ADVice
 					</h1>
 				</div>
 				<div class="links">
-					<a href="#about_section">
-						about the project
+				
+					<a href="#setup_section">
+						set up project
 					</a>
-					<a href="visualizer.html">
-						demo
+					<a href="#get_started">
+						quick start
 					</a>
+					
 				</div>
 			</div>
 			<div class="middle">
+			<!--
 				<div class="social">
 					<img src="circle.png">
 					<img src="circle.png">
 					<img src="circle.png">
 				</div>
+				-->
 				<div class="slogan">
 					<h3>
 						Documentation:
@@ -150,7 +153,7 @@
 					<img src="box_dark.png"> 	-->				
 				</div>
 			</div>
-			<div id="about_section" class="section">
+			<div id="setup_section" class="section">
 				<h2>
 					Setup your project
 				</h2>
@@ -159,7 +162,7 @@
 				</h3>
 				<p>
 				First we need to setup the maven dependencies and compiler plugin. 
-				Copy paste the following into your Project “pom.xml”.
+				Copy paste the following into your project "pom.xml".
 				</p>
 				<code>
 					
@@ -195,7 +198,7 @@
 				Now, try and building your project. 
 				If the build was successful you can start using the annotations to visualize your data structures.
 				</p>
-				<h2 id ="get_started">
+				<h2 id="get_started">
 					Getting started with annotations
 				</h2>
 				<p>

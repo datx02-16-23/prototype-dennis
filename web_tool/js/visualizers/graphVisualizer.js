@@ -54,6 +54,8 @@ var GraphVisualizer = function(args){
 		var hex = 0x000000;
 		
 		this.graph.add({object: sphere, index: index });
+		
+		this.graph.positionNodes();
 	},
 	
 	this.addAll = function(array){
@@ -219,6 +221,15 @@ var GraphVisualizer = function(args){
 		var node2 = args.node2;
 		var value = args.value;
 		var id = args.id;
+		
+	
+		if(this.graph.nodes[node1] == null){
+			this.addNode(node1);
+		}
+		
+		if(this.graph.nodes[node2] == null){
+			this.addNode(node2);
+		}
 		
 		var edge = this.graph.nodes[node1].graph.adjecent[node2];
 		
