@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 @VisualClass
 public class TestApp {
     
-    public static Semaphore s = new Semaphore(3, true);
+    public static Semaphore s = new Semaphore(2, true);
 
     public static void aquire(){
         try {
@@ -87,7 +87,7 @@ public class TestApp {
         
        new Thread(r2).start();
         
-        new Thread(r3).start();
+       // new Thread(r3).start();
        
        // new Thread(r4).start();
         

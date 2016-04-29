@@ -25,6 +25,7 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.lang.model.element.Element;
+import javax.tools.StandardLocation;
 
 /**
  *
@@ -40,10 +41,11 @@ public abstract class SourceProcessor {
     protected Path fullPath;
     protected String rootDirectory;
     
+    public static final String SUFFIX = "Visual";
+    
     public SourceProcessor(String className) {
         this.className = className;
         this.originalClassName = className;
-        this.source = source;
         this.dataStructures = new ArrayList<>();
     }
 
@@ -66,27 +68,8 @@ public abstract class SourceProcessor {
             return this.className;
     }
     
-    public String getPath() {
-        return fullPath.toString();
-    }
-    
-    public void setPath(String path){
-        if(path == null){     
-            throw new RuntimeException("Source path is  null.\n"
-                    + "Please provide a path to your project "
-                    + "source using @SourcePath(path = your/path/to/source)");
-        }
-        this.rootDirectory = path;
-        Path root = FileSystems.getDefault().getPath(path);
-        SourceFinder sf = new SourceFinder(className+".java");
-        
-        try {
-            Files.walkFileTree(root, sf); 
-            this.fullPath = sf.result;
-        } catch (IOException ex) {
-            throw new RuntimeException(ex.getMessage());
-        }
-        
+    public Path getPath(){
+        return fullPath;
     }
 
     public ArrayList<DataStructure> getDataStructures() {
@@ -136,11 +119,10 @@ public abstract class SourceProcessor {
         return stream;
     }
 
-    protected String readFile(Path fullPath){
+    public String readFile(Path fullPath){
         
         if(fullPath == null){
-            throw new RuntimeException("Incorrect path given: "+fullPath.toString()+"\n"+
-                    "Please provide you project path using the @SourcePath annotation");
+            throw new RuntimeException("path is null");
         }
 
         InputStream reader = getInputStream(fullPath);

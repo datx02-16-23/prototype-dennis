@@ -11,8 +11,9 @@ package com.dennisjonsson.annotation.markup;
  */
 public class AbstractType {
     public static final String ARRAY = "array";
-    public static final String ADJECENCY_LIST = "adjacency list";
     public static final String ADJACENCY_MATRIX = "adjacency matrix";
     public static final String BINARY_TREE = "binary tree";
+    public static final String MATRIX = "matrix";
+    public static final String TREE = "tree";
     public static final String UNKNOWN = "unknown";
 }

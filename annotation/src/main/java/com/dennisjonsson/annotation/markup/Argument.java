@@ -13,18 +13,18 @@ package com.dennisjonsson.annotation.markup;
 public class Argument {
     
     public String name;
+    public String simpleName;
     public Method method;
     public DataStructure dataStructure;
     
     public int position = 0;
 
-    public Argument(String name, Method method, DataStructure dataStructure) {
+    public Argument(String name, String simpleName, Method method, DataStructure dataStructure) {
         this.name = name;
+        this.simpleName = simpleName;
         this.method = method;
         this.dataStructure = dataStructure;
     }
-
-    
 
     
 

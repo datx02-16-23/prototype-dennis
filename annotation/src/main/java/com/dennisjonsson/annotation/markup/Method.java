@@ -24,7 +24,7 @@ public class Method {
         this.name = signature.replaceAll("\\(.*\\)", "").trim();
         
         this.className = className;
-        this.signature = signature;
+        this.signature = signature.replaceAll("(\\w*\\.)","").trim();
         this.annotetedArguments = new ArrayList<>();
         this.uniqueSignature = className + signature;
     }
@@ -32,6 +32,16 @@ public class Method {
     public void addArgument(Argument arg){
         arg.method = this;
         annotetedArguments.add(arg);
+    }
+    
+    public boolean compareSignature(String astSignature){
+        astSignature = adjustASTMethodSignature(astSignature);
+        return signature.equalsIgnoreCase(astSignature);
+    }
+    
+    public static String adjustASTMethodSignature(String astSignature){
+        int split = astSignature.indexOf(" ");
+        return astSignature.substring(split).replaceAll(" ", "").trim();
     }
     
     

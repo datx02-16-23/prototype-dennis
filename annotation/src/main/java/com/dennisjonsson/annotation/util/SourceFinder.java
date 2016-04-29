@@ -20,11 +20,20 @@ public class SourceFinder
     extends SimpleFileVisitor<Path> {
     
     public final String sourceFile;
+    public final String fullName;
     public Path result = null;
     
-    public SourceFinder(String sourceFile){
+    public SourceFinder(String sourceFile, String fullClassName){
         super();
         this.sourceFile = sourceFile;
+        this.fullName = fullClassName;
+    }
+    
+    public boolean isFullPath(Path file){
+        
+        return (file.toString().contains(fullName.replaceAll("\\.", "/")) ||
+                file.toString().contains(fullName.replaceAll("\\.", "\\\\")) );
+     
     }
 
     // Print information about
@@ -36,7 +45,8 @@ public class SourceFinder
             //System.out.format("Symbolic link: %s ", file);
         } else if (attr.isRegularFile()) {
             
-            if(file.getFileName().toString().equalsIgnoreCase(sourceFile)){
+            if(file.getFileName().toString().equalsIgnoreCase(sourceFile) && 
+                     isFullPath(file)){
                
                 result = file;
                 return FileVisitResult.TERMINATE;

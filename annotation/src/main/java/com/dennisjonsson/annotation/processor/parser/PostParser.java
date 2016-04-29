@@ -7,14 +7,24 @@ package com.dennisjonsson.annotation.processor.parser;
 
 import com.dennisjonsson.annotation.log.ast.LogUtils;
 import com.dennisjonsson.annotation.markup.DataStructure;
+import com.github.javaparser.ast.ImportDeclaration;
 import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.TypeParameter;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.expr.ClassExpr;
-import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.expr.NameExpr;
+import com.github.javaparser.ast.expr.VariableDeclarationExpr;
 import com.github.javaparser.ast.stmt.Statement;
+import com.github.javaparser.ast.stmt.TypeDeclarationStmt;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.type.PrimitiveType;
+import com.github.javaparser.ast.type.ReferenceType;
+import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.ModifierVisitorAdapter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
 
 /**
  *
@@ -23,35 +33,150 @@ import java.util.Arrays;
 public class PostParser extends ModifierVisitorAdapter {
     
     public final String className;
+    final String fullClassName;
     public final ArrayList<DataStructure> dataStructures;
+    public final HashMap<String, String> includes;
+    public final HashMap<String, String> imports;
+    public final String packageName;
     
-    ArrayList<String> types;
-        private ArrayList<String> primitives = 
-                new ArrayList<>();
-        private ArrayList<String> looseTypes = 
-                new ArrayList<>(Arrays.asList("int", "java.lang.String", "boolean", "char", "double", "float", "java.lang.Object"));
         
     ArrayList<Statement> classBody;
 
-    public PostParser(String className, ArrayList<DataStructure> dataStructures) {
+    public PostParser(String className, String fullClassName, ArrayList<DataStructure> dataStructures, 
+            ArrayList<String> includes, LinkedList<ImportDeclaration> imports, 
+            String packageName) {
+        
         this.className = className;
+        this.fullClassName = fullClassName;
         this.dataStructures = dataStructures;
+        this.includes = new HashMap<>();
+        this.imports = new HashMap<>();
+        this.packageName = packageName;
+        //System.out.println(this.packageName);
+        initIncludes(includes);
+        initImports(imports);
+        
+    }
+    
+    public void initIncludes(ArrayList<String> includes){
+        for(String include : includes){
+           // System.out.println("include: "+include);
+            this.includes.put(include, include);
+        }
+    }
+    
+    public void initImports(LinkedList<ImportDeclaration> imports){
+        for(ImportDeclaration imp : imports){
+            
+            int i = imp.getName().toString().lastIndexOf(".") + 1;
+            this.imports.put(imp.getName().toString().substring(i),
+                    imp.getName().toString());
+           // System.out.println("import: "+imp.getName().toString().substring(i)
+                   // + " -> "+imp.getName());
+        }
     }
 
-    @Override
-    public Node visit(ClassOrInterfaceDeclaration n, Object arg) {
-        
-        
-        return super.visit(n, arg); //To change body of generated methods, choose Tools | Templates.
-    }
 
     @Override
     public Node visit(ClassExpr n, Object arg) {
-        
         return super.visit(n, arg); //To change body of generated methods, choose Tools | Templates.
-        
+    }
+    
+    @Override
+    public Node visit(ClassOrInterfaceDeclaration n, Object arg) {
+        //System.out.println(className+" post: class: "+n.getName());
+        return super.visit(n, arg); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    @Override
+    public Node visit(TypeParameter n, Object arg) {
+        String name = n.getName().toString();
+        //System.out.println(className+" post: TypeParameter name: "+name);
+        return super.visit(n, arg); //To change body of generated methods, choose Tools | Templates.
     }
 
+    @Override
+    public Node visit(TypeDeclarationStmt n, Object arg) {
+        String name = n.getTypeDeclaration().getName().toString();
+       // System.out.println(className+" post: TypeDeclarationStmt : "+name);
+        return super.visit(n, arg); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    @Override
+    public Node visit(VariableDeclarationExpr n, Object arg) {
+        //System.out.println(className+" post: VariableDeclarationExpr : "+n.getType().toString());
+        //n.setType(applyIncludesOnType(n.getType()));
+        return super.visit(n, arg); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Node visit(ClassOrInterfaceType n, Object arg) {
+        //System.out.println(className+" post: ClassOrInterfaceType : "+n.getName());
+        return super.visit((ClassOrInterfaceType)applyIncludesOnType(n), arg); 
+    }
+    
+
+    @Override
+    public Node visit(NameExpr n, Object arg) {
+       // System.out.println(className+" post: NameExpr : "+n.toString());
+        n.setName(applyIncludesOnName(n.toString()));
+        return super.visit(n, arg); 
+    }
+    
+    /*
+        checks other annotated classes against imports
+    */
+    public String checkTypes(String typeName){
+        
+        String importName = imports.get(typeName);
+        if(importName != null){
+            return includes.get(importName);
+        }
+        
+        String include = includes.get(packageName + "." + typeName);
+       // System.out.println("type checking: "+packageName + "." + typeName);
+        if(include != null){
+            return include;
+        }
+        
+        return includes.get(typeName);
+
+    }
+    
+    private String applyIncludesOnName(String name){
+        int i = name.lastIndexOf(".") +1;
+        String includeName = checkTypes(name.substring(i));
+        if( includeName != null){
+               return includeName + ASTProcessor.SUFFIX;
+        }
+        return name;
+    }
+    
+    private Type applyIncludesOnType(Type type){
+        String name = type.toString();
+        int i = name.lastIndexOf(".") +1;
+        String t = checkTypes(name.substring(i));
+        if( t != null){
+               return includeType(type, t);
+        }
+        return type;
+    }
+     
+    public Type includeType(Type type, String name){
+        if(type instanceof ClassOrInterfaceType ){
+            return new ClassOrInterfaceType(name + ASTProcessor.SUFFIX);
+        }else if(type instanceof ReferenceType){
+            ReferenceType refType = (ReferenceType)type;
+            Type innerType = includeType(refType.getType(), name);
+            return new ReferenceType(innerType,refType.getArrayCount());
+        }else if(type instanceof PrimitiveType){
+            return type;
+        }
+        throw new RuntimeException(type.toString() + " is not a class or interface.");
+    }
+ 
+    
+    /*
     @Override
     public Node visit(BlockStmt n, Object arg) {
         if (n.getParentNode() instanceof ClassOrInterfaceDeclaration){
@@ -63,134 +188,8 @@ public class PostParser extends ModifierVisitorAdapter {
             }
         }
         return super.visit(n, arg); //To change body of generated methods, choose Tools | Templates.
-    }
+    }*/
     
-    
-    
-    
-    
-    private void insertMethods(){
-        for(DataStructure ds : dataStructures){
-            insertMethodsFor(ds);
-        }
-    }
 
-    private void insertMethodsFor(DataStructure dStruct){
-        
-        String originalType = dStruct.getType();
-            String cleanType = fixClassTypes(originalType);
-            String primitiveType = cleanType;
-            // check type already exists as method
-            for(String type : types){
-                    if(type.equalsIgnoreCase(primitiveType)){
-                            return;
-                    }
-            }
-            
-            String result = null;
-
-            if(dStruct.getType().contains("[")){
-                primitiveType = primitiveType.replaceAll("(\\[|\\])", "");
-                getArrayEvalsAndWrites(
-                        countDimension(dStruct.getType()),
-                        primitiveType
-                    );
-            }else{
-                getWriteMethod(primitiveType,0);
-                getEval(primitiveType,0);
-            }
-            
-            types.add(primitiveType);
-            types.add(cleanType);
-            types.add(originalType);
-    }
-    
-     public String fixClassTypes(String type){
-            if(!looseTypes.contains(type.replaceAll("(\\[|\\])", "")) || type.contains(".")){
-                int i = type.lastIndexOf(".") + 1;
-                String object = type.substring(i,i+1).toUpperCase()+type.substring(i+1,type.length());
-                return type.substring(0,i)+object;
-            }
-            return type;
-            
-        }
-    
-    public boolean isPrimitive(String primitive){
-            for(String str : primitives){
-               if(str.equalsIgnoreCase(primitive)){
-                   return true;
-               }
-            }
-            return false;
-        }
-    
-    public String getReadMethod(){
-        
-
-            return "public static int read("
-                    + "String name,"
-                    + "int dimension, "
-                    + "int index){ "
-                    + "\nlogger.read(\""+className+"\", name ,index ,dimension);\n"
-
-                    + "return index; \n}\n";
-	}
-	
-	public String getWriteMethod(String primitiveType, int dimension){
-            return "public static "+primitiveType+" write(String name, "+primitiveType+" value, int sourceType, int targetType ){\n"
-                       
-                        + "logger.write(\""+className+"\", name, "+getValue(dimension,primitiveType,"value")+", sourceType, targetType);\n"
-                        + "return value;\n"
-                        + "}\n";
-	}
-        
-        public String getEval(String primitiveType, int dimension){
-            return "public static "+primitiveType+" eval( String targetId, "+primitiveType+" value, int expressionType){"
-                    + "\n"
-                    + "logger.eval(\""+className+"\", targetId, "+getValue(dimension,primitiveType,"value")+", expressionType);\n"
-                    + "return value;\n"
-                    + "}\n";
-        }
-        
-        public String getValue(int dimension, String type, String name){
-            String value = name;
-            if(dimension > 1){
-                 value = "new "+LogUtils.CLASS_NAME+"<"+type+">()."+LogUtils.COPY+"("+name+")";
-            }
-            if(dimension == 1){
-                value = "java.util.Arrays.copyOf("+name+","+name+".length)";
-            }
-            return value;
-        }
-        
-        
-        
-          public int countDimension(String type){
-            int i = 0; 
-            int j = 0;
-            
-            while(i != -1){
-                i = type.indexOf("[", i+1);
-                j++;
-            }
-            return j;
-        }
-          
-        public String getArrayEvalsAndWrites(int dimensions, String primitiveType){
-            StringBuilder builder = new StringBuilder();
-            for(int i = 0; i <= dimensions; i++){
-                if(!isPrimitive(primitiveType)){
-                    builder.append(getEval(primitiveType, i));
-                    builder.append(getWriteMethod(primitiveType, i));
-                    primitives.add(primitiveType);
-                    types.add(primitiveType);
-                }
-                primitiveType = primitiveType + "[]";
-            }
-             
-            return builder.toString();
-        }
-    
-    
     
 }

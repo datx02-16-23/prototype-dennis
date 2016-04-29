@@ -3,6 +3,7 @@ package com.dennisjonsson.annotation.processor;
 
 import com.dennisjonsson.annotation.Interpreter;
 import com.dennisjonsson.annotation.Print;
+import com.dennisjonsson.annotation.Run;
 import com.dennisjonsson.annotation.markup.DataStructure;
 import com.dennisjonsson.annotation.Visualize;
 import com.dennisjonsson.annotation.processor.parser.ASTProcessor;
@@ -27,6 +28,19 @@ import com.dennisjonsson.annotation.SourcePath;
 import com.dennisjonsson.annotation.VisualClass;
 import com.dennisjonsson.annotation.markup.Argument;
 import com.dennisjonsson.annotation.markup.Method;
+import com.dennisjonsson.annotation.processor.exec.ProgramExecutor;
+import com.dennisjonsson.annotation.util.ADVicePrinter;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.tools.JavaCompiler;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.StandardLocation;
+import javax.tools.ToolProvider;
 
 
 //@AutoService(Processor.class)
@@ -42,12 +56,14 @@ public class VisualizeProcessor extends AbstractProcessor {
         private String interpreterClassName = null;
         private String SOURCE_PATH = null;
         private ArrayList<String> annotatedClasses;
+        private String mainSourceName;
 
 	
 	@Override
 	public synchronized void init(ProcessingEnvironment env){
 		messager = env.getMessager();		
 		filer = env.getFiler();
+                
 		sourceFiles = new HashMap<>();
                 looseDataStructures = new HashMap<>();
                 loosePrints = new HashMap<>();
@@ -56,7 +72,6 @@ public class VisualizeProcessor extends AbstractProcessor {
                 annotatedClasses = new ArrayList<>();
 	}
         
-
 	/*
 		process annot
 	*/
@@ -68,74 +83,88 @@ public class VisualizeProcessor extends AbstractProcessor {
 		processVisualize(env);
                 processPrint(env);
                 processInterpreter(env);
+                processRun(env);
                 
-		for(ASTProcessor sourceProcessor : sourceFiles.values()){
-
-                    if(!sourceProcessor.isWritten()){
-                        
-                        //ArrayList<String> inc = includes.get(sourceProcessor.fullName);
-                        //if(inc != null){
-                        sourceProcessor.setIncludes(annotatedClasses);
-                        //}
-                        if(interpreterClassName != null){
-                            sourceProcessor.setInterpreter(interpreterClassName);
-                        }
-                        
-                        sourceProcessor.setPath(SOURCE_PATH);
-                        
-                        sourceProcessor.written();
-                        // process new source file
-                        sourceProcessor.loadSource();
-                        sourceProcessor.processSource(null);
-                        sourceProcessor.writeSource();
-
-                    }
-		}
+                processSources(env);
+                
+		runVisualizationProgram(env);
+                
 
 		return true;
 	}
         
-        private void processSourcePath(RoundEnvironment env){
-            for (Element annotatedElement : env.getElementsAnnotatedWith(SourcePath.class)) {
-                if(annotatedElement.getKind() == ElementKind.CLASS){
-                    SourcePath annotation = 
-                        (SourcePath)annotatedElement.getAnnotation(SourcePath.class);
-                    SOURCE_PATH = annotation.path();
+        private void runVisualizationProgram(RoundEnvironment env){
+            ASTProcessor source = sourceFiles.get(mainSourceName);
+            if(env.processingOver() && (source != null)){
+                ProgramExecutor program = 
+                        new ProgramExecutor(source);
+                program.execute();
+            }else{
+                ADVicePrinter.info("No runnable class defined");
+            }
+        }
+        
+        
+        private void processSources(RoundEnvironment env){
+           
+            if(!env.processingOver() || (SOURCE_PATH == null)){
+                return;
+            }
+            
+            for(ASTProcessor sourceProcessor : sourceFiles.values()){
+
+                if(!sourceProcessor.isWritten()){
+
+                    //ArrayList<String> inc = includes.get(sourceProcessor.fullName);
+                    //if(inc != null){
+                    sourceProcessor.setIncludes(annotatedClasses);
+                    //}
+                    if(interpreterClassName != null){
+                        sourceProcessor.setInterpreter(interpreterClassName);
+                    }
+
+                    sourceProcessor.setPath(SOURCE_PATH);
+
+                    sourceProcessor.written();
+                    // process new source file
+                    sourceProcessor.loadSource();
+                    sourceProcessor.processSource(null);
+                    sourceProcessor.writeSource();
+
                 }
             }
         }
         
-        /*
-        private void processInclude(RoundEnvironment env){
-             for (Element annotatedElement : env.getElementsAnnotatedWith(Include.class)) {
-                 if(annotatedElement.getKind() == ElementKind.CLASS){
-                     addInclude(annotatedElement.toString(), 
-                             ((Include)annotatedElement
-                                     .getAnnotation(Include.class)).classes());
-                 }
-             }
+        private void processRun(RoundEnvironment env){
+            for (Element annotatedElement : env.getElementsAnnotatedWith(Run.class)) {
+                    if(annotatedElement.getKind() == ElementKind.CLASS){
+                        mainSourceName = annotatedElement.toString();
+                        ADVicePrinter.info("main source: "+annotatedElement.toString() );
+                    }
+            }
         }
         
-        private void addInclude(String className, String [] include){
-                 ArrayList<String> inc = includes.get(className);
-                 if(inc == null){
-                     inc = new ArrayList<>();
-                     includes.put(className, inc);
-                 }
-                 for(String str :include){
-                     inc.add(str);
-                 }
-                 
-                 
-        }*/
+        private void processSourcePath(RoundEnvironment env){
+            for (Element annotatedElement : env.getElementsAnnotatedWith(SourcePath.class)) {
+                if(annotatedElement.getKind() == ElementKind.CLASS){
+                    
+                    SourcePath annotation = 
+                        (SourcePath)annotatedElement.getAnnotation(SourcePath.class);
+                    SOURCE_PATH = annotation.path();
+                    ADVicePrinter.info("source path: "+SOURCE_PATH);
+                }
+            }
+        }
         
- 
         private void addArgument(String className, Element methodElm, DataStructure ds){
             
             Method method = new Method(className, methodElm.toString()); 
-         
-            addDataStructure(ds, className);
-            addArgument(new Argument(ds.identifier,method,ds));
+            
+            ArrayList<String> scope = new ArrayList<String>();
+            scope.add(method.name);
+            scope.add(className);
+            addDataStructure(ds, className, scope);
+            addArgument(new Argument(ds.identifier , ds.simpleIdentifier, method,ds));
                 
         }
         
@@ -147,7 +176,7 @@ public class VisualizeProcessor extends AbstractProcessor {
               
                 processor.addArgument(arg);
            
-            }else{
+            }/*else{
                 HashMap<String, Method> methods = looseMethods.get(arg.method.className);
                 if(methods == null){
                     methods = new HashMap<>();
@@ -159,7 +188,7 @@ public class VisualizeProcessor extends AbstractProcessor {
                 
                 methods.get(arg.method.name).addArgument(arg);
            
-            }
+            }*/
         }
         
         
@@ -221,18 +250,24 @@ public class VisualizeProcessor extends AbstractProcessor {
                     //System.out.println("enclosing: "+annotatedElement.getEnclosingElement().toString());
                     
                 }else if(annotatedElement.getKind() == ElementKind.FIELD){
-                    addDataStructure(dataStructure, classElement.toString());
+                    ArrayList<String> scope = new ArrayList<String>();
+                    scope.add(classElement.toString());
+                    addDataStructure(dataStructure, classElement.toString(), scope);
                     
                 }
-
-                
 
             }
 	}
         
-        private void addDataStructure(DataStructure dataStructure, String className){
+        private void addDataStructure(DataStructure dataStructure, String className, ArrayList<String> scope){
             ASTProcessor sourceProcessor = sourceFiles.get(className);
-
+            
+            // set scope of datastructure
+            dataStructure.setScope(scope);
+            
+            ADVicePrinter.info("Visualize "+dataStructure.getAbstractType()
+                    +" "+dataStructure.identifier);
+            
             if(sourceProcessor == null){
                  if(!looseDataStructures.containsKey(className)){
                         ArrayList<DataStructure> list = new ArrayList<>();
@@ -252,11 +287,11 @@ public class VisualizeProcessor extends AbstractProcessor {
                 env.getElementsAnnotatedWith(VisualClass.class)) {
 
                 String className = annotatedElement.getSimpleName().toString();
-                
-                addAnnotatedClass(annotatedElement.toString());
-               
+
                 if((annotatedElement.getKind() == ElementKind.CLASS) && 
                         !(sourceFiles.containsKey(annotatedElement.toString()))){
+                    
+                    addAnnotatedClass(annotatedElement.toString());
 
                     ASTProcessor sourceProcessor = 
                         (ASTProcessor)SourceProcessorFactory
@@ -264,31 +299,37 @@ public class VisualizeProcessor extends AbstractProcessor {
                                         SourceProcessorFactory.Type.AST, 
                                         className,
                                         annotatedElement.toString());
-
+                    
+                    ADVicePrinter.info("VisualCLass "+sourceProcessor.fullName);
                     // add loose dataStructures
-                    if(looseDataStructures.containsKey(annotatedElement.toString())){
+                    if(looseDataStructures.containsKey(sourceProcessor.fullName)){
 
                         sourceProcessor.getDataStructures()
                                 .addAll(looseDataStructures
-                                        .get(annotatedElement.toString()));
+                                        .get(sourceProcessor.fullName));
                     }
 
                     // loose prints
-                    if(loosePrints.containsKey(annotatedElement.toString())){
+                    if(loosePrints.containsKey(sourceProcessor.fullName)){
                         sourceProcessor.setPrint(
-                                loosePrints.get(annotatedElement.toString()));
+                                loosePrints.get(sourceProcessor.fullName));
                     }
                     
+                    /*
                     if(looseMethods.containsKey(annotatedElement.toString())){
-                        sourceProcessor.addMethods(looseMethods.get(annotatedElement.toString()));
-                    }
+                        sourceProcessor.addMethods(looseMethods.get(sourceProcessor.fullName));
+                    }*/
                     
 
-                    sourceFiles.put(annotatedElement.toString(), sourceProcessor);
-
+                    sourceFiles.put(sourceProcessor.fullName, sourceProcessor);
+                    adMethodsForClass(annotatedElement);
                     //throw new RuntimeException(annotatedElement.toString());
                 }
             }
+        }
+        
+        private void adMethodsForClass(Element classElement){
+            handleClassElements(classElement, classElement.toString());
         }
         
         private void addAnnotatedClass(String fullClassName){
@@ -346,7 +387,7 @@ public class VisualizeProcessor extends AbstractProcessor {
 		return nextOuter;
 	}
 	
-	private void printAllElements(Element top){
+	private void handleClassElements(Element top, String className){
 		
 		ArrayList<Element> elements = new ArrayList<Element>();
 		elements.addAll(top.getEnclosedElements());
@@ -357,12 +398,21 @@ public class VisualizeProcessor extends AbstractProcessor {
 			
 			Element e = elements.get(elements.size()-1);
 			strBuilder.append("\n"+e.getKind()+" "+e.getSimpleName()+" "+e.toString());
+                        handleElement(e, className);
 			elements.remove(elements.size()-1);
 			elements.addAll(e.getEnclosedElements());
 		}
 		
 		messager.printMessage(Diagnostic.Kind.NOTE, strBuilder.toString());
 	}
+        
+        private void handleElement(Element e, String className){
+            if(e.getKind() == ElementKind.METHOD){
+                sourceFiles.get(className)
+                    .AddMethod(new Method(className, e.toString()));
+            }
+            
+        }
 	
       
 	@Override
@@ -373,6 +423,7 @@ public class VisualizeProcessor extends AbstractProcessor {
                 set.add(Interpreter.class.getCanonicalName());
                 set.add(VisualClass.class.getCanonicalName());
                 set.add(Print.class.getCanonicalName());
+                set.add(Run.class.getCanonicalName());
 		return set;
 	}
 

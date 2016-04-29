@@ -29,7 +29,7 @@ public class TextParser {
     }
     
     public void removeAnnotations(){
-            source = source.replaceAll("(\\@VisualClass|\\@Visualize|\\@SourcePath|\\@Print|\\@Include)(\\([^\\)]*\\))?+","");
+            source = source.replaceAll("(\\@VisualClass|\\@Visualize|\\@SourcePath|\\@Print|\\@Include|\\@Run)(\\([^\\)]*\\))?+","");
        
     }
     
@@ -50,7 +50,8 @@ public class TextParser {
     public void renameType(String className, String newName){
             source = source.replaceAll(className, newName);
             int i = className.lastIndexOf(".") + 1;
-            rename("(\\)|\\(|\\{|\\}|\\n|\\s|\\.)", "(\\(|\\{|\\}|\\n|\\s|\\.)", className.substring(i), newName);
+            //rename("(\\)|\\(|\\{|\\}|\\n|\\s|\\.)", "(\\(|\\{|\\}|\\n|\\s|\\.)", className.substring(i), newName);
+            rename("(\\W|\\s)", "(\\W|\\s)", className.substring(i), newName);
     
     }
     

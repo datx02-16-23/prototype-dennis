@@ -15,7 +15,7 @@ import java.util.HashMap;
  */
 public class Header {
     
-    public static final String CONCAT = ":";
+    public transient static final String CONCAT = " ";
     
     public final int version = 2;
     public final HashMap<String, String []> sources;

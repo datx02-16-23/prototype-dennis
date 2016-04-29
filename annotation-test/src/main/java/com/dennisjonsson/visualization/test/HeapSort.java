@@ -14,6 +14,7 @@ import java.util.Arrays;
 @VisualClass
 public class HeapSort {
  
+   @Visualize(abstractType="binarytree")
    private static int[] a;
    private static int n;
    private static int left;

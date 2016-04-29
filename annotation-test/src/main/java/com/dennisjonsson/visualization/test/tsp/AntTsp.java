@@ -69,9 +69,9 @@ public class AntTsp {
 
     public int n = 0; // # towns
     public int m = 0; // # ants
-    @Visualize(abstractType=AbstractType.ADJACENCY_MATRIX)
+    @Visualize(abstractType="matrix")
     private double graph[][];
-    @Visualize(abstractType=AbstractType.ADJACENCY_MATRIX)
+    @Visualize(abstractType="matrix")
     private double trails[][];
     private Ant ants[] = null;
     private Random rand = new Random();
@@ -307,10 +307,6 @@ public class AntTsp {
         anttsp.solve();
         
         
-        print();
-        
     }
     
-    @Print(path="")
-    public static void print(){}
 }

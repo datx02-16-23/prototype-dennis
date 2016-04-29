@@ -13,16 +13,24 @@ import com.dennisjonsson.annotation.markup.Argument;
 import com.dennisjonsson.annotation.markup.DataStructure;
 import com.dennisjonsson.annotation.markup.Header;
 import com.dennisjonsson.annotation.markup.Method;
+import com.dennisjonsson.annotation.util.ADVicePrinter;
+import com.dennisjonsson.annotation.util.PathFormatter;
+import com.dennisjonsson.annotation.util.SourceFinder;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.ImportDeclaration;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -33,12 +41,12 @@ import java.util.logging.Logger;
  */
 public class ASTProcessor extends SourceProcessor {
     
-    private MainParser adapter;
+    private ClassLevelParser adapter;
     private CompilationUnit unit;
     public HashMap<String, Method> methods;
     public final String fullName;
     public ArrayList<String> includes;
-    private static final String SUFFIX = "Visual";
+    
     private String interpreterClass = DefaultInterpreter.class.getName();
     
     ASTProcessor(String className, String fullName) {
@@ -47,8 +55,10 @@ public class ASTProcessor extends SourceProcessor {
         methods = new HashMap<>();
         includes = new ArrayList<>();
     }
-    
-  
+     
+    public String getExecutableName(){
+        return fullName + SUFFIX;
+    }
     
     public void setInterpreter(String interpreterClass){
         this.interpreterClass = interpreterClass;
@@ -65,14 +75,42 @@ public class ASTProcessor extends SourceProcessor {
         methods.get(arg.method.name).addArgument(arg);
     }
     
-    public void addMethods(HashMap<String, Method> methods){
-        this.methods = methods;
-    }
-    
     public void addAllArguments(ArrayList<Argument> args){
         for(Argument arg : args){
             addArgument(arg);
         }
+    }
+    
+    public void AddMethod(Method method){
+        if(!methods.containsKey(method.name)){
+            this.methods.put(method.name, method);
+        }
+    }
+
+    public void addMethods(HashMap<String, Method> methods){
+        
+        this.methods = methods;
+    }
+    
+    public void setPath(String path){
+        
+        if(path == null){     
+            throw new RuntimeException("Source path is  null.\n"
+                    + "Please provide a path to your project "
+                    + "source using @SourcePath(path = your/path/to/source)");
+        }
+        
+        this.rootDirectory = path;
+        Path root = FileSystems.getDefault().getPath(path);
+        SourceFinder sf = new SourceFinder(className+".java", fullName);
+        
+        try {
+            Files.walkFileTree(root, sf); 
+            this.fullPath = sf.result;
+        } catch (IOException ex) {
+            throw new RuntimeException(ex.getMessage());
+        }
+        
     }
 
     @Override
@@ -82,7 +120,7 @@ public class ASTProcessor extends SourceProcessor {
 
    CompilationUnit readFile(){
        
-       System.out.println("loading source: "+this.fullPath.toString());
+       ADVicePrinter.info("loading source: "+this.fullPath.toString());
        InputStream stream = this.getInputStream(this.fullPath);
        
        CompilationUnit unit = null;
@@ -109,7 +147,7 @@ public class ASTProcessor extends SourceProcessor {
             if(!incl.equalsIgnoreCase(fullName)){
                 String classname =incl.replaceAll("(\\w*\\.)", "");
                 parser.renameType(classname, classname + SUFFIX);
-                System.out.println("include: "+incl+" -> "+(incl + SUFFIX));
+                ADVicePrinter.info("including: "+incl+" -> "+(incl + SUFFIX));
             }
         }
     }
@@ -122,7 +160,7 @@ public class ASTProcessor extends SourceProcessor {
         String line;
         try {
             while ((line = br.readLine()) != null) {
-                lines.add(line);
+                lines.add(line.replaceAll("\\\\", ""));
             }
         } catch (IOException ex) {
             Logger.getLogger(ASTProcessor.class.getName()).log(Level.SEVERE, null, ex);
@@ -168,21 +206,42 @@ public class ASTProcessor extends SourceProcessor {
         if(unit == null){
             throw new RuntimeException("ASTPRocessor: CompilationUnit is null");
         }
-        
-        /*
-        if(print == null){
-            throw new RuntimeException("ASTPRocessor: No printing method found");
-        }*/
        
         String newClass = className + SUFFIX;
         String lines = getSourceLinesAsString(unit.toString());
         
-        PreParser pp = new PreParser(methods);
-        pp.visit(unit, null);
+        // pre parsing
+        PreParser pp = new PreParser(
+                methods, 
+                className, 
+                fullName
+        );
+        
+        pp.visit(unit, new ASTArgument());
    
-        concatClassName(className);
-        adapter = new MainParser(className, dataStructures, getPrintingMethod(), methods);
-        adapter.visit(unit, null);
+        //concatClassName(className);
+        // main parsing
+        adapter = new ClassLevelParser(
+                className, 
+                fullName,
+                dataStructures, 
+                getPrintingMethod(), 
+                methods
+        );
+        
+        adapter.visit(unit, new ASTArgument());
+        
+        // post parsing
+        PostParser postParser = new PostParser(
+                className, 
+                fullName,
+                dataStructures, 
+                includes, 
+                (LinkedList<ImportDeclaration>)unit.getImports(),
+                unit.getPackage().getName().toString()
+        );
+        
+        postParser.visit(unit, new ASTArgument());
 
         // textual changes
         TextParser parser = new TextParser(unit.toString());
@@ -193,7 +252,7 @@ public class ASTProcessor extends SourceProcessor {
         
         parser.removeAnnotations();
         // replace type of included sources
-        replaceIncludes(parser);
+        //replaceIncludes(parser);
         parser.insertInterceptorMethods(className, dataStructures);
         parser.insertField("public static "+ASTLogger.class.getName()+" logger = \n"
                 +   ASTLogger.class.getName()+".instance("

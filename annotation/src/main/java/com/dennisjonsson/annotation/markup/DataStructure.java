@@ -5,6 +5,7 @@
  */
 package com.dennisjonsson.annotation.markup;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -19,18 +20,29 @@ public class DataStructure {
     protected String rawType;
     protected transient String type;
     public String identifier;
+    public transient String simpleIdentifier;
+    public transient ArrayList<String> scope;
     public final HashMap<String, Object> attributes;
 
     public DataStructure(String abstractType, String rawType, String type, String name) {
         this.abstractType = abstractType;
         this.rawType = rawType;
         this.type = type;
+        this.simpleIdentifier = name;
         this.identifier = name;
        // size = new ArrayList<Integer>();
         attributes = new HashMap<>();
     }
-
-  
+    
+    public void setScope(ArrayList<String> scope){
+        String fullScope = "";
+        for(String str : scope){
+            fullScope = str + Header.CONCAT + fullScope;
+        }
+        identifier = fullScope + simpleIdentifier;
+        this.scope = scope;
+        
+    }
 
     public String getAbstractType() {
         return abstractType;

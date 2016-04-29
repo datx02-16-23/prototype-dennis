@@ -5,6 +5,8 @@
  */
 package com.dennisjonsson.annotation.markup;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author dennis
@@ -30,6 +32,17 @@ public class DataStructureFactory {
  
         }
   
+    }
+    
+    public static DataStructure getDataStructure(
+            String abstractType, 
+            String type, 
+            String identifier, 
+            ArrayList<String> scope){
+        
+        DataStructure ds =  getDataStructure(abstractType, type, identifier);
+        ds.setScope(scope);
+        return ds;
     }
     
     public static DataStructure createPrimitve(String type, String identifier, String abstractType){

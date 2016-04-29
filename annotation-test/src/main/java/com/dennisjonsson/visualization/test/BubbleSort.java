@@ -14,7 +14,7 @@ import com.dennisjonsson.annotation.markup.AbstractType;
 public class BubbleSort {
  
         public static void sort(@Visualize(abstractType="array")int intArray[]) {
- 
+                //intArray = intArray;
                 int n = intArray.length;
                 int temp = 0;
                

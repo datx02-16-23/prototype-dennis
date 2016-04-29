@@ -52,6 +52,8 @@ public class ASTLogger {
     
     private static ASTLogger logger;
     
+    private Thread mainThread;
+    
     public static ASTLogger instance(SourceHeader sourceHeader){
         if(logger == null){
             logger = new ASTLogger(sourceHeader);
@@ -78,27 +80,36 @@ public class ASTLogger {
     private boolean aquired = false;
     
     Runnable print = new Runnable(){
+        
         @Override
         public void run() {
-            //aquire();
+            try {
+                mainThread.join();
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(ASTLogger.class.getName()).log(Level.SEVERE, null, ex);
+            }
             print();
         }
         
     };
-
     
-    private void enablePrint(){
-        if(!aquired){
-            //aquire();
-            Thread t = new Thread(print);
-            try {
-                t.join();
-            } catch (InterruptedException ex) {
-                Logger.getLogger(ASTLogger.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            t.start();
-            aquired = true;
+    //Semaphore s = new Semaphore(1, false);
+/*
+    private void aquire(){
+        try {
+            s.acquire();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(ASTLogger.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }*/
+    
+    private void enablePrint() {
+        mainThread = Thread.currentThread();
+        Thread t = new Thread(print);
+        t.start();
+     
+        
     }
     
     private void appendHeader(SourceHeader sourceHeader){
