@@ -133,6 +133,8 @@
 				
 				return currentProgram;
 			},
+			"tree": 
+				this["binarytree"],
 			"binarytree":
 			function(args){	
 			
@@ -154,6 +156,23 @@
 			function(args){	
 			
 				var currentProgram = new StapleVisualizer(
+					{
+						dataStructure: args.dataStructure, 
+						environment: new Environment2D({
+							position: args.position,
+							divisions: args.divisions,
+							//container: args.DOM["container"], 
+							browser: args.browser
+					})
+				});
+				//currentProgram.init();
+
+				return currentProgram;
+			},
+			"matrix":
+			function(args){	
+			
+				var currentProgram = new MatrixVisualizer(
 					{
 						dataStructure: args.dataStructure, 
 						environment: new Environment2D({
@@ -190,14 +209,11 @@
 			this.sequence.setMarkup(markup);
 			
 			// v2.1 log specification
-			if(markup.header.metadata != null){
-				this.initSources(markup.header.metadata.sources);
-			}else{
-				//this.initSources(markup.header.sources);
-				this.initSourceArrays(markup.header.sources);
-			}
 			
-			// annotated variables are in header
+			//this.initSources(markup.header.sources);
+			this.initSourceArrays(markup.header.sources);
+			
+			// annotated variables are in header, which is also always the case.
 			if(this.allVisualizations.length <= 0){
 				this.backup(markup);
 			}
@@ -212,24 +228,24 @@
 			
 			console.log("running backup");
 			var visualizers = this.initVariables(markup.header.annotatedVariables);
-				this.backupWindow = document.createElement("div");
-				var width = window.innerWidth;
-				var height = window.innerHeight-50;
-				
-				this.backupWindow.style.width = (width*0.7)+"px";
-				this.backupWindow.style.height = height+"px";
-				this.backupWindow.style.marginLeft = (width*0.3)+"px";
-				
-				for(var i = 0; i < visualizers.length; i++){
-		
-					visualizers[i].init({
-						width: width*0.7, 
-						height: height, 
-						container: this.backupWindow
-						});
-					this.sequence.addVisualizer(visualizers[i]);
-				}
-				this.DOM["container"].appendChild(this.backupWindow); 
+			
+			this.backupWindow = document.createElement("div");
+			var width = window.innerWidth;
+			var height = window.innerHeight-50;
+			
+			this.backupWindow.style.width = (width*0.7)+"px";
+			this.backupWindow.style.height = height+"px";
+			this.backupWindow.style.marginLeft = (width*0.3)+"px";
+			
+			for(var i = 0; i < visualizers.length; i++){
+				visualizers[i].init({
+					width: width*0.7, 
+					height: height, 
+					container: this.backupWindow
+					});
+				this.sequence.addVisualizer(visualizers[i]);
+			}
+			this.DOM["container"].appendChild(this.backupWindow); 
 		},
 		
 		this.initSourceArrays = function(sources){
@@ -256,6 +272,9 @@
 			}
 		},
 		
+		
+		// this code expects rhe annotated variables to be in source.
+		/*
 		this.initSources = function(sources){
 			for(var key in sources){
 				
@@ -288,7 +307,7 @@
 					this.currentPrograms[key] = program;
 				}
 			}
-		},
+		},*/
 		
 		this.initVariables = function(variables){
 			var currentPrograms = [];

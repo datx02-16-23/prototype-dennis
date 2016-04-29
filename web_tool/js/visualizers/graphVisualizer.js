@@ -109,7 +109,7 @@ var GraphVisualizer = function(args){
 			
 			this.traverseEdge(evt);
 		}
-		else if( (evt.source.index != null && evt.source.index == 1) 
+		else if( (evt.source.index != null && evt.source.index.length == 1) 
 			&& this.ownData(evt.source) ){
 				
 			this.traverseNode({

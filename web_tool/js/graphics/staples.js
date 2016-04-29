@@ -11,7 +11,6 @@ var Staples = function(args){
 	
 	this.addStaple = function(args){
 		
-		
 		this.staples[args.index] = {
 				value: args.value, 
 				height: this.evaluate(args.value),
