@@ -30,8 +30,8 @@ com.dennisjonsson.annotation.log.ast.ASTLogger.instance(new com.dennisjonsson.an
         int i = 0;
         while (i < left.size()) {
             marked[left.get(i)] = true;
-            for (int j = 0; j < adjList[read("com.dennisjonsson.visualization.test.BFS bfs adjList", 0, left.get(i))].length; j++) {
-                if (!marked[j] && eval(null, eval(null, adjList[read("com.dennisjonsson.visualization.test.BFS bfs adjList", 0, left.get(i))], 2, new int[] { 36, 36 })[read("com.dennisjonsson.visualization.test.BFS bfs adjList", 1, j)], 2, new int[] { 36, 36 }) == 1) {
+            for (int j = 0; j < eval(null, adjList[read("com.dennisjonsson.visualization.test.BFS bfs adjList", 0, left.get(i))], 2, new int[] { 35, 35 }).length; j++) {
+                if (!marked[j] && eval(null, adjList[read("com.dennisjonsson.visualization.test.BFS bfs adjList", 0, left.get(i))], 2, new int[] { 36, 36 })[j] == 1) {
                     left.add(j);
                     marked[j] = true;
                 }

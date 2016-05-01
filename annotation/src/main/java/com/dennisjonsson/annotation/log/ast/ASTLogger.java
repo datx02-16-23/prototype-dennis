@@ -36,20 +36,14 @@ public class ASTLogger {
     
     public static final String CLASS_NAME = "com.dennisjonsson.log.ast.ASTLogger"; 
 
-    /*
-    final ArrayList<LogOperation> operations = 
-            new ArrayList<>();*/
     final HashMap<String,LogParser> streamParsers;
     final Markup markup;
     final SourceHeader sourceHeader;
     
+    
     // interpreter
     final AbstractInterpreter interpreter;
    // final LogParser streamParser;
-    
-    int printCount = 0;
-    final int PARTION_SIZE = 100000; 
-    
     private static ASTLogger logger;
     
     private Thread mainThread;
@@ -85,7 +79,7 @@ public class ASTLogger {
         public void run() {
             try {
                 mainThread.join();
-                Thread.sleep(1000);
+                Thread.sleep(500);
             } catch (InterruptedException ex) {
                 Logger.getLogger(ASTLogger.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -135,24 +129,29 @@ public class ASTLogger {
     
     public synchronized void read(String className, String id, int index, int dimension){
         // IndexRead(String identifier, int index, int dimension, String statementId)
-        streamParsers.get(className).operations.add(new IndexedReadOperation(id, index, dimension));
+        
+        streamParsers.get(className).addOperation(new IndexedReadOperation(id, index, dimension));
     }
     
     public synchronized void write(String className, String name, Object value, int sourceType, int targetType){
         // (String name, String value, String operation, String statementId)
-        streamParsers.get(className).operations.add(new WriteOperation(name, value, sourceType, targetType));
+        streamParsers.get(className).addOperation(new WriteOperation(name, value, sourceType, targetType));
     }
     
     public synchronized void eval(String className, String targetId, Object value, int expressionType, int [] line){
         //EvalOperation(String value, String statementId)
         EvalOperation eval = new EvalOperation(targetId, value, expressionType, line);
-        streamParsers.get(className).operations.add(eval);
+        streamParsers.get(className).addOperation(eval);
         streamOperation(className, eval);
         
     }
     
     private void streamOperation(String className, EvalOperation op){
-        streamParsers.get(className).visit(op, streamParsers.get(className).operations.size()-2);
+        int i = streamParsers.get(className)
+                .visit(op, streamParsers.get(className).pointer - 2) + 1;
+        
+        streamParsers.get(className).resetPointer(i);
+        
         int index = this.markup.body.size()-1;
         this.interpreter.interpret(className, this.markup.body.get(index));
     }

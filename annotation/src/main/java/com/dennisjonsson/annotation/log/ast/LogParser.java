@@ -22,6 +22,8 @@ public class LogParser {
     public final MarkupComposer composer;
     public final String className;
     
+    int pointer =0;
+    
     private final ArrayList<ParseOperation> parserStack;
     private final CallStack callStack;
 
@@ -33,6 +35,25 @@ public class LogParser {
         this.composer = new MarkupComposer(className, markup);
         parserStack = new ArrayList<>();
         callStack = new CallStack(dataStructures, operations, parserStack);
+    }
+    
+    public void addOperation(LogOperation op){
+        operations.add(op);
+        pointer ++;
+        //System.out.println("size:    "+operations.size());
+        //System.out.println("pointer: "+pointer);
+    }
+    
+    public void resetPointer(int i){
+        //System.out.println("reset:   "+i);
+        for(int j = i; j < pointer; j++ ) {
+            operations.remove(i);
+        }
+        pointer = i;
+    }
+    
+    public LogOperation getFromTop(int i){
+        return operations.get(pointer-1 - i);
     }
 
     public void parse(){
@@ -60,12 +81,12 @@ public class LogParser {
     }
     
     public int visit(EvalOperation op, int i){
+        //System.out.println(Arrays.toString(operations.toArray())+ ", "+i);
         LogOperation nextOp = operations.get(i);
-
         switch(op.expressionType){
             case EvalOperation.ASSIGNMENT :
                 if(!(nextOp.operation.equalsIgnoreCase(WriteOperation.OPERATION))){
-                    throw new RuntimeException("Unexpected successor to eval: "+nextOp.operation);
+                    throw new RuntimeException("ASSIGNMENT: Unexpected successor to eval: "+nextOp.operation);
                 }
                 return visit((WriteOperation)nextOp, i-1 );
             case EvalOperation.ARRAY_ACCESS :

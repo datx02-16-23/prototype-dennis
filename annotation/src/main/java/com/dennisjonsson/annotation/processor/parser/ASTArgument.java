@@ -5,6 +5,7 @@
  */
 package com.dennisjonsson.annotation.processor.parser;
 
+import java.util.HashMap;
 import java.util.Stack;
 
 /**
@@ -29,6 +30,7 @@ public class ASTArgument {
         if(stack.empty()){
             topNode = exp;
             stack.push(exp);
+            
         }
         else if(stack.peek() < 10 || exp >= stack.peek()){
             stack.push(exp);
@@ -54,5 +56,27 @@ public class ASTArgument {
         topNode = -1;
         stack.clear();
     }
+    
+    public int kinds(int kind){
+        int res = 0;
+        for( Object i : stack.toArray()){
+            Integer in = (Integer)i;
+            if(in.intValue() == kind){
+                res ++;
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public String toString() {
+        String res = "";
+        for(Object tr : stack.toArray()){
+            res = res + ", " + tr.toString();
+        }
+        return res; //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    
 
 }

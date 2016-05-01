@@ -20,6 +20,9 @@ import com.github.javaparser.ast.expr.ArrayCreationExpr;
 import com.github.javaparser.ast.expr.ArrayInitializerExpr;
 import com.github.javaparser.ast.expr.AssignExpr;
 import com.github.javaparser.ast.expr.BinaryExpr;
+import com.github.javaparser.ast.expr.BinaryExpr.Operator;
+import com.github.javaparser.ast.expr.ConditionalExpr;
+import com.github.javaparser.ast.expr.EnclosedExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.IntegerLiteralExpr;
@@ -33,6 +36,7 @@ import com.github.javaparser.ast.stmt.ExpressionStmt;
 import com.github.javaparser.ast.stmt.ForStmt;
 import com.github.javaparser.ast.stmt.IfStmt;
 import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.stmt.WhileStmt;
 import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.visitor.ModifierVisitorAdapter;
 import java.util.ArrayList;
@@ -50,6 +54,7 @@ public class MainParser extends Parser
     private String methodScope = null;
     private ArrayList<String> parameters;
     String level;
+    ExprLevelParser exprParser;
 
     public MainParser(
             String className, 
@@ -58,12 +63,20 @@ public class MainParser extends Parser
             Element printMethod, 
             HashMap<String, Method> methods) {
         super(className, fullClassName, dataStruct, printMethod, methods);
+
     }
 
     public MainParser(Parser parser) {
         super(parser);
+        
     }
-
+    
+    public ExprLevelParser getExprParser(MainParser parser){
+        if(exprParser == null){
+            exprParser = new ExprLevelParser(this, this);
+        }
+        return exprParser;
+    }
 
     public void setMethodScope(String scope){
         this.methodScope = scope;
@@ -134,7 +147,7 @@ public class MainParser extends Parser
     }
     
     
-    private DataStructure isAnnotated(String identifier){
+    public DataStructure isAnnotated(String identifier){
         
         
         DataStructure ds = searchFullScope(identifier);
@@ -150,7 +163,7 @@ public class MainParser extends Parser
     }
     
 
-    private DataStructure isAnnotated(Expression expr){
+    public DataStructure isAnnotated(Expression expr){
 
         // contains ..this. ..
         if(expr == null){
@@ -227,7 +240,7 @@ public class MainParser extends Parser
             evalDeclaration(n);
             
         }
-        astArg.push(IS_DECLARATION);
+        astArg.set(IS_DECLARATION);
         return super.visit(n, astArg); //To change body of generated methods, choose Tools | Templates.
     }
     
@@ -274,8 +287,7 @@ public class MainParser extends Parser
         ASTArgument astArg = (ASTArgument)arg;
         
         if( astArg.peek() == SKIP){
-            astArg.pop();
-            astArg.push(IS_ASSIGNMENT);
+            astArg.set(IS_ASSIGNMENT);
             return super.visit(n, astArg);
         }
        
@@ -292,11 +304,11 @@ public class MainParser extends Parser
             return super.visit(evalCall, astArg);
         }
 
-        astArg.push(IS_ASSIGNMENT);
+        astArg.set(IS_ASSIGNMENT);
         return super.visit(n, astArg);
     }
     
-    private void setWriteTo(Expression target, MethodCallExpr call){
+    public void setWriteTo(Expression target, MethodCallExpr call){
         
         if(target instanceof FieldAccessExpr){
             FieldAccessExpr fae = (FieldAccessExpr)target;
@@ -316,7 +328,7 @@ public class MainParser extends Parser
         }
     }
     
-    private MethodCallExpr setWriteFrom(Expression expr){
+    public MethodCallExpr setWriteFrom(Expression expr){
         MethodCallExpr call = null;
         
         if(expr instanceof ArrayAccessExpr){ 
@@ -334,7 +346,7 @@ public class MainParser extends Parser
     }
 
     
-    private MethodCallExpr createWrite(ArrayList<Expression> args){
+    public MethodCallExpr createWrite(ArrayList<Expression> args){
         return new MethodCallExpr(null, WriteOperation.OPERATION,args);
     }
     
@@ -342,7 +354,7 @@ public class MainParser extends Parser
         UNDEFINED WRITE
     */
     
-    private MethodCallExpr setWriteFromUndefined(Expression exp){
+    public MethodCallExpr setWriteFromUndefined(Expression exp){
         
         ArrayList<Expression> args = new ArrayList<>();
         args.add(new NullLiteralExpr());
@@ -355,7 +367,7 @@ public class MainParser extends Parser
         ARRAY WRITE
     */
     
-    private MethodCallExpr setWriteFromArray(ArrayAccessExpr aValueExp){
+    public MethodCallExpr setWriteFromArray(ArrayAccessExpr aValueExp){
 
         DataStructure dataStructure = isAnnotated(aValueExp);
         
@@ -372,7 +384,7 @@ public class MainParser extends Parser
     
     
     
-    private void seWriteToArray(ArrayAccessExpr aTargetExp, MethodCallExpr call){
+    public void seWriteToArray(ArrayAccessExpr aTargetExp, MethodCallExpr call){
         
         DataStructure dataStructure = isAnnotated(aTargetExp);
         if(dataStructure!= null){
@@ -383,7 +395,7 @@ public class MainParser extends Parser
 
     }
     
-    private void seWriteToArray(String name, MethodCallExpr call){
+    public void seWriteToArray(String name, MethodCallExpr call){
         
         DataStructure dataStructure = isAnnotated(name);
         if(dataStructure!= null){
@@ -398,7 +410,7 @@ public class MainParser extends Parser
         VARIABLE WRITE
     */
     
-    private MethodCallExpr setWtriteFromVariable(NameExpr nExpr){
+    public MethodCallExpr setWtriteFromVariable(NameExpr nExpr){
         
         String id = getIdentifier(nExpr, nExpr.getName() );
         
@@ -409,7 +421,7 @@ public class MainParser extends Parser
         return createWrite(args);
     }
     
-    private void setWriteToVariable(NameExpr nExpr, MethodCallExpr call ){
+    public void setWriteToVariable(NameExpr nExpr, MethodCallExpr call ){
         call.getArgs().add(
             new IntegerLiteralExpr(WriteOperation.VARIABLE+""));
         
@@ -419,57 +431,27 @@ public class MainParser extends Parser
                 READ LEVEL
     */
    
-    
     @Override
     public Node visit(ArrayAccessExpr n, Object arg) {
         ASTArgument astArg = (ASTArgument)arg;
         
-        if(astArg.peek() == SKIP){
-            astArg.pop();
-            return super.visit(n, astArg);
-        }
-       
-        if(astArg.peek() == IS_UNARY){
-            return super.visit(n, arg);
-        }
-
-        DataStructure dataStructure = isAnnotated(n.getName());
-        
-        if(dataStructure != null){
-            
-            ArrayDataStructure ads = (ArrayDataStructure) dataStructure;
-            
-            String name = n.getName().toString();
-            int dimension = TextParser.countHighLeveOccurences(name,"[", "]");
-
-            ArrayList<Expression> args = new ArrayList<>();
-            args.add(new StringLiteralExpr(dataStructure.getIdentifier()));
-            args.add(new IntegerLiteralExpr(""+dimension));
-            args.add(n.getIndex());
-            n.setIndex(new MethodCallExpr(null, "read", args));
-          
-            
-            if(astArg.peek() == IS_BINARY){
-                astArg.push(SKIP);
-                return super.visit(setEval(n), astArg);
+        if((astArg.stack.contains(IS_ASSIGNMENT) || astArg.stack.contains(IS_DECLARATION)) 
+                || astArg.peek() == IS_BINARY){
+            ExprLevelParser parser = getExprParser(this);
+            DataStructure dataStructure = isAnnotated(n.getName());
+            if(dataStructure != null){
+                parser.setRead(dataStructure, n, astArg);
             }
         }
         
         return super.visit(n, astArg);
     }
 
-    @Override
-    public Node visit(ReturnStmt n, Object arg) {
-        ASTArgument astArg = (ASTArgument)arg;
-        astArg.clear();
-        astArg.push(IS_UNARY);
-        // take care of this later
-        return super.visit(n, arg); //To change body of generated methods, choose Tools | Templates.
-    }
     
     
     
-    private MethodCallExpr setEval(ArrayAccessExpr aaExpr){
+    
+    public MethodCallExpr setEval(ArrayAccessExpr aaExpr){
         return setEvalCall(
              new NullLiteralExpr(),
              aaExpr,
@@ -566,9 +548,16 @@ public class MainParser extends Parser
         return new ArrayInitializerExpr(expressions);
     }
 
+    @Override
+    public Node visit(ConditionalExpr n, Object arg) {
+        ASTArgument astArg = (ASTArgument)arg;
+        astArg.clear();
+        return super.visit(n, arg); //To change body of generated methods, choose Tools | Templates.
+    }
 
     @Override
     public Node visit(IfStmt n, Object arg) {
+        
         ASTArgument astArg = (ASTArgument)arg;
         astArg.clear();
         return super.visit(n, arg); //To change body of generated methods, choose Tools | Templates.
@@ -582,9 +571,28 @@ public class MainParser extends Parser
     }
     
     @Override
-    public Node visit(BinaryExpr n, Object arg) {
+    public Node visit(WhileStmt n, Object arg) {
         ASTArgument astArg = (ASTArgument)arg;
-        astArg.push(IS_BINARY);
+        astArg.clear();
+        return super.visit(n, arg); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    
+
+    @Override
+    public Node visit(BinaryExpr n, Object arg) {
+    
+       // System.out.println("bi: "+n.toString());
+        ASTArgument astArg = (ASTArgument)arg;
+
+        if(!astArg.stack.contains(IS_BINARY)){
+            astArg.push(IS_BINARY);
+            ExprLevelParser parser = getExprParser(this);
+            parser.visit(n, arg);
+        }else{
+            astArg.push(IS_BINARY);
+        }
+        
         return super.visit(n, astArg); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -595,6 +603,27 @@ public class MainParser extends Parser
         return super.visit(n, astArg); //To change body of generated methods, choose Tools | Templates.
     }
     
+    @Override
+    public Node visit(ReturnStmt n, Object arg) {
+        
+        Expression e = n.getExpr();
+        DataStructure ds = isAnnotated(e);
+        ASTArgument astArg = (ASTArgument)arg;
+        if(ds != null && e instanceof ArrayAccessExpr){
+            ArrayAccessExpr a = (ArrayAccessExpr)e;
+            //System.out.println("not null: "+e.toString());
+            astArg.set(IS_ASSIGNMENT);
+            MethodCallExpr call = setEval(a);
+            n.setExpr(call);
+        }else{
+            astArg.clear();
+        }
+
+        return super.visit(n, arg); //To change body of generated methods, choose Tools | Templates.
+    }
     
+
+    
+
     
 }

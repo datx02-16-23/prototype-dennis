@@ -31,11 +31,12 @@ public class Parser extends ModifierVisitorAdapter {
     
     // over ten has rank
     public static final int SKIP = 15;
-    public static final int IS_ASSIGNMENT = 10;
-    public static final int IS_DECLARATION = 10;
+
+    public static final int IS_ASSIGNMENT = 6;
+    public static final int IS_DECLARATION = 5;
     // under ten has no rank
-    public static final int IS_UNARY = 1;
-    public static final int IS_BINARY = 2;
+    public static final int IS_UNARY = 4;
+    public static final int IS_BINARY = 3;
     
     
 

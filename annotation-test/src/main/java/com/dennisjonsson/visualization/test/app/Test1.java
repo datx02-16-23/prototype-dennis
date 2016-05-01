@@ -34,7 +34,7 @@ public class Test1 {
     @Visualize(abstractType = AbstractType.ARRAY)
     public static int [] b = new int[]{1,2,3,4,5,6,7,8,9};
     
-    public static int c [] = new int [2];
+    public static int c [] = new int [10];
    
     @Visualize(abstractType = AbstractType.ADJACENCY_MATRIX)
     public static int [][] e = new int [10][10];
@@ -50,6 +50,7 @@ public class Test1 {
         test.scope2(c);
         test.bubblesortFailedCaseTest(a);
         test.testDependencies();
+        test.recursive(2);
         
         
         
@@ -112,6 +113,21 @@ public class Test1 {
            b[0] = 1;
            b[0] = this.b[0];
            this.b[0] = b[0];
+    }
+     
+     public int recursive(int i){
+        if(i==0){
+            return 0;
+        }
+        
+        if(e[0][i] > 0){
+        
+        }
+        
+        e[0][i] = e[0][i];
+        e[0][i] = recursive(i -1) + a[i]; 
+
+        return e[0][i];
     }
    
     

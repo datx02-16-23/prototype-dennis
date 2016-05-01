@@ -172,12 +172,12 @@ com.dennisjonsson.annotation.log.ast.ASTLogger.instance(new com.dennisjonsson.an
         int i = eval("i", write("com.dennisjonsson.visualization.test.tsp.AntTsp tour", ant.tour[read("com.dennisjonsson.visualization.test.tsp.AntTsp tour", 0, currentIndex)], 0, 1), 0, new int[] { 162, 162 });
         double denom = 0.0;
         for (int l = 0; l < n; l++) if (!ant.visited(l))
-            denom += pow(trails[read("com.dennisjonsson.visualization.test.tsp.AntTsp trails", 0, i)][read("com.dennisjonsson.visualization.test.tsp.AntTsp trails", 1, l)], alpha) * pow(1.0 / graph[read("com.dennisjonsson.visualization.test.tsp.AntTsp graph", 0, i)][read("com.dennisjonsson.visualization.test.tsp.AntTsp graph", 1, l)], beta);
+            denom += pow(eval(null, trails[read("com.dennisjonsson.visualization.test.tsp.AntTsp trails", 0, i)], 2, new int[] { 167, 167 })[l], alpha) * pow(1.0 / eval(null, graph[read("com.dennisjonsson.visualization.test.tsp.AntTsp graph", 0, i)], 2, new int[] { 168, 168 })[l], beta);
         for (int j = 0; j < n; j++) {
             if (ant.visited(j)) {
                 probs[j] = 0.0;
             } else {
-                double numerator = pow(trails[read("com.dennisjonsson.visualization.test.tsp.AntTsp trails", 0, i)][read("com.dennisjonsson.visualization.test.tsp.AntTsp trails", 1, j)], alpha) * pow(1.0 / graph[read("com.dennisjonsson.visualization.test.tsp.AntTsp graph", 0, i)][read("com.dennisjonsson.visualization.test.tsp.AntTsp graph", 1, j)], beta);
+                double numerator = pow(eval(null, trails[read("com.dennisjonsson.visualization.test.tsp.AntTsp trails", 0, i)], 2, new int[] { 175, 175 })[j], alpha) * pow(1.0 / eval(null, graph[read("com.dennisjonsson.visualization.test.tsp.AntTsp graph", 0, i)], 2, new int[] { 176, 176 })[j], beta);
                 probs[j] = numerator / denom;
             }
         }

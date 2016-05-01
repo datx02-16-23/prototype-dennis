@@ -23,10 +23,10 @@ com.dennisjonsson.annotation.log.ast.ASTLogger.instance(new com.dennisjonsson.an
         int pivot = eval("pivot", write("com.dennisjonsson.visualization.test.QuickSort quickSort arr", arr[read("com.dennisjonsson.visualization.test.QuickSort quickSort arr", 0, middle)], 0, 1), 0, new int[] { 23, 23 });
         int i = low, j = high;
         while (i <= j) {
-            while (arr[read("com.dennisjonsson.visualization.test.QuickSort quickSort arr", 0, i)] < pivot) {
+            while (eval(null, arr[read("com.dennisjonsson.visualization.test.QuickSort quickSort arr", 0, i)], 2, new int[] { 26, 26 }) < pivot) {
                 i++;
             }
-            while (arr[read("com.dennisjonsson.visualization.test.QuickSort quickSort arr", 0, j)] > pivot) {
+            while (eval(null, arr[read("com.dennisjonsson.visualization.test.QuickSort quickSort arr", 0, j)], 2, new int[] { 29, 29 }) > pivot) {
                 j--;
             }
             if (i <= j) {
