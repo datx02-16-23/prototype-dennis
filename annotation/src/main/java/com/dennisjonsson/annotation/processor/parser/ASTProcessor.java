@@ -254,6 +254,8 @@ public class ASTProcessor extends SourceProcessor {
         // replace type of included sources
         //replaceIncludes(parser);
         parser.insertInterceptorMethods(className, dataStructures);
+        
+        System.out.println("root dir: "+rootDirectory);
         parser.insertField("public static "+ASTLogger.class.getName()+" logger = \n"
                 +   ASTLogger.class.getName()+".instance("
                 +   "new "+SourceHeader.class.getName()+"("
@@ -262,8 +264,9 @@ public class ASTProcessor extends SourceProcessor {
                 +   getPrintingPath()+","
                 +   parser.printDataStructures(dataStructures) +","
                 +   "new " + interpreterClass + "(),"
-                +   "\""+rootDirectory+"\""
+                +   "\""+rootDirectory.replaceAll("\\\\", ".")+"\""
                 + "));", className);
+        
         source = parser.getSource();
      
         

@@ -65,7 +65,7 @@ public class ASTLogger {
         this.sourceHeader = sourceHeader;
         this.interpreter = sourceHeader.interpreter;
         this.interpreter.addMarkup(markup);
-        this.interpreter.setRootDirectory(sourceHeader.rootDirectory);
+        this.interpreter.setRootDirectory(sourceHeader.rootDirectory.replaceAll("\\.", "\\\\"));
         appendHeader(sourceHeader);
         
         enablePrint();
@@ -88,15 +88,6 @@ public class ASTLogger {
         
     };
     
-    //Semaphore s = new Semaphore(1, false);
-/*
-    private void aquire(){
-        try {
-            s.acquire();
-        } catch (InterruptedException ex) {
-            Logger.getLogger(ASTLogger.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }*/
     
     private void enablePrint() {
         mainThread = Thread.currentThread();

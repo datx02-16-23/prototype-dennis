@@ -57,7 +57,7 @@ public class TextParser {
     
     
     public void insertField(String field, String className){
-        source = source.replaceFirst("\\sclass\\s++"+className+"\\s*\\{", " class "+className+"{\n"+field);
+        source = source.replaceFirst("\\sclass\\s++"+className+"([^\\{])*\\{", " class "+className+"{\n"+field);
      
     }
 
