@@ -229,8 +229,8 @@
 			var visualizers = this.initVariables(markup.header.annotatedVariables);
 			
 			this.backupWindow = document.createElement("div");
-			var width = window.innerWidth;
-			var height = window.innerHeight-50;
+			var width = window.innerWidth -20;
+			var height = window.innerHeight-70;
 			
 			this.backupWindow.style.width = (width*0.7)+"px";
 			this.backupWindow.style.height = height+"px";
@@ -348,6 +348,10 @@
 				}
 			}
 			return currentPrograms;
+		},
+		
+		this.resetVisualization = function(){
+			this.sequence.play();
 		},
 		
 		this.runVisualization = function(){

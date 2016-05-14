@@ -34,6 +34,7 @@ public class PostParser extends ModifierVisitorAdapter {
     
     public final String className;
     final String fullClassName;
+    final String newClassName;
     public final ArrayList<DataStructure> dataStructures;
     public final HashMap<String, String> includes;
     public final HashMap<String, String> imports;
@@ -42,12 +43,13 @@ public class PostParser extends ModifierVisitorAdapter {
         
     ArrayList<Statement> classBody;
 
-    public PostParser(String className, String fullClassName, ArrayList<DataStructure> dataStructures, 
+    public PostParser(String className, String fullClassName, String newClassName, ArrayList<DataStructure> dataStructures, 
             ArrayList<String> includes, LinkedList<ImportDeclaration> imports, 
             String packageName) {
         
         this.className = className;
         this.fullClassName = fullClassName;
+        this.newClassName = newClassName;
         this.dataStructures = dataStructures;
         this.includes = new HashMap<>();
         this.imports = new HashMap<>();
@@ -79,21 +81,11 @@ public class PostParser extends ModifierVisitorAdapter {
 
     @Override
     public Node visit(ClassExpr n, Object arg) {
+        System.out.println("class name: "+n.toString());
         return super.visit(n, arg); //To change body of generated methods, choose Tools | Templates.
     }
     
-    @Override
-    public Node visit(ClassOrInterfaceDeclaration n, Object arg) {
-        //System.out.println(className+" post: class: "+n.getName());
-        return super.visit(n, arg); //To change body of generated methods, choose Tools | Templates.
-    }
-    
-    @Override
-    public Node visit(TypeParameter n, Object arg) {
-        String name = n.getName().toString();
-        //System.out.println(className+" post: TypeParameter name: "+name);
-        return super.visit(n, arg); //To change body of generated methods, choose Tools | Templates.
-    }
+ 
 
     @Override
     public Node visit(TypeDeclarationStmt n, Object arg) {
@@ -103,15 +95,12 @@ public class PostParser extends ModifierVisitorAdapter {
     }
     
     @Override
-    public Node visit(VariableDeclarationExpr n, Object arg) {
-        //System.out.println(className+" post: VariableDeclarationExpr : "+n.getType().toString());
-        //n.setType(applyIncludesOnType(n.getType()));
-        return super.visit(n, arg); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public Node visit(ClassOrInterfaceType n, Object arg) {
-        //System.out.println(className+" post: ClassOrInterfaceType : "+n.getName());
+        System.out.println(className+" post: ClassOrInterfaceType : "+n.getName());
+        if(n.getName().equalsIgnoreCase(className)){
+            n.setName(newClassName);
+            return super.visit(n, arg);
+        }
         return super.visit((ClassOrInterfaceType)applyIncludesOnType(n), arg); 
     }
     
@@ -143,6 +132,9 @@ public class PostParser extends ModifierVisitorAdapter {
 
     }
     
+    /*
+        replaces all class name expressions which have a visual counter part
+    */
     private String applyIncludesOnName(String name){
         int i = name.lastIndexOf(".") +1;
         String includeName = checkTypes(name.substring(i));

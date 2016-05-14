@@ -92,6 +92,7 @@ public class ASTProcessor extends SourceProcessor {
         this.methods = methods;
     }
     
+    
     public void setPath(String path){
         
         if(path == null){     
@@ -235,11 +236,14 @@ public class ASTProcessor extends SourceProcessor {
         PostParser postParser = new PostParser(
                 className, 
                 fullName,
+                newClass,
                 dataStructures, 
                 includes, 
                 (LinkedList<ImportDeclaration>)unit.getImports(),
                 unit.getPackage().getName().toString()
         );
+        
+        
         
         postParser.visit(unit, new ASTArgument());
 
