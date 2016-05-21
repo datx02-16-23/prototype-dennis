@@ -289,7 +289,7 @@ com.dennisjonsson.annotation.log.ast.ASTLogger.instance(new com.dennisjonsson.an
     // printing best tour so far each time. 
     public static void main(String[] args) {
         // Load in TSP data file.
-        com.dennisjonsson.visualization.test.tsp.AntTspVisual anttsp = new com.dennisjonsson.visualization.test.tsp.AntTspVisual();
+        AntTspVisual anttsp = new AntTspVisual();
         anttsp.readGraph("");
         // Repeatedly solve - will keep the best tour found.
         anttsp.solve();

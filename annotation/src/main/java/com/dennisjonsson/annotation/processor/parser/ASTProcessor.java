@@ -232,6 +232,17 @@ public class ASTProcessor extends SourceProcessor {
         
         adapter.visit(unit, new ASTArgument());
         
+        String logger_field = "public static "+ASTLogger.class.getName()+" logger = \n"
+                +   ASTLogger.class.getName()+".instance("
+                +   "new "+SourceHeader.class.getName()+"("
+                +   "\""+newClass+"\","
+                +   ""+lines+","
+                +   getPrintingPath()+","
+                +   TextParser.printDataStructures(dataStructures) +","
+                +   "new " + interpreterClass + "(),"
+                +   "\""+rootDirectory.replaceAll("\\\\", ".")+"\""
+                + "));";
+        
         // post parsing
         PostParser postParser = new PostParser(
                 className, 
@@ -243,16 +254,14 @@ public class ASTProcessor extends SourceProcessor {
                 unit.getPackage().getName().toString()
         );
         
-        
+        postParser.setLoggerField(logger_field); 
         
         postParser.visit(unit, new ASTArgument());
-
-        // textual changes
-        TextParser parser = new TextParser(unit.toString());
-        parser.renameClass(className, newClass);
-        
-        String oldClassName = className;
         className = newClass;
+        // textual changes
+        
+        TextParser parser = new TextParser(unit.toString());
+        parser.insertField(logger_field, className);
         
         parser.removeAnnotations();
         // replace type of included sources
@@ -260,20 +269,10 @@ public class ASTProcessor extends SourceProcessor {
         parser.insertInterceptorMethods(className, dataStructures);
         
         System.out.println("root dir: "+rootDirectory);
-        parser.insertField("public static "+ASTLogger.class.getName()+" logger = \n"
-                +   ASTLogger.class.getName()+".instance("
-                +   "new "+SourceHeader.class.getName()+"("
-                +   "\""+newClass+"\","
-                +   ""+lines+","
-                +   getPrintingPath()+","
-                +   parser.printDataStructures(dataStructures) +","
-                +   "new " + interpreterClass + "(),"
-                +   "\""+rootDirectory.replaceAll("\\\\", ".")+"\""
-                + "));", className);
+        //parser.insertField();
         
         source = parser.getSource();
-     
-        
+
     }
     
    

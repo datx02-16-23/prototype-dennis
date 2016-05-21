@@ -28,7 +28,7 @@ com.dennisjonsson.annotation.log.ast.ASTLogger.instance(new com.dennisjonsson.an
         try {
             s.acquire();
         } catch (InterruptedException ex) {
-            Logger.getLogger(com.dennisjonsson.visualization.test.app.TestAppVisual.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TestAppVisual.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -86,7 +86,7 @@ com.dennisjonsson.annotation.log.ast.ASTLogger.instance(new com.dennisjonsson.an
         try {
             sleep(500);
         } catch (InterruptedException ex) {
-            Logger.getLogger(com.dennisjonsson.visualization.test.app.TestAppVisual.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TestAppVisual.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 public static int read(String name,int dimension, int index ){ 

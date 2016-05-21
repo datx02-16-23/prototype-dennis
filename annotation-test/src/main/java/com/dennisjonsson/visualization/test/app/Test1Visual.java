@@ -36,7 +36,7 @@ com.dennisjonsson.annotation.log.ast.ASTLogger.instance(new com.dennisjonsson.an
 
     public static void main(String[] args) {
         // TODO code application logic here
-        com.dennisjonsson.visualization.test.app.Test1Visual test = new com.dennisjonsson.visualization.test.app.Test1Visual();
+        Test1Visual test = new Test1Visual();
         test.simpleTest();
         test.scope1(eval("com.dennisjonsson.visualization.test.app.Test1 scope1 b", write(null, c, 3, 1), 3, new int[] { 49, 49 }));
         test.scope2(c);
