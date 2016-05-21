@@ -133,8 +133,6 @@
 				
 				return currentProgram;
 			},
-			"tree": 
-				this["binarytree"],
 			"binarytree":
 			function(args){	
 			
@@ -187,6 +185,8 @@
 			}
 			
 		},
+		
+		this.programs["tree"] = this.programs["binarytree"];
 		
 		this.parseText = function(text){
 			
@@ -309,10 +309,11 @@
 		},*/
 		
 		this.handleAbstractType = function(dataStructure){
+			/*
 			if(dataStructure.attributes.size != null &&
-				dataStructure.attributes.size.length == 2){
+				dataStructure.attributes.size.length == 2 ){
 				dataStructure.abstractType = "matrix";
-			}
+			}*/
 		},
 		
 		this.initVariables = function(variables){
